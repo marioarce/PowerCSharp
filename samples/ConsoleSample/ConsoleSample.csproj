@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\PowerCSharp.Core\PowerCSharp.Core.csproj" />
+    <ProjectReference Include="..\..\src\PowerCSharp.Extensions\PowerCSharp.Extensions.csproj" />
+    <ProjectReference Include="..\..\src\PowerCSharp.Utilities\PowerCSharp.Utilities.csproj" />
+    <ProjectReference Include="..\..\src\PowerCSharp.Helpers\PowerCSharp.Helpers.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

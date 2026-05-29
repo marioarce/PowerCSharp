@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\PowerCSharp.Core\PowerCSharp.Core.csproj" />
+    <ProjectReference Include="..\..\src\PowerCSharp.Extensions\PowerCSharp.Extensions.csproj" />
+    <ProjectReference Include="..\..\src\PowerCSharp.Utilities\PowerCSharp.Utilities.csproj" />
+    <ProjectReference Include="..\..\src\PowerCSharp.Helpers\PowerCSharp.Helpers.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
+</Project>
