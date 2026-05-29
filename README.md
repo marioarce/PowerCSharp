@@ -1,12 +1,18 @@
 # PowerCSharp
 
+[![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v1.0.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://github.com/marioarce/PowerCSharp/workflows/CI/badge.svg)](https://github.com/marioarce/PowerCSharp/actions)
+[![codecov](https://codecov.io/gh/marioarce/PowerCSharp/branch/main/graph/badge.svg)](https://codecov.io/gh/marioarce/PowerCSharp)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/PowerCSharp.Core.svg)](https://www.nuget.org/packages/PowerCSharp.Core)
+[![Code Quality](https://img.shields.io/badge/code%20quality-A%2B-brightgreen)](https://github.com/marioarce/PowerCSharp)
+
 Enhanced C# extension methods and utilities for .NET developers
 
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Core.svg)](https://www.nuget.org/packages/PowerCSharp.Core)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Extensions.svg)](https://www.nuget.org/packages/PowerCSharp.Extensions)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Utilities.svg)](https://www.nuget.org/packages/PowerCSharp.Utilities)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Helpers.svg)](https://www.nuget.org/packages/PowerCSharp.Helpers)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 PowerCSharp is a comprehensive library of extension methods, utilities, and helper classes designed to enhance your C# development experience. Built by a senior C# architect with 20+ years of experience, this library provides practical, well-tested solutions for common programming challenges.
 
@@ -131,9 +137,13 @@ dotnet test
 
 ## 📚 Documentation
 
-- [API Documentation](docs/) (Coming soon)
-- [Examples and Samples](samples/)
-- [Migration Guide](docs/migration.md) (Coming soon)
+- [API Documentation](docs/) - Complete API reference
+- [Examples and Samples](samples/) - Working code examples
+- [Contributing Guide](CONTRIBUTING.md) - How to contribute
+- [Security Policy](SECURITY.md) - Security information
+- [Code of Conduct](CODE_OF_CONDUCT.md) - Community guidelines
+- [Changelog](CHANGELOG.md) - Version history
+- [Workflow Documentation](docs/WORKFLOW.md) - Development workflow
 
 ## 🤝 Contributing
 
