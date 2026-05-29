@@ -16,7 +16,9 @@ public static class CryptoHelper
     public static string ComputeSHA256(string input)
     {
         var bytes = Encoding.UTF8.GetBytes(input);
-        var hash = SHA256.HashData(bytes);
+        
+        using var sha256 = SHA256.Create();
+        var hash = sha256.ComputeHash(bytes);
 
         var result = Convert.ToBase64String(hash);
         return result;
@@ -28,7 +30,9 @@ public static class CryptoHelper
     public static string ComputeMD5(string input)
     {
         var bytes = Encoding.UTF8.GetBytes(input);
-        var hash = MD5.HashData(bytes);
+        
+        using var md5 = MD5.Create();
+        var hash = md5.ComputeHash(bytes);
 
         var result = BitConverter
             .ToString(hash)
