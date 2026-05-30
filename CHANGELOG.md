@@ -8,12 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2026-05-29
 
 ### Added
-- **PowerCSharp.Core** - Core string manipulation and validation extensions
-  - `IsNullOrWhiteSpace()` extension method
-  - `SafeSubstring()` safe string extraction
-  - `ToTitleCase()` string formatting
+- **PowerCSharp.Core** - Core foundation and base classes for PowerCSharp library
+  - Provides foundational architecture for the PowerCSharp ecosystem
 
 - **PowerCSharp.Extensions** - Extension methods for common .NET types
+  - **String Extensions** (`IsNullOrWhiteSpace()`, `SafeSubstring()`, `ToTitleCase()`, and more)
   - **DateTime Extensions** (`GetAge()`, `IsWeekend()`, `FirstDayOfMonth()`, `LastDayOfMonth()`)
   - **Collection Extensions** (`IsNullOrEmpty()`, `FirstOrDefaultSafe()`, `Page()`)
   - **Advanced Extensions** - HTTP, LINQ, JSON, XML, Object, Type, Stream, and Configuration extensions
