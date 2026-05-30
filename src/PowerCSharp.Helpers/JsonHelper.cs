@@ -15,6 +15,11 @@ public static class JsonHelper
     {
         try
         {
+            if (obj == null)
+            {
+                return "{}";
+            }
+            
             var result = JsonSerializer.Serialize(obj);
             return result;
         }
