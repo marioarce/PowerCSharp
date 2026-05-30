@@ -21,7 +21,7 @@ PowerCSharp is a comprehensive library of extension methods, utilities, and help
 PowerCSharp is organized into several focused packages:
 
 - **PowerCSharp.Core** - Core string manipulation and validation extensions
-- **PowerCSharp.Extensions** - Extension methods for collections, dates, and common .NET types
+- **PowerCSharp.Extensions** - Comprehensive extension methods for collections, HTTP, LINQ, JSON, XML, objects, types, streams, and configuration
 - **PowerCSharp.Utilities** - Utility classes for validation, file operations, and mathematics
 - **PowerCSharp.Helpers** - Specialized helpers for JSON, cryptography, and environment operations
 
@@ -47,15 +47,24 @@ dotnet add package PowerCSharp.Helpers
 
 ## 💡 Usage Examples
 
-### String Extensions (PowerCSharp.Core)
+### String Extensions (PowerCSharp.Core & PowerCSharp.Extensions)
 
 ```csharp
 using PowerCSharp.Core;
+using PowerCSharp.Extensions;
 
 string text = "hello world";
 bool isEmpty = text.IsNullOrWhiteSpace(); // false
 string title = text.ToTitleCase(); // "Hello World"
 string safe = text.SafeSubstring(0, 5); // "hello"
+
+// New string utilities
+string camel = "HelloWorld".ToCamelCase(); // "helloWorld"
+string firstLower = text.FirstCharToLowerCase(); // "hello world"
+string mid = text.Mid(6); // "world"
+string normalized = "User Name".NormalizeKey(); // "userName"
+string ascii = "café".AsAscii(); // "caf"
+bool isValid = "https://example.com".IsValidUrl(); // true
 ```
 
 ### Collection Extensions (PowerCSharp.Extensions)
@@ -67,6 +76,10 @@ var numbers = new List<int> { 1, 2, 3, 4, 5 };
 bool isEmpty = numbers.IsNullOrEmpty(); // false
 var first = numbers.FirstOrDefaultSafe(-1); // 1
 var page = numbers.Page(1, 2); // [1, 2]
+
+// New collection utilities
+var list = new List<string> { "keep", "remove", "keep", "remove" };
+int removed = list.RemoveAll(x => x == "remove"); // 2
 ```
 
 ### DateTime Extensions (PowerCSharp.Extensions)
@@ -79,6 +92,116 @@ int age = date.GetAge();
 bool isWeekend = date.IsWeekend();
 var firstDay = date.FirstDayOfMonth();
 var lastDay = date.LastDayOfMonth();
+```
+
+### HTTP & Network Extensions (PowerCSharp.Extensions)
+
+```csharp
+using PowerCSharp.Extensions;
+using System.Net;
+
+// HTTP Status Code utilities
+HttpStatusCode status = HttpStatusCode.OK;
+bool success = status.IsSuccessful(); // true
+bool clientError = status.IsClientError(); // false
+bool serverError = status.IsServerError(); // false
+bool isRedirect = status.IsRedirect(); // false
+
+// URI manipulation
+Uri uri = new Uri("https://example.com");
+Uri withParam = uri.AddParameter("search", "test"); // https://example.com?search=test
+
+// HTTP Request cloning
+using var request = new HttpRequestMessage(HttpMethod.Get, "https://api.example.com");
+var clonedRequest = request.Clone();
+var clonedAsync = await request.CloneAsync();
+```
+
+### LINQ & Dynamic Query Extensions (PowerCSharp.Extensions)
+
+```csharp
+using PowerCSharp.Extensions;
+
+// Dynamic expression parsing
+string expression = "Age > 18 && Name.Contains('John')";
+var predicate = expression.GetExpressionDelegate<Person>();
+
+// Dynamic ordering
+string orderExpression = "Name DESC, Age ASC";
+var orderDelegates = orderExpression.GetOrderDelegates<Person>();
+
+// Dynamic filtering and ordering
+var filterProvider = new DynamicFilterProvider<Person>();
+var orderProvider = new DynamicOrderProvider<Person>();
+var filtered = people.Filter(filterProvider);
+var ordered = people.Order(orderProvider);
+```
+
+### JSON & XML Extensions (PowerCSharp.Extensions)
+
+```csharp
+using PowerCSharp.Extensions;
+using System.Text.Json;
+
+// JSON element access
+JsonElement element = JsonDocument.Parse("{\"name\":\"John\"}").RootElement;
+var name = element.Get("name"); // JsonElement with value "John"
+var firstItem = element.Get(0); // For arrays
+
+// Case-insensitive JSON access
+bool found = element.TryGetPropertyCaseInsensitive("NAME", out var value);
+
+// XML flattening
+using System.Xml.Linq;
+XElement xml = XElement.Parse("<root><child>value</child></root>");
+var dict = xml.Flatten(); // Dictionary with XML structure
+```
+
+### Object & Type Extensions (PowerCSharp.Extensions)
+
+```csharp
+using PowerCSharp.Extensions;
+
+// Object utilities
+string text = "test";
+text.ThrowOnNull(); // Throws if null
+
+bool isTrue = "true".TryGetBool(out bool result); // result = true, isTrue = true
+bool isFalse = "0".TryGetBool(out result); // result = false, isFalse = true
+
+// Generic operations
+var person = new Person { Name = "John", Age = 30 };
+var copy = new Person();
+person.CopyPropertiesTo(copy); // Copies matching properties
+
+// Type operations
+bool isDefault = default(int).IsDefault(); // true
+string typeName = typeof(List<string>).GetGenericTypeName(); // "List<String>"
+
+// Concrete type resolution
+Type concreteType = typeof(IMyInterface).GetConcreteType();
+```
+
+### Stream Extensions (PowerCSharp.Extensions)
+
+```csharp
+using PowerCSharp.Extensions;
+
+using var originalStream = new MemoryStream(Encoding.UTF8.GetBytes("test data"));
+using var destinationStream = new MemoryStream();
+
+await originalStream.CloneAsync(destinationStream);
+// destinationStream now contains the same data as originalStream
+```
+
+### Configuration Extensions (PowerCSharp.Extensions)
+
+```csharp
+using PowerCSharp.Extensions;
+using Microsoft.Extensions.Configuration;
+
+var configuration = new ConfigurationBuilder().Build();
+var options = configuration.GetOptions<MyAppOptions>("MyApp"); // Reads from "MyApp" section
 ```
 
 ### Validation Utilities (PowerCSharp.Utilities)
