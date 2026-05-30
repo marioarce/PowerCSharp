@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Net.Mail;
 
@@ -16,12 +15,15 @@ public static class ValidationHelper
     public static bool IsValidEmail(string? email)
     {
         if (string.IsNullOrWhiteSpace(email))
+        {
             return false;
+        }
 
         try
         {
-            var addr = new System.Net.Mail.MailAddress(email);
-            return addr.Address == email;
+            var addr = new MailAddress(email);
+            var result = addr.Address == email;
+            return result;
         }
         catch
         {
@@ -34,7 +36,8 @@ public static class ValidationHelper
     /// </summary>
     public static bool IsNumeric(string? value)
     {
-        return !string.IsNullOrWhiteSpace(value) && value.All(char.IsDigit);
+        var result = !string.IsNullOrWhiteSpace(value) && value.All(char.IsDigit);
+        return result;
     }
 
     /// <summary>
