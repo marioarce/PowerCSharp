@@ -1,7 +1,4 @@
 using System;
-using System.IO;
-using System.Linq;
-using System.Net.Mail;
 
 namespace PowerCSharp.Utilities;
 
@@ -35,5 +32,37 @@ public static class MathHelper
     {
         if (total == 0) return 0;
         return (part / total) * 100;
+    }
+
+    /// <summary>
+    /// Converts degrees to radians
+    /// </summary>
+    public static double ToRadians(double degrees)
+    {
+        return degrees * (Math.PI / 180.0);
+    }
+
+    /// <summary>
+    /// Converts radians to degrees
+    /// </summary>
+    public static double ToDegrees(double radians)
+    {
+        return radians * (180.0 / Math.PI);
+    }
+
+    /// <summary>
+    /// Checks if a number is even
+    /// </summary>
+    public static bool IsEven(int number)
+    {
+        return number % 2 == 0;
+    }
+
+    /// <summary>
+    /// Checks if a number is odd
+    /// </summary>
+    public static bool IsOdd(int number)
+    {
+        return number % 2 != 0;
     }
 }

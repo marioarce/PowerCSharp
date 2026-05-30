@@ -1,6 +1,6 @@
 # PowerCSharp
 
-[![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v1.0.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
+[![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v0.1.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/marioarce/PowerCSharp/workflows/CI/badge.svg)](https://github.com/marioarce/PowerCSharp/actions)
 [![codecov](https://codecov.io/gh/marioarce/PowerCSharp/branch/main/graph/badge.svg)](https://codecov.io/gh/marioarce/PowerCSharp)
@@ -20,8 +20,8 @@ PowerCSharp is a comprehensive library of extension methods, utilities, and help
 
 PowerCSharp is organized into several focused packages:
 
-- **PowerCSharp.Core** - Core string manipulation and validation extensions
-- **PowerCSharp.Extensions** - Comprehensive extension methods for collections, HTTP, LINQ, JSON, XML, objects, types, streams, and configuration
+- **PowerCSharp.Core** - Core foundation and base classes for PowerCSharp library
+- **PowerCSharp.Extensions** - Comprehensive extension methods for collections, HTTP, LINQ, JSON, XML, objects, types, streams, strings, and configuration
 - **PowerCSharp.Utilities** - Utility classes for validation, file operations, and mathematics
 - **PowerCSharp.Helpers** - Specialized helpers for JSON, cryptography, and environment operations
 
@@ -47,10 +47,9 @@ dotnet add package PowerCSharp.Helpers
 
 ## 💡 Usage Examples
 
-### String Extensions (PowerCSharp.Core & PowerCSharp.Extensions)
+### String Extensions (PowerCSharp.Extensions)
 
 ```csharp
-using PowerCSharp.Core;
 using PowerCSharp.Extensions;
 
 string text = "hello world";
@@ -58,7 +57,7 @@ bool isEmpty = text.IsNullOrWhiteSpace(); // false
 string title = text.ToTitleCase(); // "Hello World"
 string safe = text.SafeSubstring(0, 5); // "hello"
 
-// New string utilities
+// Additional string utilities
 string camel = "HelloWorld".ToCamelCase(); // "helloWorld"
 string firstLower = text.FirstCharToLowerCase(); // "hello world"
 string mid = text.Mid(6); // "world"

@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
-using System.Net.Mail;
 
 namespace PowerCSharp.Utilities;
 
@@ -33,6 +31,7 @@ public static class FileHelper
         try
         {
             var directory = Path.GetDirectoryName(path);
+
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
@@ -59,7 +58,7 @@ public static class FileHelper
         while (len >= 1024 && order < sizes.Length - 1)
         {
             order++;
-            len = len / 1024;
+            len /= 1024;
         }
 
         return $"{len:0.##} {sizes[order]}";
