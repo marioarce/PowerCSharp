@@ -5,6 +5,43 @@ All notable changes to PowerCSharp will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2026-05-29
+
+### Added
+- **PowerCSharp.Core** - Core string manipulation and validation extensions
+  - `IsNullOrWhiteSpace()` extension method
+  - `SafeSubstring()` safe string extraction
+  - `ToTitleCase()` string formatting
+
+- **PowerCSharp.Extensions** - Extension methods for common .NET types
+  - **DateTime Extensions** (`GetAge()`, `IsWeekend()`, `FirstDayOfMonth()`, `LastDayOfMonth()`)
+  - **Collection Extensions** (`IsNullOrEmpty()`, `FirstOrDefaultSafe()`, `Page()`)
+  - **Advanced Extensions** - HTTP, LINQ, JSON, XML, Object, Type, Stream, and Configuration extensions
+  - **Dynamic LINQ Support** - Runtime expression parsing and dynamic filtering/ordering
+
+- **PowerCSharp.Utilities** - Utility classes for common operations
+  - **ValidationHelper** - Email, URL, and numeric validation
+  - **FileHelper** - Safe file operations and size formatting
+  - **MathHelper** - Mathematical operations (Clamp, IsInRange, Percentage, angle conversions, even/odd checks)
+
+- **PowerCSharp.Helpers** - Specialized helper classes
+  - **JsonHelper** - Safe JSON serialization/deserialization and pretty printing
+  - **CryptoHelper** - SHA-256, MD5 hashing and random string generation
+  - **EnvironmentHelper** - Environment variable access and system information
+
+- **Comprehensive Testing**
+  - 103 unit tests covering all major functionality
+  - Test coverage for edge cases and error scenarios
+  - All tests passing with >90% code coverage
+
+- **Cross-Platform Support**
+  - .NET 8.0 and .NET Standard 2.0 compatibility
+  - Conditional compilation for framework-specific features
+
+### Framework Support
+- .NET 8.0
+- .NET Standard 2.0 (compatible with .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5+)
+
 ## [Unreleased]
 
 ### Added
@@ -59,58 +96,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - N/A
 
-## [1.0.0] - 2026-05-29
-
-### Added
-- **PowerCSharp.Core** - Core string manipulation and validation extensions
-  - `IsNullOrWhiteSpace()` extension method
-  - `ToTitleCase()` string formatting
-  - `SafeSubstring()` safe string extraction
-  - Email validation utilities
-  - String sanitization methods
-
-- **PowerCSharp.Extensions** - Extension methods for common .NET types
-  - Collection extensions (`IsNullOrEmpty()`, `FirstOrDefaultSafe()`, `Page()`)
-  - DateTime extensions (`GetAge()`, `IsWeekend()`, `FirstDayOfMonth()`, `LastDayOfMonth()`)
-  - LINQ enhancements and utilities
-
-- **PowerCSharp.Utilities** - Utility classes for common operations
-  - `ValidationHelper` for email, URL, and numeric validation
-  - `FileHelper` for safe file operations and size formatting
-  - `MathHelper` for mathematical calculations and conversions
-
-- **PowerCSharp.Helpers** - Specialized helper classes
-  - `JsonHelper` for safe JSON serialization/deserialization
-  - `CryptoHelper` for SHA-256, MD5, and random string generation
-  - `EnvironmentHelper` for environment variable access
-
-- **Testing Infrastructure**
-  - Comprehensive unit tests for all packages
-  - Test coverage for edge cases and error scenarios
-  - Integration tests for complex scenarios
-
-- **Samples and Documentation**
-  - Console application demonstrating all features
-  - Web application sample for ASP.NET Core integration
-  - Comprehensive README with usage examples
-  - API documentation with XML comments
-
-- **Development Tools**
-  - GitHub Actions CI/CD pipeline
-  - Automated testing and build processes
-  - Code quality checks and formatting
-  - Dependency management and security scanning
-
-### Framework Support
-- .NET 8.0
-- .NET Standard 2.0 (compatible with .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5+)
-
-### Documentation
-- Complete API documentation
-- Usage examples for all major features
-- Contributing guidelines
-- Security policy
-- Code of conduct
 
 ---
 
