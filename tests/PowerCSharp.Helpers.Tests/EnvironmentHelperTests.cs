@@ -1,3 +1,6 @@
+using PowerCSharp.Helpers;
+using Xunit;
+
 namespace PowerCSharp.Helpers.Tests;
 
 public class EnvironmentHelperTests
