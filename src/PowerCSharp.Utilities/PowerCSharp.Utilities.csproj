@@ -11,7 +11,7 @@
     
     <!-- NuGet Package Metadata -->
     <PackageId>PowerCSharp.Utilities</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>0.1.0</PackageVersion>
     <Title>PowerCSharp Utilities</Title>
     <Description>Utility classes and helper methods for common programming tasks</Description>
     <Authors>Mario Arce</Authors>

@@ -29,7 +29,7 @@
     
     <!-- NuGet Package Metadata -->
     <PackageId>PowerCSharp.Extensions</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>0.1.0</PackageVersion>
     <Title>PowerCSharp Extensions</Title>
     <Description>Extension methods for common .NET types to enhance productivity</Description>
     <Authors>Mario Arce</Authors>
