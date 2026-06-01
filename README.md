@@ -261,7 +261,7 @@ string random = CryptoHelper.GenerateRandomString(10);
 
 ## 🎯 Target Frameworks
 
-- **Modern .NET**: .NET 8.0, .NET Standard 2.0 (compatible with .NET Core 2.0+, .NET 5+)
+- **Modern .NET**: .NET 8.0
 - **.NET Framework**: 4.6.2, 4.7.2, 4.8 (via PowerCSharp.Compatibility package)
 
 ## 🧪 Testing

@@ -34,12 +34,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - All tests passing with >90% code coverage
 
 - **Cross-Platform Support**
-  - .NET 8.0 and .NET Standard 2.0 compatibility
+  - .NET 8.0 compatibility
   - Conditional compilation for framework-specific features
 
 ### Framework Support
 - .NET 8.0
-- .NET Standard 2.0 (compatible with .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5+)
 
 ## [0.2.0] - 2026-06-01
 
@@ -50,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **PowerCSharp.Helpers v0.2.0** - Updated helper classes for specialized tasks
 - **16 New Extension Classes** with 50+ new extension methods
 - **3 New Interface Classes** for dynamic LINQ operations and configuration
-- **Full .NET Standard 2.0 Compatibility** for all migrated extensions
+- **Full .NET 8.0 Compatibility** for all migrated extensions
 - **Comprehensive HTTP & Network Extensions**
   - `HttpStatusCodeExtensions` - 11 HTTP status code utility methods
   - `UriExtensions` - URI query string manipulation
