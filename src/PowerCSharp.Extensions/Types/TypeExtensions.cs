@@ -36,4 +36,20 @@ public static class TypeExtensions
             return null;
         }
     }
+
+    /// <summary>
+    /// Checks if the source type is the same as, inherits from, or implements the target type.
+    /// </summary>
+    /// <param name="sourceType">The type to test.</param>
+    /// <param name="targetType">The base type or interface to compare against.</param>
+    /// <returns>True if the source is the same, a subclass, or implements the interface.</returns>
+    public static bool IsOrInheritsFrom(this Type sourceType, Type targetType)
+    {
+        if (sourceType == null || targetType == null)
+        {
+            return false;
+        }
+
+        return targetType.IsAssignableFrom(sourceType);
+    }
 }
