@@ -4,6 +4,12 @@
     <ProjectReference Include="..\PowerCSharp.Core\PowerCSharp.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Attributes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Attributes\" />
+  </ItemGroup>
   <PropertyGroup>
     <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
     <Nullable>enable</Nullable>
