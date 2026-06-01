@@ -41,10 +41,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - .NET 8.0
 - .NET Standard 2.0 (compatible with .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5+)
 
-## [Unreleased]
+## [0.2.0] - 2026-06-01
 
 ### Added
-- **PowerCSharp.Extensions Major Enhancement** - Comprehensive extension migration and enhancement
+- **PowerCSharp.Core v0.2.0** - Enhanced core interfaces and models
+- **PowerCSharp.Extensions v0.2.0** - Comprehensive extension migration and enhancement
+- **PowerCSharp.Utilities v0.2.0** - Enhanced utility classes and validation
+- **PowerCSharp.Helpers v0.2.0** - Updated helper classes for specialized tasks
 - **16 New Extension Classes** with 50+ new extension methods
 - **3 New Interface Classes** for dynamic LINQ operations and configuration
 - **Full .NET Standard 2.0 Compatibility** for all migrated extensions
@@ -81,6 +84,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - System.Text.Json for JSON processing
 
 ### Changed
+- Updated PowerCSharp.Core to v0.2.0 with enhanced interfaces
+- Improved documentation and API reference coverage
+
+### Deprecated
+- N/A
+
+### Removed
+- N/A
+
+### Fixed
+- N/A
+
+### Security
+- N/A
+
+## [0.1.0] - 2026-06-01
+
+### Added
+- **PowerCSharp.Compatibility v0.1.0** - .NET Framework compatibility layer
+- **String Extensions** for .NET Framework with System.Web dependencies
+- **Async Helper** for safe sync-over-async operations in legacy applications
+- **Validation Utilities** compatible with .NET Framework 4.6.2+
+- **Validation Attributes** for static analysis and design-time validation
+- **.NET Framework Support** - Targets net462, net472, net48
+- **System.Web Integration** - URL parameter handling with HttpUtility
+- **Comprehensive Documentation** with migration guide to modern PowerCSharp
+
+### Changed
 - N/A
 
 ### Deprecated
@@ -94,6 +125,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 - N/A
+
+## [Unreleased]
 
 
 ---
