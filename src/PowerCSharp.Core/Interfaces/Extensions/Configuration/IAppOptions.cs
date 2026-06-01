@@ -1,4 +1,4 @@
-namespace PowerCSharp.Extensions.Configuration.Interfaces;
+namespace PowerCSharp.Core.Interfaces.Extensions.Configuration;
 
 /// <summary>
 /// Represents the interface for application options.
