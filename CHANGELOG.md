@@ -45,7 +45,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **PowerCSharp.Core v0.2.0** - Enhanced core interfaces and models
-- **PowerCSharp.Extensions Major Enhancement** - Comprehensive extension migration and enhancement
+- **PowerCSharp.Extensions v0.2.0** - Comprehensive extension migration and enhancement
+- **PowerCSharp.Utilities v0.2.0** - Enhanced utility classes and validation
+- **PowerCSharp.Helpers v0.2.0** - Updated helper classes for specialized tasks
 - **16 New Extension Classes** with 50+ new extension methods
 - **3 New Interface Classes** for dynamic LINQ operations and configuration
 - **Full .NET Standard 2.0 Compatibility** for all migrated extensions
