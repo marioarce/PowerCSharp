@@ -1,6 +1,8 @@
 # PowerCSharp
 
-[![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v0.1.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
+![PowerCSharp Banner](docs/images/PowerCSharp_Banner.png)
+
+[![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v0.2.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/marioarce/PowerCSharp/workflows/CI/badge.svg)](https://github.com/marioarce/PowerCSharp/actions)
 [![codecov](https://codecov.io/gh/marioarce/PowerCSharp/branch/main/graph/badge.svg)](https://codecov.io/gh/marioarce/PowerCSharp)
@@ -13,6 +15,7 @@ Enhanced C# extension methods and utilities for .NET developers
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Extensions.svg)](https://www.nuget.org/packages/PowerCSharp.Extensions)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Utilities.svg)](https://www.nuget.org/packages/PowerCSharp.Utilities)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Helpers.svg)](https://www.nuget.org/packages/PowerCSharp.Helpers)
+[![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Compatibility.svg)](https://www.nuget.org/packages/PowerCSharp.Compatibility)
 
 PowerCSharp is a comprehensive library of extension methods, utilities, and helper classes designed to enhance your C# development experience. Built by a senior C# architect with 20+ years of experience, this library provides practical, well-tested solutions for common programming challenges.
 
@@ -20,10 +23,20 @@ PowerCSharp is a comprehensive library of extension methods, utilities, and help
 
 PowerCSharp is organized into several focused packages:
 
-- **PowerCSharp.Core** - Core foundation and base classes for PowerCSharp library
-- **PowerCSharp.Extensions** - Comprehensive extension methods for collections, HTTP, LINQ, JSON, XML, objects, types, streams, strings, and configuration
-- **PowerCSharp.Utilities** - Utility classes for validation, file operations, and mathematics
-- **PowerCSharp.Helpers** - Specialized helpers for JSON, cryptography, and environment operations
+- **[PowerCSharp.Core](src/PowerCSharp.Core/README.md)** - Core foundation and base classes for PowerCSharp library, including centralized interfaces and models
+- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Comprehensive extension methods for collections, HTTP, LINQ, JSON, XML, objects, types, streams, strings, and configuration
+- **[PowerCSharp.Utilities](src/PowerCSharp.Utilities/README.md)** - Utility classes for validation, file operations, and mathematics
+- **[PowerCSharp.Helpers](src/PowerCSharp.Helpers/README.md)** - Specialized helpers for JSON, cryptography, and environment operations
+- **[PowerCSharp.Compatibility](src/PowerCSharp.Compatibility/README.md)** - .NET Framework compatibility layer with System.Web dependencies for legacy applications
+
+### 🏗️ Architecture
+
+PowerCSharp follows a clean architectural pattern with **centralized interfaces** in PowerCSharp.Core:
+
+- **All interfaces** are located in `PowerCSharp.Core.Interfaces` namespace
+- **All models** are located in `PowerCSharp.Core.Models` namespace
+- Clear separation of concerns with proper dependency management
+- Consistent namespace organization across the entire ecosystem
 
 ## 🚀 Installation
 
@@ -34,6 +47,7 @@ dotnet add package PowerCSharp.Core
 dotnet add package PowerCSharp.Extensions
 dotnet add package PowerCSharp.Utilities
 dotnet add package PowerCSharp.Helpers
+dotnet add package PowerCSharp.Compatibility
 ```
 
 Or install the complete suite:
@@ -43,6 +57,7 @@ dotnet add package PowerCSharp.Core
 dotnet add package PowerCSharp.Extensions
 dotnet add package PowerCSharp.Utilities
 dotnet add package PowerCSharp.Helpers
+dotnet add package PowerCSharp.Compatibility
 ```
 
 ## 💡 Usage Examples
@@ -246,8 +261,8 @@ string random = CryptoHelper.GenerateRandomString(10);
 
 ## 🎯 Target Frameworks
 
-- .NET 8.0
-- .NET Standard 2.0 (compatible with .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5+)
+- **Modern .NET**: .NET 8.0
+- **.NET Framework**: 4.6.2, 4.7.2, 4.8 (via PowerCSharp.Compatibility package)
 
 ## 🧪 Testing
 
@@ -259,7 +274,22 @@ dotnet test
 
 ## 📚 Documentation
 
-- [API Documentation](docs/) - Complete API reference
+### Package-Specific Documentation
+- **[PowerCSharp.Core](src/PowerCSharp.Core/README.md)** - Core interfaces and architecture
+- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Extension methods reference  
+- **[PowerCSharp.Utilities](src/PowerCSharp.Utilities/README.md)** - Utility classes guide
+- **[PowerCSharp.Helpers](src/PowerCSharp.Helpers/README.md)** - Specialized helpers reference
+- **[PowerCSharp.Compatibility](src/PowerCSharp.Compatibility/README.md)** - .NET Framework compatibility layer
+
+### Detailed API Documentation
+- **[PowerCSharp.Core API](docs/PowerCSharp.Core.md)** - Complete core API reference
+- **[PowerCSharp.Extensions API](docs/PowerCSharp.Extensions.md)** - Detailed extensions documentation
+- **[PowerCSharp.Utilities API](docs/PowerCSharp.Utilities.md)** - Utilities API reference
+- **[PowerCSharp.Helpers API](docs/PowerCSharp.Helpers.md)** - Helpers API documentation
+- **[PowerCSharp.Compatibility API](docs/PowerCSharp.Compatibility.md)** - .NET Framework compatibility API
+- **[Extensions API Reference](docs/PowerCSharp.Extensions-API.md)** - Complete extensions catalog
+
+### Development Documentation
 - [Examples and Samples](samples/) - Working code examples
 - [Contributing Guide](CONTRIBUTING.md) - How to contribute
 - [Security Policy](SECURITY.md) - Security information

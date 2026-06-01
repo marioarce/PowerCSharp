@@ -520,7 +520,11 @@ bool isValid = "https://example.com".IsValidUrl(); // true
 
 ## Interfaces
 
+All interfaces are centralized in **PowerCSharp.Core** to maintain proper architectural separation and provide a unified foundation for the entire PowerCSharp ecosystem.
+
 ### IDynamicFilterProvider<T>
+
+**Namespace:** `PowerCSharp.Core.Interfaces.Extensions.Linq`
 
 Implement a Service Provider for dynamically filtering of the type T using Dynamic Expressions.
 
@@ -534,6 +538,8 @@ public interface IDynamicFilterProvider<T>
 
 ### IDynamicOrderProvider<T>
 
+**Namespace:** `PowerCSharp.Core.Interfaces.Extensions.Linq`
+
 Implement a Service Provider for dynamically ordering of the type T using Dynamic Expressions.
 
 ```csharp
@@ -546,6 +552,8 @@ public interface IDynamicOrderProvider<T>
 
 ### IAppOptions
 
+**Namespace:** `PowerCSharp.Core.Interfaces.Extensions.Configuration`
+
 Represents the interface for application options.
 
 ```csharp
@@ -554,6 +562,21 @@ public interface IAppOptions
     string ConfigSectionPath { get; }
 }
 ```
+
+### Interface Architecture
+
+The interface organization follows a clear hierarchical structure:
+
+- **PowerCSharp.Core.Interfaces** - Root namespace for all interfaces
+  - **Extensions.Configuration** - Configuration-related interfaces
+  - **Extensions.Linq** - LINQ and dynamic query interfaces
+  - **Models** - Model classes (reserved for future use)
+
+This centralization ensures:
+- Single source of truth for contracts and abstractions
+- Consistent namespace organization
+- Easy dependency management across packages
+- Clear architectural boundaries
 
 ## Framework Support
 

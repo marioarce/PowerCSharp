@@ -1,6 +1,6 @@
 using System;
 
-namespace PowerCSharp.Extensions.Linq.Interfaces;
+namespace PowerCSharp.Core.Interfaces.Extensions.Linq;
 
 /// <summary>
 /// Implement a Service Provider for dynamically filtering of the type <typeparamref name="T"/> using Dynamic Expressions.
