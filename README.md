@@ -1,5 +1,7 @@
 # PowerCSharp
 
+![PowerCSharp Banner](docs/images/PowerCSharp_Banner.png)
+
 [![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v0.1.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/marioarce/PowerCSharp/workflows/CI/badge.svg)](https://github.com/marioarce/PowerCSharp/actions)
