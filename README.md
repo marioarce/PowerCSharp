@@ -20,10 +20,19 @@ PowerCSharp is a comprehensive library of extension methods, utilities, and help
 
 PowerCSharp is organized into several focused packages:
 
-- **PowerCSharp.Core** - Core foundation and base classes for PowerCSharp library
+- **PowerCSharp.Core** - Core foundation and base classes for PowerCSharp library, including centralized interfaces and models
 - **PowerCSharp.Extensions** - Comprehensive extension methods for collections, HTTP, LINQ, JSON, XML, objects, types, streams, strings, and configuration
 - **PowerCSharp.Utilities** - Utility classes for validation, file operations, and mathematics
 - **PowerCSharp.Helpers** - Specialized helpers for JSON, cryptography, and environment operations
+
+### 🏗️ Architecture
+
+PowerCSharp follows a clean architectural pattern with **centralized interfaces** in PowerCSharp.Core:
+
+- **All interfaces** are located in `PowerCSharp.Core.Interfaces` namespace
+- **All models** are located in `PowerCSharp.Core.Models` namespace
+- Clear separation of concerns with proper dependency management
+- Consistent namespace organization across the entire ecosystem
 
 ## 🚀 Installation
 
