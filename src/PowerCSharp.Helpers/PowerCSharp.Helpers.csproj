@@ -4,10 +4,7 @@
     <ProjectReference Include="..\PowerCSharp.Core\PowerCSharp.Core.csproj" />
   </ItemGroup>
   
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="System.Text.Json" Version="6.0.0" />
-  </ItemGroup>
-
+  
   <PropertyGroup>
     <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
     <Nullable>enable</Nullable>
