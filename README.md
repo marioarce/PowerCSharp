@@ -22,10 +22,10 @@ PowerCSharp is a comprehensive library of extension methods, utilities, and help
 
 PowerCSharp is organized into several focused packages:
 
-- **PowerCSharp.Core** - Core foundation and base classes for PowerCSharp library, including centralized interfaces and models
-- **PowerCSharp.Extensions** - Comprehensive extension methods for collections, HTTP, LINQ, JSON, XML, objects, types, streams, strings, and configuration
-- **PowerCSharp.Utilities** - Utility classes for validation, file operations, and mathematics
-- **PowerCSharp.Helpers** - Specialized helpers for JSON, cryptography, and environment operations
+- **[PowerCSharp.Core](src/PowerCSharp.Core/README.md)** - Core foundation and base classes for PowerCSharp library, including centralized interfaces and models
+- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Comprehensive extension methods for collections, HTTP, LINQ, JSON, XML, objects, types, streams, strings, and configuration
+- **[PowerCSharp.Utilities](src/PowerCSharp.Utilities/README.md)** - Utility classes for validation, file operations, and mathematics
+- **[PowerCSharp.Helpers](src/PowerCSharp.Helpers/README.md)** - Specialized helpers for JSON, cryptography, and environment operations
 
 ### 🏗️ Architecture
 
@@ -270,7 +270,20 @@ dotnet test
 
 ## 📚 Documentation
 
-- [API Documentation](docs/) - Complete API reference
+### Package-Specific Documentation
+- **[PowerCSharp.Core](src/PowerCSharp.Core/README.md)** - Core interfaces and architecture
+- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Extension methods reference  
+- **[PowerCSharp.Utilities](src/PowerCSharp.Utilities/README.md)** - Utility classes guide
+- **[PowerCSharp.Helpers](src/PowerCSharp.Helpers/README.md)** - Specialized helpers reference
+
+### Detailed API Documentation
+- **[PowerCSharp.Core API](docs/PowerCSharp.Core.md)** - Complete core API reference
+- **[PowerCSharp.Extensions API](docs/PowerCSharp.Extensions.md)** - Detailed extensions documentation
+- **[PowerCSharp.Utilities API](docs/PowerCSharp.Utilities.md)** - Utilities API reference
+- **[PowerCSharp.Helpers API](docs/PowerCSharp.Helpers.md)** - Helpers API documentation
+- **[Extensions API Reference](docs/PowerCSharp.Extensions-API.md)** - Complete extensions catalog
+
+### Development Documentation
 - [Examples and Samples](samples/) - Working code examples
 - [Contributing Guide](CONTRIBUTING.md) - How to contribute
 - [Security Policy](SECURITY.md) - Security information
