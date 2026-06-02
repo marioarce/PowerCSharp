@@ -9,6 +9,11 @@
     <PackageVersion>$(PowerCSharpVersion)</PackageVersion>
     <Title>PowerCSharp Core</Title>
     <Description>Core functionality and base classes for PowerCSharp extension methods library</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>

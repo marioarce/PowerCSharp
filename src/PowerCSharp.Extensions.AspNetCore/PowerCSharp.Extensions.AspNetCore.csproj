@@ -19,6 +19,11 @@
     <PackageVersion>$(PowerCSharpVersion)</PackageVersion>
     <Title>PowerCSharp Extensions for ASP.NET Core</Title>
     <Description>ASP.NET Core specific extension methods for PowerCSharp library</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>

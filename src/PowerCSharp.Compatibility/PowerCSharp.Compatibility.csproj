@@ -30,6 +30,11 @@
     <PackageVersion>$(PowerCSharpCompatibilityVersion)</PackageVersion>
     <Title>PowerCSharp Compatibility</Title>
     <Description>.NET Framework compatibility layer for PowerCSharp with System.Web dependencies</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>
