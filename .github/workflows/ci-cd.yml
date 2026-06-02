@@ -132,6 +132,7 @@ jobs:
               
               // Try multiple patterns for merge commit messages
               const patterns = [
+                /Merge pull request #\d+ from .+?\/(.+)$/,
                 /Merge pull request #\d+ from (.+)$/,
                 /Merge branch '(.+?)' into develop/,
                 /Merge (.+?) into develop/,
