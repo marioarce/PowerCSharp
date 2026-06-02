@@ -95,3 +95,27 @@ jobs:
       run: dotnet nuget push ./packages/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source https://nuget.pkg.github.com/marioarce/index.json --skip-duplicate
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  delete-feature-branch:
+    name: Delete Feature Branch
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    
+    steps:
+    - name: Delete feature branch
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+      with:
+        script: |
+          const branchName = context.payload.pull_request.head.ref;
+          console.log(`Deleting branch: ${branchName}`);
+          
+          try {
+            await github.rest.git.deleteRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `heads/${branchName}`
+            });
+            console.log(`Successfully deleted branch: ${branchName}`);
+          } catch (error) {
+            console.error(`Failed to delete branch ${branchName}:`, error.message);
+          }
