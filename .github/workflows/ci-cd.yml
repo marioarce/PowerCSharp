@@ -73,8 +73,11 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore PowerCSharp.sln
       
+    - name: Build
+      run: dotnet build PowerCSharp.sln --no-restore --configuration Release
+      
     - name: Pack
-      run: dotnet pack PowerCSharp.sln --no-restore --configuration Release --output ./packages
+      run: dotnet pack PowerCSharp.sln --no-build --configuration Release --output ./packages
       
     - name: Upload packages as artifacts
       uses: actions/upload-artifact@v7.0.1
