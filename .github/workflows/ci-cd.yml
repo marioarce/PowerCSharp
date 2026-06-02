@@ -139,8 +139,13 @@ jobs:
                 /from (.+?)$/
               ];
               
-              for (const pattern of patterns) {
+              console.log('Testing patterns against:', JSON.stringify(commitMessage));
+              
+              for (let i = 0; i < patterns.length; i++) {
+                const pattern = patterns[i];
+                console.log(`Testing pattern ${i + 1}:`, pattern);
                 const match = commitMessage.match(pattern);
+                console.log(`Pattern ${i + 1} match result:`, match);
                 if (match && match[1]) {
                   branchName = match[1];
                   console.log('Found branch name with pattern', pattern, ':', branchName);
