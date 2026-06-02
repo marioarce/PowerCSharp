@@ -97,28 +97,62 @@ jobs:
   delete-feature-branch:
     name: Delete Feature Branch
     runs-on: ubuntu-latest
-    if: (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop') || (github.event_name == 'push' && github.ref == 'refs/heads/develop' && startsWith(github.event.head_commit.message, 'Merge pull request'))
+    if: (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop') || (github.event_name == 'push' && github.ref == 'refs/heads/develop')
     
     steps:
     - name: Delete feature branch
       uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
       with:
         script: |
+          console.log('=== Feature Branch Deletion Debug ===');
+          console.log('Event name:', context.eventName);
+          console.log('Event action:', context.payload.action);
+          console.log('Ref:', context.ref);
+          
           let branchName;
           
           if (context.eventName === 'pull_request') {
-            branchName = context.payload.pull_request.head.ref;
+            console.log('Processing pull_request event');
+            console.log('PR base ref:', context.payload.pull_request.base.ref);
+            console.log('PR head ref:', context.payload.pull_request.head.ref);
+            console.log('PR merged:', context.payload.pull_request.merged);
+            
+            if (context.payload.pull_request.base.ref === 'develop' && context.payload.pull_request.merged === true) {
+              branchName = context.payload.pull_request.head.ref;
+              console.log('Found branch name from PR:', branchName);
+            }
           } else if (context.eventName === 'push') {
-            // Extract branch name from merge commit message
-            const commitMessage = context.payload.head_commit.message;
-            const match = commitMessage.match(/Merge pull request #\d+ from (.+)$/);
-            if (match && match[1]) {
-              branchName = match[1];
+            console.log('Processing push event');
+            console.log('Push ref:', context.ref);
+            console.log('Commit message:', context.payload.head_commit.message);
+            
+            if (context.ref === 'refs/heads/develop') {
+              const commitMessage = context.payload.head_commit.message;
+              console.log('Looking for merge in commit message');
+              
+              // Try multiple patterns for merge commit messages
+              const patterns = [
+                /Merge pull request #\d+ from (.+)$/,
+                /Merge branch '(.+?)' into develop/,
+                /Merge (.+?) into develop/,
+                /from (.+?)$/
+              ];
+              
+              for (const pattern of patterns) {
+                const match = commitMessage.match(pattern);
+                if (match && match[1]) {
+                  branchName = match[1];
+                  console.log('Found branch name with pattern', pattern, ':', branchName);
+                  break;
+                }
+              }
             }
           }
           
+          console.log('Final branch name to delete:', branchName);
+          
           if (!branchName) {
-            console.log('Could not determine branch name to delete');
+            console.log('Could not determine branch name to delete - skipping');
             return;
           }
           
