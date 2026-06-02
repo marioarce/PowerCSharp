@@ -97,14 +97,37 @@ jobs:
   delete-feature-branch:
     name: Delete Feature Branch
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
+    if: (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop') || (github.event_name == 'push' && github.ref == 'refs/heads/develop' && startsWith(github.event.head_commit.message, 'Merge pull request'))
     
     steps:
     - name: Delete feature branch
       uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
       with:
         script: |
-          const branchName = context.payload.pull_request.head.ref;
+          let branchName;
+          
+          if (context.eventName === 'pull_request') {
+            branchName = context.payload.pull_request.head.ref;
+          } else if (context.eventName === 'push') {
+            // Extract branch name from merge commit message
+            const commitMessage = context.payload.head_commit.message;
+            const match = commitMessage.match(/Merge pull request #\d+ from (.+?)\//);
+            if (match && match[1]) {
+              branchName = match[1] + '/' + commitMessage.match(/from .+?\/(.+?)(?:\s|$)/)[1];
+            } else {
+              // Alternative parsing for different merge message formats
+              const branchMatch = commitMessage.match(/Merge pull request #\d+ from (.+)$/);
+              if (branchMatch && branchMatch[1]) {
+                branchName = branchMatch[1];
+              }
+            }
+          }
+          
+          if (!branchName) {
+            console.log('Could not determine branch name to delete');
+            return;
+          }
+          
           console.log(`Deleting branch: ${branchName}`);
           
           try {
@@ -121,14 +144,37 @@ jobs:
   delete-release-branch:
     name: Delete Release Branch
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' && startsWith(github.event.pull_request.head.ref, 'release/')
+    if: (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' && startsWith(github.event.pull_request.head.ref, 'release/')) || (github.event_name == 'push' && github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'Merge pull request'))
     
     steps:
     - name: Delete release branch
       uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
       with:
         script: |
-          const branchName = context.payload.pull_request.head.ref;
+          let branchName;
+          
+          if (context.eventName === 'pull_request') {
+            branchName = context.payload.pull_request.head.ref;
+          } else if (context.eventName === 'push') {
+            // Extract branch name from merge commit message
+            const commitMessage = context.payload.head_commit.message;
+            const match = commitMessage.match(/Merge pull request #\d+ from (.+)$/);
+            if (match && match[1]) {
+              branchName = match[1];
+            }
+          }
+          
+          if (!branchName) {
+            console.log('Could not determine branch name to delete');
+            return;
+          }
+          
+          // Only delete if it's a release branch
+          if (!branchName.startsWith('release/')) {
+            console.log(`Branch ${branchName} is not a release branch, skipping deletion`);
+            return;
+          }
+          
           console.log(`Deleting release branch: ${branchName}`);
           
           try {
