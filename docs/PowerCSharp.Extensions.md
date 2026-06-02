@@ -2,7 +2,9 @@
 
 ## Overview
 
-PowerCSharp.Extensions provides comprehensive extension methods for .NET developers that enhance productivity and simplify common programming tasks. This package contains over 100 extension methods organized into logical categories including strings, collections, LINQ, HTTP, JSON, XML, objects, types, streams, and configuration.
+PowerCSharp.Extensions provides cross-platform extension methods for .NET developers that enhance productivity and simplify common programming tasks. This package contains over 100 extension methods organized into logical categories including strings, collections, LINQ, JSON, XML, objects, types, streams, and exception handling.
+
+**Note:** ASP.NET Core specific extensions (Configuration, HTTP utilities, URI manipulation) are now available in the separate `PowerCSharp.Extensions.AspNetCore` package.
 
 ## Architecture
 
@@ -19,28 +21,24 @@ PowerCSharp.Extensions provides comprehensive extension methods for .NET develop
 ```
 PowerCSharp.Extensions/
 ├── Collections/
+│   ├── CollectionExtensions.cs
 │   └── IListExtensions.cs
-├── Configuration/
-│   └── ConfigurationExtensions.cs
 ├── DateTimeExtensions.cs
-├── Http/
-│   ├── HttpStatusCodeExtensions.cs
-│   ├── HttpRequestMessageExtensions.cs
-│   └── UriExtensions.cs
+├── EnumerableExtensions.cs
 ├── Json/
 │   ├── JsonExtensions.cs
 │   └── JsonElementExtensions.cs
 ├── Linq/
 │   ├── DynamicExpressionExtensions.cs
 │   └── IEnumerableExtensions.cs
-├── Net/
-│   └── UriExtensions.cs
 ├── Objects/
+│   ├── ExceptionExtensions.cs
 │   ├── GenericExtensions.cs
 │   └── ObjectExtensions.cs
 ├── Streams/
 │   └── StreamExtensions.cs
 ├── Strings/
+│   ├── EnumExtensions.cs
 │   └── StringExtensions.cs
 ├── Types/
 │   ├── GenericTypeExtensions.cs
@@ -48,6 +46,12 @@ PowerCSharp.Extensions/
 └── Xml/
     └── XmlExtensions.cs
 ```
+
+**Moved to PowerCSharp.Extensions.AspNetCore:**
+- Configuration/ConfigurationExtensions.cs
+- Net/UriExtensions.cs  
+- Http/HttpStatusCodeExtensions.cs
+- Http/HttpRequestMessageExtensions.cs
 
 ## Extension Categories
 
@@ -1085,14 +1089,19 @@ public class EnhancedConfigurationManager
 
 ## Version History
 
+### v0.2.0
+- Restructured for cross-platform compatibility
+- Moved ASP.NET Core specific extensions to PowerCSharp.Extensions.AspNetCore
+- Enhanced .NET Standard 2.0 compatibility
+- Updated dependency management for cross-platform support
+
 ### v0.1.0
 - Initial release with comprehensive extension methods
 - String manipulation and validation extensions
 - Collection and LINQ enhancements
-- HTTP and network utilities
 - JSON and XML processing extensions
 - Object and type manipulation utilities
-- Stream and configuration extensions
+- Stream and exception handling extensions
 - Performance-optimized implementations
 
 ## Future Enhancements
