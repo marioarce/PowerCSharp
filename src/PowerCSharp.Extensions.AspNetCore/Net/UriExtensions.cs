@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace PowerCSharp.Extensions.Net;
+namespace PowerCSharp.Extensions.AspNetCore.Net;
 
 /// <summary>
 /// Extension methods for URI operations

@@ -2,25 +2,25 @@
 
 ![PowerCSharp Banner](../docs/images/PowerCSharp_Banner.png)
 
-[![PowerCSharp.Extensions](https://img.shields.io/badge/PowerCSharp.Extensions-v0.1.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
+[![PowerCSharp.Extensions](https://img.shields.io/badge/PowerCSharp.Extensions-v0.2.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Extensions.svg)](https://www.nuget.org/packages/PowerCSharp.Extensions)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/PowerCSharp.Extensions.svg)](https://www.nuget.org/packages/PowerCSharp.Extensions)
 
-Comprehensive extension methods for .NET developers that enhance productivity and simplify common programming tasks. This package contains over 100 extension methods organized into logical categories.
+Cross-platform extension methods for .NET developers that enhance productivity and simplify common programming tasks. This package contains over 100 extension methods organized into logical categories, compatible with both modern .NET and .NET Standard 2.0.
 
 ## 📦 Package Information
 
 - **Package ID:** `PowerCSharp.Extensions`
-- **Version:** 0.1.0
+- **Version:** 0.2.0
 - **Target Frameworks:** .NET 8.0, .NET Standard 2.0
 - **Dependencies:** 
   - `PowerCSharp.Core` (for shared interfaces)
   - `System.Linq.Dynamic.Core` (for dynamic LINQ)
-  - `Microsoft.AspNetCore.WebUtilities`
-  - `Microsoft.Extensions.Configuration.Abstractions`
-  - `Microsoft.Extensions.Configuration.Binder`
-  - `System.Text.Json`
+  - `Ben.Demystifier` (for enhanced exception demystification)
+  - `System.Text.Json` (for JSON processing)
+
+**Note:** ASP.NET Core specific extensions (Configuration, URI manipulation) are now available in the separate `PowerCSharp.Extensions.AspNetCore` package.
 
 ## 🚀 Installation
 
@@ -76,27 +76,6 @@ var list = new List<string> { "keep", "remove", "keep" };
 int removed = list.RemoveAll(x => x == "remove"); // 1
 ```
 
-### 🌐 HTTP & Network Extensions
-
-Simplified HTTP status code handling and URL manipulation.
-
-```csharp
-using PowerCSharp.Extensions;
-using System.Net;
-
-HttpStatusCode status = HttpStatusCode.OK;
-bool success = status.IsSuccessful();         // true
-bool clientError = status.IsClientError();    // false
-bool serverError = status.IsServerError();     // false
-
-// URL manipulation
-Uri uri = new Uri("https://example.com");
-Uri withParam = uri.AddParameter("search", "test"); // https://example.com?search=test
-
-// HTTP Request cloning
-using var request = new HttpRequestMessage(HttpMethod.Get, "https://api.example.com");
-var clonedRequest = request.Clone();
-```
 
 ### 🔍 LINQ & Dynamic Query Extensions
 
@@ -176,17 +155,6 @@ await originalStream.CloneAsync(destinationStream);
 // destinationStream now contains the same data as originalStream
 ```
 
-### ⚙️ Configuration Extensions
-
-Simplified configuration binding and options management.
-
-```csharp
-using PowerCSharp.Extensions;
-using Microsoft.Extensions.Configuration;
-
-var configuration = new ConfigurationBuilder().Build();
-var options = configuration.GetOptions<MyAppOptions>("MyApp"); // Reads from "MyApp" section
-```
 
 ## 🎯 Key Features
 
@@ -208,10 +176,10 @@ PowerCSharp.Extensions depends on:
 
 - **PowerCSharp.Core** - Shared interfaces and base functionality
 - **System.Linq.Dynamic.Core** - Dynamic LINQ expression parsing
-- **Microsoft.AspNetCore.WebUtilities** - URL query string manipulation
-- **Microsoft.Extensions.Configuration.Abstractions** - Configuration support
-- **Microsoft.Extensions.Configuration.Binder** - Configuration binding
+- **Ben.Demystifier** - Enhanced exception demystification and stack trace formatting
 - **System.Text.Json** - JSON processing
+
+**For ASP.NET Core specific functionality:** Install `PowerCSharp.Extensions.AspNetCore` for configuration extensions, URI manipulation, and HTTP utilities.
 
 ## 🧪 Testing
 
@@ -225,102 +193,56 @@ dotnet test src/PowerCSharp.Extensions.Tests
 
 - [Main PowerCSharp Documentation](../../README.md) - Complete ecosystem overview
 - [PowerCSharp.Core](../PowerCSharp.Core/README.md) - Core interfaces and architecture
+- [PowerCSharp.Extensions.AspNetCore](../PowerCSharp.Extensions.AspNetCore/README.md) - ASP.NET Core specific extensions
 - [Detailed API Documentation](../../docs/PowerCSharp.Extensions-API.md) - Complete API reference
 - [Contributing Guide](../../CONTRIBUTING.md) - How to contribute
 - [Workflow Documentation](../../docs/WORKFLOW.md) - Development workflow
 
 ## 💡 Usage Examples
 
-### Web API Scenario
+### Dynamic LINQ Scenario
 ```csharp
 using PowerCSharp.Extensions;
-using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
-public class UsersController : ControllerBase
+public class AdvancedDataProcessor
 {
-    [HttpGet]
-    public IActionResult GetUsers([FromQuery] string filter = "", [FromQuery] string sort = "Name")
+    public IEnumerable<User> FilterAndSortUsers(IEnumerable<User> users, string filterExpression, string sortExpression)
     {
-        var users = _userRepository.GetAll();
-        
-        // Apply dynamic filtering
-        if (!string.IsNullOrEmpty(filter))
+        // Dynamic filtering
+        if (!string.IsNullOrEmpty(filterExpression))
         {
-            var filterProvider = new DynamicFilterProvider<User>();
-            filterProvider.SetFilter(u => u.Name.Contains(filter) || u.Email.Contains(filter));
-            users = users.Filter(filterProvider);
+            var predicate = filterExpression.GetExpressionDelegate<User>();
+            users = users.Where(predicate);
         }
         
-        // Apply dynamic sorting
-        var orderProvider = new DynamicOrderProvider<User>();
-        var orderDelegates = sort.GetOrderDelegates<User>();
-        orderProvider.SetOrderDelegates(orderDelegates);
-        users = users.Order(orderProvider);
+        // Dynamic sorting
+        if (!string.IsNullOrEmpty(sortExpression))
+        {
+            var orderDelegates = sortExpression.GetOrderDelegates<User>();
+            users = users.OrderByMultiple(orderDelegates);
+        }
         
-        return Ok(users);
+        return users;
     }
-}
-```
-
-### Data Processing Scenario
-```csharp
-using PowerCSharp.Extensions;
-
-public class DataProcessor
-{
-    public void ProcessRecords(List<DataRecord> records)
+    
+    public void ProcessDynamicQuery(string query)
     {
-        // Validate input
-        records.ThrowOnNull();
+        // Example: "Age > 25 AND Name.Contains('John') ORDER BY Name DESC, Age ASC"
+        var parts = query.Split("ORDER BY", StringSplitOptions.RemoveEmptyEntries);
+        var filterPart = parts[0].Trim();
+        var sortPart = parts.Length > 1 ? parts[1].Trim() : "Name ASC";
         
-        if (records.IsNullOrEmpty())
+        var users = GetUsers();
+        var results = FilterAndSortUsers(users, filterPart, sortPart);
+        
+        foreach (var user in results)
         {
-            Console.WriteLine("No records to process");
-            return;
-        }
-        
-        // Process in pages
-        int pageSize = 100;
-        int pageNumber = 1;
-        
-        while (true)
-        {
-            var page = records.Page(pageNumber, pageSize);
-            if (!page.Any()) break;
-            
-            foreach (var record in page)
-            {
-                // Process individual record
-                ProcessRecord(record);
-            }
-            
-            pageNumber++;
+            Console.WriteLine($"{user.Name} ({user.Age})");
         }
     }
     
-    private void ProcessRecord(DataRecord record)
-    {
-        // String operations
-        record.Name = record.Name?.ToTitleCase() ?? "";
-        record.Email = record.Email?.ToLowerInvariant() ?? "";
-        
-        // Validation
-        if (!record.Email.IsValidEmail())
-        {
-            throw new InvalidOperationException($"Invalid email: {record.Email}");
-        }
-        
-        // Date operations
-        if (record.CreatedDate.IsWeekend())
-        {
-            record.Priority = "Low";
-        }
-        
-        record.Age = DateTime.Now.GetAge(record.BirthDate);
-    }
+    private IEnumerable<User> GetUsers() => new List<User>();
 }
-```
 
 ## 🤝 Contributing
 
