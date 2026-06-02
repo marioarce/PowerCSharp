@@ -111,15 +111,9 @@ jobs:
           } else if (context.eventName === 'push') {
             // Extract branch name from merge commit message
             const commitMessage = context.payload.head_commit.message;
-            const match = commitMessage.match(/Merge pull request #\d+ from (.+?)\//);
+            const match = commitMessage.match(/Merge pull request #\d+ from (.+)$/);
             if (match && match[1]) {
-              branchName = match[1] + '/' + commitMessage.match(/from .+?\/(.+?)(?:\s|$)/)[1];
-            } else {
-              // Alternative parsing for different merge message formats
-              const branchMatch = commitMessage.match(/Merge pull request #\d+ from (.+)$/);
-              if (branchMatch && branchMatch[1]) {
-                branchName = branchMatch[1];
-              }
+              branchName = match[1];
             }
           }
           
@@ -128,7 +122,13 @@ jobs:
             return;
           }
           
-          console.log(`Deleting branch: ${branchName}`);
+          // Only delete branches that start with "feature/"
+          if (!branchName.startsWith('feature/')) {
+            console.log(`Branch ${branchName} does not start with "feature/" - skipping deletion`);
+            return;
+          }
+          
+          console.log(`Deleting feature branch: ${branchName}`);
           
           try {
             await github.rest.git.deleteRef({
@@ -136,9 +136,9 @@ jobs:
               repo: context.repo.repo,
               ref: `heads/${branchName}`
             });
-            console.log(`Successfully deleted branch: ${branchName}`);
+            console.log(`Successfully deleted feature branch: ${branchName}`);
           } catch (error) {
-            console.error(`Failed to delete branch ${branchName}:`, error.message);
+            console.error(`Failed to delete feature branch ${branchName}:`, error.message);
           }
 
   delete-release-branch:
