@@ -128,7 +128,9 @@ jobs:
             
             if (context.ref === 'refs/heads/develop') {
               const commitMessage = context.payload.head_commit.message;
+              const commitTitle = commitMessage.split('\n')[0]; // Only use first line
               console.log('Looking for merge in commit message');
+              console.log('Commit title:', JSON.stringify(commitTitle));
               
               // Try multiple patterns for merge commit messages
               const patterns = [
@@ -139,12 +141,12 @@ jobs:
                 /from (.+?)$/
               ];
               
-              console.log('Testing patterns against:', JSON.stringify(commitMessage));
+              console.log('Testing patterns against:', JSON.stringify(commitTitle));
               
               for (let i = 0; i < patterns.length; i++) {
                 const pattern = patterns[i];
                 console.log(`Testing pattern ${i + 1}:`, pattern);
-                const match = commitMessage.match(pattern);
+                const match = commitTitle.match(pattern);
                 console.log(`Pattern ${i + 1} match result:`, match);
                 if (match && match[1]) {
                   branchName = match[1];
