@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\PowerCSharp.Core\PowerCSharp.Core.csproj" />
     <ProjectReference Include="..\..\src\PowerCSharp.Extensions\PowerCSharp.Extensions.csproj" />
+    <ProjectReference Include="..\..\src\PowerCSharp.Extensions.AspNetCore\PowerCSharp.Extensions.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\PowerCSharp.Utilities\PowerCSharp.Utilities.csproj" />
     <ProjectReference Include="..\..\src\PowerCSharp.Helpers\PowerCSharp.Helpers.csproj" />
   </ItemGroup>
