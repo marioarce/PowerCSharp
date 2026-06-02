@@ -13,6 +13,7 @@ Enhanced C# extension methods and utilities for .NET developers
 
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Core.svg)](https://www.nuget.org/packages/PowerCSharp.Core)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Extensions.svg)](https://www.nuget.org/packages/PowerCSharp.Extensions)
+[![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Extensions.AspNetCore.svg)](https://www.nuget.org/packages/PowerCSharp.Extensions.AspNetCore)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Utilities.svg)](https://www.nuget.org/packages/PowerCSharp.Utilities)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Helpers.svg)](https://www.nuget.org/packages/PowerCSharp.Helpers)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Compatibility.svg)](https://www.nuget.org/packages/PowerCSharp.Compatibility)
@@ -24,7 +25,8 @@ PowerCSharp is a comprehensive library of extension methods, utilities, and help
 PowerCSharp is organized into several focused packages:
 
 - **[PowerCSharp.Core](src/PowerCSharp.Core/README.md)** - Core foundation and base classes for PowerCSharp library, including centralized interfaces and models
-- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Comprehensive extension methods for collections, HTTP, LINQ, JSON, XML, objects, types, streams, strings, and configuration
+- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Cross-platform extension methods for collections, HTTP, LINQ, JSON, XML, objects, types, streams, and strings
+- **[PowerCSharp.Extensions.AspNetCore](src/PowerCSharp.Extensions.AspNetCore/README.md)** - ASP.NET Core specific extensions for configuration and web utilities
 - **[PowerCSharp.Utilities](src/PowerCSharp.Utilities/README.md)** - Utility classes for validation, file operations, and mathematics
 - **[PowerCSharp.Helpers](src/PowerCSharp.Helpers/README.md)** - Specialized helpers for JSON, cryptography, and environment operations
 - **[PowerCSharp.Compatibility](src/PowerCSharp.Compatibility/README.md)** - .NET Framework compatibility layer with System.Web dependencies for legacy applications
@@ -45,6 +47,7 @@ Install individual packages via NuGet:
 ```bash
 dotnet add package PowerCSharp.Core
 dotnet add package PowerCSharp.Extensions
+dotnet add package PowerCSharp.Extensions.AspNetCore
 dotnet add package PowerCSharp.Utilities
 dotnet add package PowerCSharp.Helpers
 dotnet add package PowerCSharp.Compatibility
@@ -55,6 +58,7 @@ Or install the complete suite:
 ```bash
 dotnet add package PowerCSharp.Core
 dotnet add package PowerCSharp.Extensions
+dotnet add package PowerCSharp.Extensions.AspNetCore
 dotnet add package PowerCSharp.Utilities
 dotnet add package PowerCSharp.Helpers
 dotnet add package PowerCSharp.Compatibility
@@ -108,10 +112,10 @@ var firstDay = date.FirstDayOfMonth();
 var lastDay = date.LastDayOfMonth();
 ```
 
-### HTTP & Network Extensions (PowerCSharp.Extensions)
+### HTTP & Network Extensions (PowerCSharp.Extensions.AspNetCore)
 
 ```csharp
-using PowerCSharp.Extensions;
+using PowerCSharp.Extensions.AspNetCore;
 using System.Net;
 
 // HTTP Status Code utilities
@@ -129,6 +133,16 @@ Uri withParam = uri.AddParameter("search", "test"); // https://example.com?searc
 using var request = new HttpRequestMessage(HttpMethod.Get, "https://api.example.com");
 var clonedRequest = request.Clone();
 var clonedAsync = await request.CloneAsync();
+```
+
+### Configuration Extensions (PowerCSharp.Extensions.AspNetCore)
+
+```csharp
+using PowerCSharp.Extensions.AspNetCore;
+using Microsoft.Extensions.Configuration;
+
+var configuration = new ConfigurationBuilder().Build();
+var options = configuration.GetOptions<MyAppOptions>("MyApp"); // Reads from "MyApp" section
 ```
 
 ### LINQ & Dynamic Query Extensions (PowerCSharp.Extensions)
@@ -208,15 +222,6 @@ await originalStream.CloneAsync(destinationStream);
 // destinationStream now contains the same data as originalStream
 ```
 
-### Configuration Extensions (PowerCSharp.Extensions)
-
-```csharp
-using PowerCSharp.Extensions;
-using Microsoft.Extensions.Configuration;
-
-var configuration = new ConfigurationBuilder().Build();
-var options = configuration.GetOptions<MyAppOptions>("MyApp"); // Reads from "MyApp" section
-```
 
 ### Validation Utilities (PowerCSharp.Utilities)
 
@@ -262,7 +267,9 @@ string random = CryptoHelper.GenerateRandomString(10);
 ## 🎯 Target Frameworks
 
 - **Modern .NET**: .NET 8.0
+- **Cross-platform**: .NET Standard 2.0 (PowerCSharp.Core, Extensions, Helpers, Utilities)
 - **.NET Framework**: 4.6.2, 4.7.2, 4.8 (via PowerCSharp.Compatibility package)
+- **ASP.NET Core**: .NET 8.0 (PowerCSharp.Extensions.AspNetCore package)
 
 ## 🧪 Testing
 
@@ -276,14 +283,16 @@ dotnet test
 
 ### Package-Specific Documentation
 - **[PowerCSharp.Core](src/PowerCSharp.Core/README.md)** - Core interfaces and architecture
-- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Extension methods reference  
+- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Cross-platform extension methods reference  
+- **[PowerCSharp.Extensions.AspNetCore](src/PowerCSharp.Extensions.AspNetCore/README.md)** - ASP.NET Core specific extensions
 - **[PowerCSharp.Utilities](src/PowerCSharp.Utilities/README.md)** - Utility classes guide
 - **[PowerCSharp.Helpers](src/PowerCSharp.Helpers/README.md)** - Specialized helpers reference
 - **[PowerCSharp.Compatibility](src/PowerCSharp.Compatibility/README.md)** - .NET Framework compatibility layer
 
 ### Detailed API Documentation
 - **[PowerCSharp.Core API](docs/PowerCSharp.Core.md)** - Complete core API reference
-- **[PowerCSharp.Extensions API](docs/PowerCSharp.Extensions.md)** - Detailed extensions documentation
+- **[PowerCSharp.Extensions API](docs/PowerCSharp.Extensions.md)** - Cross-platform extensions documentation
+- **[PowerCSharp.Extensions.AspNetCore API](docs/PowerCSharp.Extensions.AspNetCore.md)** - ASP.NET Core extensions API
 - **[PowerCSharp.Utilities API](docs/PowerCSharp.Utilities.md)** - Utilities API reference
 - **[PowerCSharp.Helpers API](docs/PowerCSharp.Helpers.md)** - Helpers API documentation
 - **[PowerCSharp.Compatibility API](docs/PowerCSharp.Compatibility.md)** - .NET Framework compatibility API
