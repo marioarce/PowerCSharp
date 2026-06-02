@@ -12,24 +12,13 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <PackageTags>csharp;extensions;aspnetcore;dotnet</PackageTags>
     
     <!-- NuGet Package Metadata -->
     <PackageId>PowerCSharp.Extensions.AspNetCore</PackageId>
-    <PackageVersion>0.2.0</PackageVersion>
+    <PackageVersion>$(PowerCSharpVersion)</PackageVersion>
     <Title>PowerCSharp Extensions for ASP.NET Core</Title>
     <Description>ASP.NET Core specific extension methods for PowerCSharp library</Description>
-    <Authors>Mario Arce</Authors>
-    <Copyright>Copyright © Mario Arce 2026</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/marioarce/PowerCSharp</PackageProjectUrl>
-        <PackageTags>csharp;extensions;aspnetcore;dotnet</PackageTags>
-    <RepositoryUrl>https://github.com/marioarce/PowerCSharp</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
 </Project>

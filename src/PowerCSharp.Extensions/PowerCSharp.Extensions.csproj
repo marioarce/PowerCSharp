@@ -16,24 +16,13 @@
 
   <PropertyGroup>
     <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
-    <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <PackageTags>csharp;extensions;dotnet;productivity</PackageTags>
     
     <!-- NuGet Package Metadata -->
     <PackageId>PowerCSharp.Extensions</PackageId>
-    <PackageVersion>0.2.0</PackageVersion>
+    <PackageVersion>$(PowerCSharpVersion)</PackageVersion>
     <Title>PowerCSharp Extensions</Title>
     <Description>Extension methods for common .NET types to enhance productivity</Description>
-    <Authors>Mario Arce</Authors>
-    <Copyright>Copyright © Mario Arce 2026</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/marioarce/PowerCSharp</PackageProjectUrl>
-        <PackageTags>csharp;extensions;dotnet;productivity</PackageTags>
-    <RepositoryUrl>https://github.com/marioarce/PowerCSharp</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
 </Project>
