@@ -4,7 +4,7 @@
 
 [![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v0.2.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://github.com/marioarce/PowerCSharp/workflows/CI/badge.svg)](https://github.com/marioarce/PowerCSharp/actions)
+[![Build Status](https://github.com/marioarce/PowerCSharp/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/marioarce/PowerCSharp/actions)
 [![codecov](https://codecov.io/gh/marioarce/PowerCSharp/branch/main/graph/badge.svg)](https://codecov.io/gh/marioarce/PowerCSharp)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/PowerCSharp.Core.svg)](https://www.nuget.org/packages/PowerCSharp.Core)
 [![Code Quality](https://img.shields.io/badge/code%20quality-A%2B-brightgreen)](https://github.com/marioarce/PowerCSharp)
