@@ -109,9 +109,9 @@ jobs:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         
     - name: Publish to GitHub Packages
-      run: dotnet nuget push ./packages/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source https://nuget.pkg.github.com/marioarce/index.json --skip-duplicate
+      run: dotnet nuget push ./packages/*.nupkg --api-key ${{ secrets.PACKAGES_PAT }} --source https://nuget.pkg.github.com/marioarce/index.json --skip-duplicate
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PACKAGES_PAT: ${{ secrets.PACKAGES_PAT }}
 
   delete-feature-branch:
     name: Delete Feature Branch
