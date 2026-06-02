@@ -1,8 +1,8 @@
 using System;
 using Microsoft.Extensions.Configuration;
-using PowerCSharp.Extensions.Configuration.Interfaces;
+using PowerCSharp.Core.Interfaces.Extensions.Configuration;
 
-namespace PowerCSharp.Extensions.Configuration;
+namespace PowerCSharp.Extensions.AspNetCore.Configuration;
 
 /// <summary>
 /// Extension methods for IConfiguration operations

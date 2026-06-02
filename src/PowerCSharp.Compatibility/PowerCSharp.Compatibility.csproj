@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net48;net462;net472</TargetFrameworks>
+    <LangVersion>11.0</LangVersion>
+    <PackageTags>csharp;compatibility;framework;dotnet</PackageTags>
+    <RootNamespace>PowerCSharp.Compatibility</RootNamespace>
+    <AssemblyName>PowerCSharp.Compatibility</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="10.0.8" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- NuGet Package Metadata -->
+    <PackageId>PowerCSharp.Compatibility</PackageId>
+    <PackageVersion>$(PowerCSharpCompatibilityVersion)</PackageVersion>
+    <Title>PowerCSharp Compatibility</Title>
+    <Description>.NET Framework compatibility layer for PowerCSharp with System.Web dependencies</Description>
+  </PropertyGroup>
+
+</Project>

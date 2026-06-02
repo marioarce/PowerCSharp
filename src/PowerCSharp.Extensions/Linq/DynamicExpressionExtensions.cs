@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Linq.Dynamic.Core;
-using PowerCSharp.Extensions.Linq.Interfaces;
+using PowerCSharp.Core.Interfaces.Extensions.Linq;
 
 namespace PowerCSharp.Extensions.Linq;
 

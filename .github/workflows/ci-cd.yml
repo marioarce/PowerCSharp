@@ -2,11 +2,24 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'release/*' ]
   pull_request:
-    branches: [ main ]
-  release:
-    types: [ published ]
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+  pull-requests: write
 
 env:
   DOTNET_VERSION: '8.0.x'
@@ -18,24 +31,24 @@ jobs:
     
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4.2.2
       
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5.3.0
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
         
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore PowerCSharp.sln
       
     - name: Build
-      run: dotnet build --no-restore --configuration Release
+      run: dotnet build PowerCSharp.sln --no-restore --configuration Release
       
     - name: Test
-      run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
+      run: dotnet test PowerCSharp.sln --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
       
     - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v6.0.1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: '**/coverage.cobertura.xml'
@@ -45,25 +58,25 @@ jobs:
     name: Pack NuGet Packages
     runs-on: ubuntu-latest
     needs: build-and-test
-    if: github.event_name == 'release'
+    if: (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' && startsWith(github.event.pull_request.head.ref, 'release/')) || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))
     
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4.2.2
       
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5.3.0
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
         
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore PowerCSharp.sln
       
     - name: Pack
-      run: dotnet pack --no-restore --configuration Release --output ./packages
+      run: dotnet pack PowerCSharp.sln --no-restore --configuration Release --output ./packages
       
     - name: Upload packages as artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7.0.1
       with:
         name: nuget-packages
         path: ./packages/*.nupkg
@@ -72,17 +85,17 @@ jobs:
     name: Publish to NuGet
     runs-on: ubuntu-latest
     needs: pack
-    if: github.event_name == 'release'
+    if: (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' && startsWith(github.event.pull_request.head.ref, 'release/')) || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))
     
     steps:
     - name: Download packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8.0.1
       with:
         name: nuget-packages
         path: ./packages
         
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5.3.0
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
         
@@ -90,3 +103,217 @@ jobs:
       run: dotnet nuget push ./packages/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        
+    - name: Publish to GitHub Packages
+      run: dotnet nuget push ./packages/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source https://nuget.pkg.github.com/marioarce/index.json --skip-duplicate
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  delete-feature-branch:
+    name: Delete Feature Branch
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    
+    steps:
+    - name: Delete feature branch
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+      with:
+        script: |
+          console.log('=== Feature Branch Deletion Debug ===');
+          console.log('Event name:', context.eventName);
+          console.log('Event action:', context.payload.action);
+          console.log('Ref:', context.ref);
+          
+          let branchName;
+          
+          if (context.eventName === 'pull_request') {
+            console.log('Processing pull_request event');
+            console.log('PR base ref:', context.payload.pull_request.base.ref);
+            console.log('PR head ref:', context.payload.pull_request.head.ref);
+            console.log('PR merged:', context.payload.pull_request.merged);
+            
+            if (context.payload.pull_request.base.ref === 'develop' && context.payload.pull_request.merged === true) {
+              branchName = context.payload.pull_request.head.ref;
+              console.log('Found branch name from PR:', branchName);
+            }
+          } else if (context.eventName === 'push') {
+            console.log('Processing push event');
+            console.log('Push ref:', context.ref);
+            console.log('Commit message:', context.payload.head_commit.message);
+            
+            if (context.ref === 'refs/heads/develop') {
+              const commitMessage = context.payload.head_commit.message;
+              const commitTitle = commitMessage.split('\n')[0]; // Only use first line
+              console.log('Looking for merge in commit message');
+              console.log('Commit title:', JSON.stringify(commitTitle));
+              
+              // Try multiple patterns for merge commit messages
+              const patterns = [
+                /Merge pull request #\d+ from .+?\/(.+)$/,
+                /Merge pull request #\d+ from (.+)$/,
+                /Merge branch '(.+?)' into develop/,
+                /Merge (.+?) into develop/,
+                /from (.+?)$/
+              ];
+              
+              console.log('Testing patterns against:', JSON.stringify(commitTitle));
+              
+              for (let i = 0; i < patterns.length; i++) {
+                const pattern = patterns[i];
+                console.log(`Testing pattern ${i + 1}:`, pattern);
+                const match = commitTitle.match(pattern);
+                console.log(`Pattern ${i + 1} match result:`, match);
+                if (match && match[1]) {
+                  branchName = match[1];
+                  console.log('Found branch name with pattern', pattern, ':', branchName);
+                  break;
+                }
+              }
+            }
+          }
+          
+          console.log('Final branch name to delete:', branchName);
+          
+          if (!branchName) {
+            console.log('Could not determine branch name to delete - skipping');
+            return;
+          }
+          
+          // Only delete branches that start with "feature/"
+          if (!branchName.startsWith('feature/')) {
+            console.log(`Branch ${branchName} does not start with "feature/" - skipping deletion`);
+            return;
+          }
+          
+          console.log(`Deleting feature branch: ${branchName}`);
+          
+          try {
+            await github.rest.git.deleteRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `heads/${branchName}`
+            });
+            console.log(`Successfully deleted feature branch: ${branchName}`);
+          } catch (error) {
+            console.error(`Failed to delete feature branch ${branchName}:`, error.message);
+          }
+
+  update-version:
+    name: Update Package Version
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4.2.2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5.3.0
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Update version
+      run: |
+        echo "Updating version for ${{ github.event.inputs.release_type }} release"
+        
+        # Read current version
+        CURRENT_VERSION=$(grep '<PowerCSharpVersion>' Directory.Build.props | sed 's/.*<PowerCSharpVersion>\(.*\)<\/PowerCSharpVersion>.*/\1/')
+        echo "Current version: $CURRENT_VERSION"
+        
+        # Split version into parts
+        IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+        MAJOR=${VERSION_PARTS[0]}
+        MINOR=${VERSION_PARTS[1]}
+        PATCH=${VERSION_PARTS[2]}
+        
+        # Update version based on release type
+        case "${{ github.event.inputs.release_type }}" in
+          "major")
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+            ;;
+          "minor")
+            MINOR=$((MINOR + 1))
+            PATCH=0
+            ;;
+          "patch")
+            PATCH=$((PATCH + 1))
+            ;;
+        esac
+        
+        NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+        echo "New version: $NEW_VERSION"
+        
+        # Update Directory.Build.props
+        sed -i "s/<PowerCSharpVersion>.*<\/PowerCSharpVersion>/<PowerCSharpVersion>$NEW_VERSION<\/PowerCSharpVersion>/" Directory.Build.props
+        
+        # Commit and push changes
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add Directory.Build.props
+        git commit -m "chore: bump version to $NEW_VERSION"
+        git push
+        
+    - name: Create release tag
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+      with:
+        script: |
+          const version = require('fs').readFileSync('Directory.Build.props', 'utf8')
+            .match(/<PowerCSharpVersion>(.+?)<\/PowerCSharpVersion>/)[1];
+          
+          await github.rest.git.createRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: `refs/tags/v${version}`,
+            sha: context.sha
+          });
+
+  delete-release-branch:
+    name: Delete Release Branch
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' && startsWith(github.event.pull_request.head.ref, 'release/')) || (github.event_name == 'push' && github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'Merge pull request'))
+    
+    steps:
+    - name: Delete release branch
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+      with:
+        script: |
+          let branchName;
+          
+          if (context.eventName === 'pull_request') {
+            branchName = context.payload.pull_request.head.ref;
+          } else if (context.eventName === 'push') {
+            // Extract branch name from merge commit message
+            const commitMessage = context.payload.head_commit.message;
+            const match = commitMessage.match(/Merge pull request #\d+ from (.+)$/);
+            if (match && match[1]) {
+              branchName = match[1];
+            }
+          }
+          
+          if (!branchName) {
+            console.log('Could not determine branch name to delete');
+            return;
+          }
+          
+          // Only delete if it's a release branch
+          if (!branchName.startsWith('release/')) {
+            console.log(`Branch ${branchName} is not a release branch, skipping deletion`);
+            return;
+          }
+          
+          console.log(`Deleting release branch: ${branchName}`);
+          
+          try {
+            await github.rest.git.deleteRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `heads/${branchName}`
+            });
+            console.log(`Successfully deleted release branch: ${branchName}`);
+          } catch (error) {
+            console.error(`Failed to delete release branch ${branchName}:`, error.message);
+          }

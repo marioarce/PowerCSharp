@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <!-- Centralized version management for PowerCSharp packages -->
+    <PowerCSharpVersion>0.2.0</PowerCSharpVersion>
+    <PowerCSharpCompatibilityVersion>0.1.0</PowerCSharpCompatibilityVersion>
+    
+    <!-- Common package metadata -->
+    <Authors>Mario Arce</Authors>
+    <Copyright>Copyright © Mario Arce 2026</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/marioarce/PowerCSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/marioarce/PowerCSharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+</Project>

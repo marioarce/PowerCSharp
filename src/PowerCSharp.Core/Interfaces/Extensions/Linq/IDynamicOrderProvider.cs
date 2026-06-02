@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace PowerCSharp.Extensions.Linq.Interfaces;
+namespace PowerCSharp.Core.Interfaces.Extensions.Linq;
 
 /// <summary>
 /// Implement a Service Provider for dynamically ordering of the type <typeparamref name="T"/> using Dynamic Expressions.

@@ -1,0 +1,37 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{493BDE4C-2EBA-49EE-BF44-10AAB73634D7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8507D629-2649-468E-8345-212CFC547FA9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{BC0230B2-0BAF-4499-BBC1-34EAF4CB6160}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerCSharp.Compatibility.Extensions.Tests", "tests\PowerCSharp.Compatibility.Extensions.Tests\PowerCSharp.Compatibility.Extensions.Tests.csproj", "{D7A54062-A400-4AD3-96AD-62808CBAAAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerCSharp.Compatibility", "src\PowerCSharp.Compatibility\PowerCSharp.Compatibility.csproj", "{EABF254A-AA66-4291-9B37-EDFC8B8CBDC8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D7A54062-A400-4AD3-96AD-62808CBAAAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7A54062-A400-4AD3-96AD-62808CBAAAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7A54062-A400-4AD3-96AD-62808CBAAAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7A54062-A400-4AD3-96AD-62808CBAAAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EABF254A-AA66-4291-9B37-EDFC8B8CBDC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EABF254A-AA66-4291-9B37-EDFC8B8CBDC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EABF254A-AA66-4291-9B37-EDFC8B8CBDC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EABF254A-AA66-4291-9B37-EDFC8B8CBDC8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D7A54062-A400-4AD3-96AD-62808CBAAAC} = {8507D629-2649-468E-8345-212CFC547FA9}
+		{EABF254A-AA66-4291-9B37-EDFC8B8CBDC8} = {493BDE4C-2EBA-49EE-BF44-10AAB73634D7}
+	EndGlobalSection
+EndGlobal
