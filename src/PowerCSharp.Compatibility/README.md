@@ -7,7 +7,7 @@
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Compatibility.svg)](https://www.nuget.org/packages/PowerCSharp.Compatibility)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/PowerCSharp.Compatibility.svg)](https://www.nuget.org/packages/PowerCSharp.Compatibility)
 
-**.NET Framework compatibility layer for PowerCSharp** - Essential utilities and extensions for legacy .NET Framework applications with System.Web dependencies.
+**.NET Framework compatibility layer for PowerCSharp** - Essential utilities and extensions for legacy .NET Framework applications with System.Web dependencies. This package provides a seamless migration path from .NET Framework to modern .NET while maintaining compatibility with existing PowerCSharp interfaces.
 
 > **⚠️ .NET Framework Exclusive**: This package is specifically designed for .NET Framework applications (4.6.2, 4.7.2, 4.8) and includes System.Web dependencies. For modern .NET applications, use other PowerCSharp packages.
 

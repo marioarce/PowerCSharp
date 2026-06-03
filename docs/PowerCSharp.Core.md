@@ -2,7 +2,13 @@
 
 ## Overview
 
-PowerCSharp.Core serves as the foundational core of the PowerCSharp ecosystem, providing centralized interfaces, models, and base functionality for all PowerCSharp packages.
+PowerCSharp.Core serves as the foundational core of the PowerCSharp ecosystem, providing centralized interfaces, models, and base functionality for all PowerCSharp packages. This package has been refactored to provide a clean, dependency-free foundation with improved architectural separation and better maintainability.
+
+**Recent Improvements (v0.3.0):**
+- **Centralized Interface Design**: All interfaces now centralized for better consistency
+- **Dependency-Free Core**: Removed external dependencies for maximum compatibility
+- **Enhanced Architecture**: Improved namespace organization and separation of concerns
+- **Better Documentation**: Comprehensive API documentation and usage examples
 
 ## Architecture
 

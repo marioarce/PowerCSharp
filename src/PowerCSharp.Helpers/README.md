@@ -9,6 +9,12 @@
 
 Specialized helper classes for cryptography, JSON operations, and environment management. These focused utilities provide secure and reliable implementations of common programming tasks.
 
+**Recent Improvements (v0.2.0):**
+- **Enhanced Security**: Improved cryptographic implementations with better error handling
+- **Performance Gains**: Optimized JSON serialization and deserialization
+- **Better Documentation**: Comprehensive usage examples and security best practices
+- **Environment Support**: Enhanced environment variable management with fallback values
+
 ## 📦 Package Information
 
 - **Package ID:** `PowerCSharp.Helpers`

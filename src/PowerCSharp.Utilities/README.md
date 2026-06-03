@@ -9,6 +9,12 @@
 
 Essential utility classes and helper methods for common programming tasks including validation, file operations, and mathematical computations.
 
+**Recent Improvements (v0.2.0):**
+- **Enhanced Validation**: Improved validation utilities with better error messages
+- **File Operations**: Safer file handling with automatic directory creation
+- **Math Functions**: Enhanced mathematical utilities with edge case protection
+- **Better Testing**: Comprehensive unit test coverage for all utility methods
+
 ## 📦 Package Information
 
 - **Package ID:** `PowerCSharp.Utilities`

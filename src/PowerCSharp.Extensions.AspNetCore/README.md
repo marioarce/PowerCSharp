@@ -9,6 +9,12 @@
 
 ASP.NET Core specific extension methods for modern web development. This package provides specialized extensions for configuration management, web utilities, and HTTP operations that require ASP.NET Core dependencies.
 
+**Recent Improvements (v0.3.0):**
+- **Package Separation**: Extracted from PowerCSharp.Extensions for cleaner dependency management
+- **Enhanced Performance**: Optimized HTTP operations and configuration handling
+- **Better Integration**: Improved ASP.NET Core dependency injection support
+- **Updated Dependencies**: All Microsoft.Extensions packages updated to .NET 8.0 compatible versions
+
 ## 📦 Package Information
 
 - **Package ID:** `PowerCSharp.Extensions.AspNetCore`

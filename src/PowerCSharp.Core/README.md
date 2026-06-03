@@ -7,7 +7,7 @@
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Core.svg)](https://www.nuget.org/packages/PowerCSharp.Core)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/PowerCSharp.Core.svg)](https://www.nuget.org/packages/PowerCSharp.Core)
 
-The foundational core of the PowerCSharp ecosystem, providing centralized interfaces, models, and base functionality for all PowerCSharp packages.
+The foundational core of the PowerCSharp ecosystem, providing centralized interfaces, models, and base functionality for all PowerCSharp packages. This package has been refactored to provide a clean, dependency-free foundation with improved architectural separation.
 
 ## 📦 Package Information
 

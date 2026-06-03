@@ -9,6 +9,12 @@
 
 Cross-platform extension methods for .NET developers that enhance productivity and simplify common programming tasks. This package contains over 100 extension methods organized into logical categories, compatible with both modern .NET and .NET Standard 2.0.
 
+**Recent Improvements (v0.3.0):**
+- **Package Separation**: ASP.NET Core extensions moved to dedicated package for cleaner dependencies
+- **Performance Optimization**: Reduced memory allocations and improved execution speed
+- **Enhanced Documentation**: Better API documentation and practical examples
+- **Improved Testing**: Expanded unit test coverage for all extension methods
+
 ## 📦 Package Information
 
 - **Package ID:** `PowerCSharp.Extensions`
