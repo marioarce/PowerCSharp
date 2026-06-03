@@ -17,7 +17,7 @@ public static class IEnumerableExtensions
     /// <param name="source">The source sequence to filter.</param>
     /// <param name="filterProvider">The dynamic filter provider containing filter criteria.</param>
     /// <returns>An IEnumerable of <typeparamref name="TSource"/> that contains elements from the input sequence that satisfy the filter condition.</returns>
-    public static IEnumerable<TSource> Filter<TSource>(this IEnumerable<TSource> source, IDynamicFilterProvider<TSource>? filterProvider)
+    public static IEnumerable<TSource>? Filter<TSource>(this IEnumerable<TSource> source, IDynamicFilterProvider<TSource>? filterProvider)
     {
         if (source == null)
         {
@@ -40,7 +40,7 @@ public static class IEnumerableExtensions
     /// <param name="source">The source sequence to sort.</param>
     /// <param name="orderProvider">The dynamic order provider containing ordering criteria.</param>
     /// <returns>An IOrderedEnumerable whose elements are sorted according to the order criteria.</returns>
-    public static IEnumerable<TSource> Order<TSource>(this IEnumerable<TSource> source, IDynamicOrderProvider<TSource>? orderProvider)
+    public static IEnumerable<TSource>? Order<TSource>(this IEnumerable<TSource> source, IDynamicOrderProvider<TSource>? orderProvider)
     {
         if (source == null)
         {
@@ -79,5 +79,48 @@ public static class IEnumerableExtensions
         }
 
         return orderedEnumerable ?? source;
+    }
+
+    /// <summary>
+    /// Returns distinct elements from a sequence based on a key selector function.
+    /// </summary>
+    /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+    /// <typeparam name="TKey">The type of the key to distinguish elements by.</typeparam>
+    /// <param name="source">The sequence to remove duplicate elements from.</param>
+    /// <param name="keySelector">A function to extract the key for each element.</param>
+    /// <returns>An IEnumerable that contains distinct elements from the source sequence.</returns>
+    /// <remarks>
+    /// This method is implemented using a HashSet to track seen keys for O(n) performance.
+    /// The order of elements in the result sequence matches their first occurrence in the source sequence.
+    /// </remarks>
+    public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+    {
+#if NET5_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(source);
+#else
+        if (source == null)
+        {
+            throw new ArgumentNullException(nameof(source));
+        }
+#endif
+
+#if NET5_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(keySelector);
+#else
+        if (keySelector == null)
+        {
+            throw new ArgumentNullException(nameof(keySelector));
+        }
+#endif
+
+        var seenKeys = new HashSet<TKey>();
+
+        foreach (TSource element in source)
+        {
+            if (seenKeys.Add(keySelector(element)))
+            {
+                yield return element;
+            }
+        }
     }
 }
