@@ -1,6 +1,12 @@
 # PowerCSharp.Compatibility API Reference
 
-Complete API reference for PowerCSharp.Compatibility - .NET Framework compatibility layer with System.Web dependencies.
+Complete API reference for PowerCSharp.Compatibility - .NET Framework compatibility layer with System.Web dependencies. This package provides a seamless migration path from .NET Framework to modern .NET while maintaining compatibility with existing PowerCSharp interfaces.
+
+**Key Features:**
+- **System.Web Integration**: URL manipulation and web utilities using System.Web
+- **Async-to-Sync Bridging**: Safe async operations in synchronous contexts
+- **Migration Path**: Gradual upgrade path from .NET Framework to modern .NET
+- **Framework Compatibility**: Designed specifically for .NET Framework applications
 
 > **Target Framework**: .NET Framework 4.6.2, 4.7.2, 4.8  
 > **Namespace**: `PowerCSharp.Compatibility`

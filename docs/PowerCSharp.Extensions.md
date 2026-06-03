@@ -4,7 +4,14 @@
 
 PowerCSharp.Extensions provides cross-platform extension methods for .NET developers that enhance productivity and simplify common programming tasks. This package contains over 100 extension methods organized into logical categories including strings, collections, LINQ, JSON, XML, objects, types, streams, and exception handling.
 
-**Note:** ASP.NET Core specific extensions (Configuration, HTTP utilities, URI manipulation) are now available in the separate `PowerCSharp.Extensions.AspNetCore` package.
+**Note:** ASP.NET Core specific extensions (Configuration, HTTP utilities, URI manipulation) are now available in the separate `PowerCSharp.Extensions.AspNetCore` package for cleaner dependency management.
+
+**Recent Improvements (v0.3.0):**
+- **Package Separation**: ASP.NET Core extensions moved to dedicated package
+- **Performance Optimization**: Reduced memory allocations and improved execution speed
+- **Enhanced Documentation**: Better API documentation with practical examples
+- **Improved Testing**: Expanded unit test coverage for all extension methods
+- **Better Error Handling**: More robust error handling and edge case coverage
 
 ## Architecture
 

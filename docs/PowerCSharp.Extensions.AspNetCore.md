@@ -4,6 +4,13 @@
 
 PowerCSharp.Extensions.AspNetCore provides ASP.NET Core specific extension methods that require ASP.NET Core dependencies. This package focuses on configuration management, web utilities, and HTTP operations that are specifically designed for modern ASP.NET Core applications.
 
+**Recent Improvements (v0.3.0):**
+- **Package Separation**: Extracted from PowerCSharp.Extensions for cleaner dependency management
+- **Enhanced Performance**: Optimized HTTP operations and configuration handling
+- **Better Integration**: Improved ASP.NET Core dependency injection support
+- **Updated Dependencies**: All Microsoft.Extensions packages updated to .NET 8.0 compatible versions
+- **Improved Documentation**: Comprehensive usage examples and best practices
+
 ## Target Framework
 
 - **.NET 8.0** - Leverages the latest ASP.NET Core features and optimizations
