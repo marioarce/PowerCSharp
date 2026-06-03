@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using PowerCSharp.Compatibility.Helpers;
 
 namespace PowerCSharp.Compatibility.Net;
 
@@ -48,12 +49,10 @@ public static class HttpRequestMessageExtensions
         // Copy content if present
         if (original.Content != null)
         {
-            // Read content synchronously
-            var contentBytes = original
-                .Content
-                .ReadAsByteArrayAsync()
-                .GetAwaiter()
-                .GetResult();
+            // Read content synchronously using AsyncHelper to prevent deadlocks
+            var contentBytes = AsyncHelper.RunSync(
+                original.Content.ReadAsByteArrayAsync
+            );
 
             clone.Content = new ByteArrayContent(contentBytes);
 
