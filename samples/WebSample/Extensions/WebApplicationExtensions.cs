@@ -1,7 +1,8 @@
 using PowerCSharp.Extensions;
 using PowerCSharp.Extensions.Strings;
-using PowerCSharp.Helpers;
+using PowerCSharp.Extensions.AspNetCore.Helpers;
 using PowerCSharp.Utilities;
+using PowerCSharp.Helpers;
 
 namespace WebSample.Extensions;
 
@@ -55,9 +56,9 @@ public static class WebApplicationExtensions
             
             return new
             {
-                email = new { value = email, isValid = ValidationHelper.IsValidEmail(email) },
-                phone = new { value = phone, isNumeric = ValidationHelper.IsNumeric(phone) },
-                url = new { value = url, isValid = ValidationHelper.IsValidUrl(url) }
+                email = new { value = email, isValid = ValidationUtility.IsValidEmail(email) },
+                phone = new { value = phone, isNumeric = ValidationUtility.IsNumeric(phone) },
+                url = new { value = url, isValid = ValidationUtility.IsValidUrl(url) }
             };
         });
 
@@ -109,13 +110,13 @@ public static class WebApplicationExtensions
             
             return new
             {
-                clamp = MathHelper.Clamp(value, min, max),
-                isInRange = MathHelper.IsInRange(value, min, max),
-                percentage = MathHelper.Percentage(25, 100),
-                radians = MathHelper.ToRadians(180),
-                degrees = MathHelper.ToDegrees(Math.PI),
-                isEven = MathHelper.IsEven(4),
-                isOdd = MathHelper.IsOdd(3)
+                clamp = MathUtility.Clamp(value, min, max),
+                isInRange = MathUtility.IsInRange(value, min, max),
+                percentage = MathUtility.Percentage(25, 100),
+                radians = MathUtility.ToRadians(180),
+                degrees = MathUtility.ToDegrees(Math.PI),
+                isEven = MathUtility.IsEven(4),
+                isOdd = MathUtility.IsOdd(3)
             };
         });
 

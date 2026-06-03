@@ -3,7 +3,7 @@ using Xunit;
 
 namespace PowerCSharp.Utilities.Tests;
 
-public class ValidationHelperTests
+public class ValidationUtilityTests
 {
     [Fact]
     public void IsValidEmail_ShouldReturnTrueForValidEmail()
@@ -12,7 +12,7 @@ public class ValidationHelperTests
         string email = "test@example.com";
         
         // Act
-        bool result = ValidationHelper.IsValidEmail(email);
+        bool result = ValidationUtility.IsValidEmail(email);
         
         // Assert
         Assert.True(result);
@@ -25,7 +25,7 @@ public class ValidationHelperTests
         string email = "invalid-email";
         
         // Act
-        bool result = ValidationHelper.IsValidEmail(email);
+        bool result = ValidationUtility.IsValidEmail(email);
         
         // Assert
         Assert.False(result);
@@ -38,7 +38,7 @@ public class ValidationHelperTests
         string? email = null;
         
         // Act
-        bool result = ValidationHelper.IsValidEmail(email);
+        bool result = ValidationUtility.IsValidEmail(email);
         
         // Assert
         Assert.False(result);
@@ -51,7 +51,7 @@ public class ValidationHelperTests
         string email = "";
         
         // Act
-        bool result = ValidationHelper.IsValidEmail(email);
+        bool result = ValidationUtility.IsValidEmail(email);
         
         // Assert
         Assert.False(result);
@@ -64,7 +64,7 @@ public class ValidationHelperTests
         string email = "   ";
         
         // Act
-        bool result = ValidationHelper.IsValidEmail(email);
+        bool result = ValidationUtility.IsValidEmail(email);
         
         // Assert
         Assert.False(result);
@@ -77,7 +77,7 @@ public class ValidationHelperTests
         string number = "12345";
         
         // Act
-        bool result = ValidationHelper.IsNumeric(number);
+        bool result = ValidationUtility.IsNumeric(number);
         
         // Assert
         Assert.True(result);
@@ -129,7 +129,7 @@ public class ValidationHelperTests
         string url = "http://example.com";
         
         // Act
-        bool result = ValidationHelper.IsValidUrl(url);
+        bool result = ValidationUtility.IsValidUrl(url);
         
         // Assert
         Assert.True(result);
@@ -142,7 +142,7 @@ public class ValidationHelperTests
         string url = "https://example.com";
         
         // Act
-        bool result = ValidationHelper.IsValidUrl(url);
+        bool result = ValidationUtility.IsValidUrl(url);
         
         // Assert
         Assert.True(result);
@@ -155,7 +155,7 @@ public class ValidationHelperTests
         string url = "not-a-url";
         
         // Act
-        bool result = ValidationHelper.IsValidUrl(url);
+        bool result = ValidationUtility.IsValidUrl(url);
         
         // Assert
         Assert.False(result);
@@ -168,7 +168,7 @@ public class ValidationHelperTests
         string url = "ftp://example.com";
         
         // Act
-        bool result = ValidationHelper.IsValidUrl(url);
+        bool result = ValidationUtility.IsValidUrl(url);
         
         // Assert
         Assert.False(result);
@@ -181,7 +181,7 @@ public class ValidationHelperTests
         string? url = null;
         
         // Act
-        bool result = ValidationHelper.IsValidUrl(url);
+        bool result = ValidationUtility.IsValidUrl(url);
         
         // Assert
         Assert.False(result);

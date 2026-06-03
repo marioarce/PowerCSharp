@@ -2,10 +2,10 @@ using System;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace PowerCSharp.Helpers;
+namespace PowerCSharp.Extensions.AspNetCore.Helpers;
 
 /// <summary>
-/// Helper class for environment and system operations
+/// Helper class for environment and system operations with .NET 8 specific optimizations
 /// </summary>
 public static partial class EnvironmentHelper
 {

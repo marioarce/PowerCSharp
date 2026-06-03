@@ -2,7 +2,7 @@
 
 ![PowerCSharp Banner](docs/images/PowerCSharp_Banner.png)
 
-[![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v0.2.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
+[![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v0.3.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/marioarce/PowerCSharp/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/marioarce/PowerCSharp/actions)
 [![codecov](https://codecov.io/gh/marioarce/PowerCSharp/branch/main/graph/badge.svg)](https://codecov.io/gh/marioarce/PowerCSharp)
@@ -266,10 +266,16 @@ string random = CryptoHelper.GenerateRandomString(10);
 
 ## 🎯 Target Frameworks
 
-- **Modern .NET**: .NET 8.0
+- **Modern .NET**: .NET 8.0 with full compatibility
 - **Cross-platform**: .NET Standard 2.0 (PowerCSharp.Core, Extensions, Helpers, Utilities)
 - **.NET Framework**: 4.6.2, 4.7.2, 4.8 (via PowerCSharp.Compatibility package)
 - **ASP.NET Core**: .NET 8.0 (PowerCSharp.Extensions.AspNetCore package)
+
+### 🔧 Recent Updates (v0.3.0)
+- **Package Compatibility**: Resolved NuGet package compatibility issues for .NET 8.0
+- **Dependency Updates**: Updated Microsoft.Extensions packages to compatible versions
+- **Build Improvements**: Enhanced build process and package generation
+- **Documentation**: Comprehensive documentation updates and API reference
 
 ## 🧪 Testing
 

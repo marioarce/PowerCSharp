@@ -6,7 +6,7 @@ namespace PowerCSharp.Utilities;
 /// <summary>
 /// Utility class for common file operations
 /// </summary>
-public static class FileHelper
+public static class FileUtility
 {
     /// <summary>
     /// Safely reads all text from a file
