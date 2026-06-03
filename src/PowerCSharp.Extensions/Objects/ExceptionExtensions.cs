@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Runtime.ExceptionServices;
+using PowerCSharp.Extensions.Types;
 
 namespace PowerCSharp.Extensions.Objects;
 
@@ -156,7 +158,7 @@ public static class ExceptionExtensions
             var valueType = value.GetType();
 
             // For primitive types and strings, add directly
-            if (IsSimpleType(valueType))
+            if (valueType.IsSimpleType())
             {
                 ex.Data.Add(key, value);
                 return true;
@@ -198,22 +200,89 @@ public static class ExceptionExtensions
     }
 
     /// <summary>
-    /// Determines if a type is a simple/primitive type that can be safely stored in Exception.Data.
+    /// Returns a boolean indicating whether a specified string occurs within the Message of this Exception or their InnerExceptions.
     /// </summary>
-    /// <param name="type">The type to check.</param>
-    /// <returns>True if the type is simple; False if it's complex.</returns>
-    private static bool IsSimpleType(Type type)
+    /// <param name="input">The exception to search in.</param>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
+    /// <returns>true if the value parameter occurs within the Message of this Exception (or their InnerExceptions); otherwise, false.</returns>
+    public static bool MessageContains(this Exception? input, string value, StringComparison comparisonType)
     {
-        var result = type.IsPrimitive || 
-               type.IsEnum || 
-               type == typeof(string) || 
-               type == typeof(decimal) || 
-               type == typeof(DateTime) || 
-               type == typeof(DateTimeOffset) || 
-               type == typeof(TimeSpan) || 
-               type == typeof(Guid) ||
-               Nullable.GetUnderlyingType(type) != null && IsSimpleType(Nullable.GetUnderlyingType(type));
+        if (input == null || string.IsNullOrEmpty(value))
+        {
+            return false;
+        }
 
-        return result;
+#if NETCOREAPP2_1_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        if (input.Message.Contains(value, comparisonType))
+#else
+        if (string.Equals(input.Message, value, comparisonType) || input.Message.IndexOf(value, 0, comparisonType) >= 0)
+#endif
+        {
+            return true;
+        }
+        else
+        {
+            return MessageContains(input.InnerException, value, comparisonType);
+        }
+    }
+
+    /// <summary>
+    /// Returns a collection with all InnerExceptions walking to all levels hierarchical.
+    /// </summary>
+    /// <param name="ex">The exception to get inner exceptions from.</param>
+    /// <param name="includeItself">Set <c>true</c> to include the root Exception in the collection.</param>
+    /// <returns>An enumerable collection of inner exceptions in hierarchical order.</returns>
+    public static IEnumerable<Exception> GetInnerExceptions(this Exception? ex, bool includeItself = false)
+    {
+        if (ex == null)
+        {
+            yield break;
+        }
+
+        var innerException = ex.InnerException;
+        if (includeItself)
+        {
+            innerException = ex;
+        }
+
+        if (innerException == null)
+        {
+            yield break;
+        }
+
+        do
+        {
+            yield return innerException;
+            innerException = innerException.InnerException;
+        }
+        while (innerException != null);
+    }
+
+    /// <summary>
+    /// Attempts to prepare the exception for re-throwing by preserving the stack trace. The returned exception should be immediately thrown.
+    /// </summary>
+    /// <param name="exception">The exception. May not be <c>null</c>.</param>
+    /// <returns>The <see cref="Exception"/> that was passed into this method.</returns>
+    /// <remarks>
+    /// This method uses ExceptionDispatchInfo.Capture to preserve the original stack trace when re-throwing exceptions.
+    /// The method should be used immediately before throwing: <code>throw exception.PrepareForRethrow();</code>
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">Thrown when the exception parameter is null.</exception>
+    public static Exception PrepareForRethrow(this Exception exception)
+    {
+#if NET5_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(exception);
+#else
+        if (exception == null) throw new ArgumentNullException(nameof(exception));
+#endif
+
+        ExceptionDispatchInfo
+            .Capture(exception)
+            .Throw();
+
+        // The code cannot ever get here. We just return a value to work around a badly-designed API (ExceptionDispatchInfo.Throw):
+        // https://connect.microsoft.com/VisualStudio/feedback/details/689516/exceptiondispatchinfo-api-modifications (http://www.webcitation.org/6XQ7RoJmO)
+        return exception;
     }
 }
