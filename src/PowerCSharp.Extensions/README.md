@@ -2,7 +2,7 @@
 
 ![PowerCSharp Banner](../docs/images/PowerCSharp_Banner.png)
 
-[![PowerCSharp.Extensions](https://img.shields.io/badge/PowerCSharp.Extensions-v0.2.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
+[![PowerCSharp.Extensions](https://img.shields.io/badge/PowerCSharp.Extensions-v0.3.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Extensions.svg)](https://www.nuget.org/packages/PowerCSharp.Extensions)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/PowerCSharp.Extensions.svg)](https://www.nuget.org/packages/PowerCSharp.Extensions)
@@ -12,13 +12,13 @@ Cross-platform extension methods for .NET developers that enhance productivity a
 ## 📦 Package Information
 
 - **Package ID:** `PowerCSharp.Extensions`
-- **Version:** 0.2.0
+- **Version:** 0.3.0
 - **Target Frameworks:** .NET 8.0, .NET Standard 2.0
 - **Dependencies:** 
   - `PowerCSharp.Core` (for shared interfaces)
-  - `System.Linq.Dynamic.Core` (for dynamic LINQ)
-  - `Ben.Demystifier` (for enhanced exception demystification)
-  - `System.Text.Json` (for JSON processing)
+  - `System.Linq.Dynamic.Core` v1.7.2 (for dynamic LINQ)
+  - `Ben.Demystifier` v0.4.1 (for enhanced exception demystification)
+  - `System.Text.Json` v10.0.8 (for JSON processing)
 
 **Note:** ASP.NET Core specific extensions (Configuration, URI manipulation) are now available in the separate `PowerCSharp.Extensions.AspNetCore` package.
 

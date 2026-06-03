@@ -10,10 +10,18 @@ PowerCSharp.Extensions.AspNetCore provides ASP.NET Core specific extension metho
 
 ## Dependencies
 
-- **PowerCSharp.Core** - Shared interfaces and base functionality
-- **Microsoft.AspNetCore.WebUtilities** - URL query string manipulation and web utilities
-- **Microsoft.Extensions.Configuration.Abstractions** - Configuration support
-- **Microsoft.Extensions.Configuration.Binder** - Configuration binding
+- **PowerCSharp.Core** v0.3.0 - Shared interfaces and base functionality
+- **Microsoft.AspNetCore.WebUtilities** v8.0.8 - URL query string manipulation and web utilities
+- **Microsoft.Extensions.Configuration.Abstractions** v8.0.0 - Configuration support
+- **Microsoft.Extensions.Configuration.Binder** v8.0.0 - Configuration binding
+- **Microsoft.Extensions.DependencyInjection** v8.0.0 - Dependency injection support
+- **Microsoft.Extensions.Options** v8.0.0 - Options pattern support
+
+## Recent Updates (v0.3.0)
+
+- **Package Compatibility**: Resolved NuGet package compatibility issues for .NET 8.0
+- **Dependency Updates**: Updated all Microsoft.Extensions packages to v8.0.x for full .NET 8.0 compatibility
+- **Build Improvements**: Enhanced package generation with symbol packages
 
 ## Namespaces
 

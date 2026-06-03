@@ -53,6 +53,24 @@ PowerCSharp.Extensions/
 - Http/HttpStatusCodeExtensions.cs
 - Http/HttpRequestMessageExtensions.cs
 
+## Dependencies
+
+- **PowerCSharp.Core** v0.3.0 - Shared interfaces and base functionality
+- **System.Linq.Dynamic.Core** v1.7.2 - Dynamic LINQ expression parsing
+- **Ben.Demystifier** v0.4.1 - Enhanced exception demystification
+- **System.Text.Json** v10.0.8 - JSON processing
+
+## Target Frameworks
+
+- **.NET 8.0** - Latest features and optimizations
+- **.NET Standard 2.0** - Cross-platform compatibility
+
+## Recent Updates (v0.3.0)
+
+- **Package Compatibility**: Ensured all dependencies are compatible with .NET 8.0
+- **Dependency Updates**: Updated to latest stable versions of all dependencies
+- **Build Improvements**: Enhanced package generation with symbol packages
+
 ## Extension Categories
 
 ### DateTime Extensions

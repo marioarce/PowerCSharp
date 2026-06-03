@@ -2,7 +2,7 @@
 
 ![PowerCSharp Banner](../docs/images/PowerCSharp_Banner.png)
 
-[![PowerCSharp.Utilities](https://img.shields.io/badge/PowerCSharp.Utilities-v0.1.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
+[![PowerCSharp.Utilities](https://img.shields.io/badge/PowerCSharp.Utilities-v0.2.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Utilities.svg)](https://www.nuget.org/packages/PowerCSharp.Utilities)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/PowerCSharp.Utilities.svg)](https://www.nuget.org/packages/PowerCSharp.Utilities)
@@ -12,10 +12,10 @@ Essential utility classes and helper methods for common programming tasks includ
 ## 📦 Package Information
 
 - **Package ID:** `PowerCSharp.Utilities`
-- **Version:** 0.1.0
+- **Version:** 0.2.0
 - **Target Frameworks:** .NET 8.0, .NET Standard 2.0
 - **Dependencies:** 
-  - `PowerCSharp.Core` (for shared interfaces)
+  - `PowerCSharp.Core` v0.3.0 (for shared interfaces)
 
 ## 🚀 Installation
 

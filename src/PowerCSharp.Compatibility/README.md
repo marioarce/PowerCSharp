@@ -17,7 +17,7 @@
 - **Version:** 0.1.0
 - **Target Frameworks:** .NET Framework 4.6.2, 4.7.2, 4.8
 - **Dependencies:** 
-  - `System.Text.Json` (v10.0.8)
+  - `System.Text.Json` v10.0.8 (modern JSON handling)
   - `System.Web` (Framework reference)
 
 ## 🎯 Why PowerCSharp.Compatibility?
