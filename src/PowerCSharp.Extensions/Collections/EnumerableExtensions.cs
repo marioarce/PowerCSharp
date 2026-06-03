@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PowerCSharp.Extensions;
+namespace PowerCSharp.Extensions.Collections;
 
 /// <summary>
 /// Extension methods for common .NET collections and enumerables

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using PowerCSharp.Core.Interfaces.Extensions.Linq;
 
-namespace PowerCSharp.Extensions.Linq;
+namespace PowerCSharp.Extensions.Collections;
 
 /// <summary>
 /// Extension methods for IEnumerable collections with dynamic filtering and ordering capabilities
 /// </summary>
-public static class IEnumerableExtensions
+public static class DynamicEnumerableExtensions
 {
     /// <summary>
     /// Filters a sequence of values based on a dynamic filter provider.
@@ -17,7 +17,7 @@ public static class IEnumerableExtensions
     /// <param name="source">The source sequence to filter.</param>
     /// <param name="filterProvider">The dynamic filter provider containing filter criteria.</param>
     /// <returns>An IEnumerable of <typeparamref name="TSource"/> that contains elements from the input sequence that satisfy the filter condition.</returns>
-    public static IEnumerable<TSource>? Filter<TSource>(this IEnumerable<TSource> source, IDynamicFilterProvider<TSource>? filterProvider)
+    public static IEnumerable<TSource>? FilterDynamic<TSource>(this IEnumerable<TSource> source, IDynamicFilterProvider<TSource>? filterProvider)
     {
         if (source == null)
         {
@@ -40,7 +40,7 @@ public static class IEnumerableExtensions
     /// <param name="source">The source sequence to sort.</param>
     /// <param name="orderProvider">The dynamic order provider containing ordering criteria.</param>
     /// <returns>An IOrderedEnumerable whose elements are sorted according to the order criteria.</returns>
-    public static IEnumerable<TSource>? Order<TSource>(this IEnumerable<TSource> source, IDynamicOrderProvider<TSource>? orderProvider)
+    public static IEnumerable<TSource>? OrderDynamic<TSource>(this IEnumerable<TSource> source, IDynamicOrderProvider<TSource>? orderProvider)
     {
         if (source == null)
         {
@@ -90,28 +90,23 @@ public static class IEnumerableExtensions
     /// <param name="keySelector">A function to extract the key for each element.</param>
     /// <returns>An IEnumerable that contains distinct elements from the source sequence.</returns>
     /// <remarks>
-    /// This method is implemented using a HashSet to track seen keys for O(n) performance.
-    /// The order of elements in the result sequence matches their first occurrence in the source sequence.
+    /// Uses the built-in DistinctBy method when targeting .NET 5.0 or later.
+    /// Falls back to custom implementation for .NET Standard 2.0 compatibility.
     /// </remarks>
     public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
     {
 #if NET5_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(source);
+        return source.DistinctBy(keySelector);
 #else
         if (source == null)
         {
             throw new ArgumentNullException(nameof(source));
         }
-#endif
 
-#if NET5_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(keySelector);
-#else
         if (keySelector == null)
         {
             throw new ArgumentNullException(nameof(keySelector));
         }
-#endif
 
         var seenKeys = new HashSet<TKey>();
 
@@ -122,5 +117,6 @@ public static class IEnumerableExtensions
                 yield return element;
             }
         }
+#endif
     }
 }
