@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\PowerCSharp.Helpers\PowerCSharp.Helpers.csproj" />
+    <ProjectReference Include="..\..\src\PowerCSharp.Extensions.AspNetCore\PowerCSharp.Extensions.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>

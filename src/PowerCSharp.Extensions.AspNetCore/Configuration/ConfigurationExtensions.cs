@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using PowerCSharp.Core.Interfaces.Extensions.Configuration;
 
 namespace PowerCSharp.Extensions.AspNetCore.Configuration;
@@ -29,5 +30,19 @@ public static class ConfigurationExtensions
         var options = section.Get<TOptions>();
         
         return options ?? throw new InvalidOperationException($"Failed to bind configuration section '{sectionPath}' to type {typeof(TOptions).Name}");
+    }
+
+    /// <summary>
+    /// Get options from IConfiguration object using the ConfigSectionPath from the options type.
+    /// </summary>
+    /// <typeparam name="TOptions">The type of options to retrieve. Must implement IAppOptions.</typeparam>
+    /// <param name="configuration">The IConfiguration object.</param>
+    /// <returns>The options object.</returns>
+    public static TOptions GetOptions<TOptions>(this IConfiguration configuration)
+        where TOptions : class, IAppOptions
+    {
+        return configuration
+            .GetRequiredSection(typeof(TOptions).Name)
+            .Get<TOptions>(options => options.BindNonPublicProperties = true);
     }
 }

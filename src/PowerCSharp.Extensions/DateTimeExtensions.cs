@@ -50,4 +50,21 @@ public static class DateTimeExtensions
         var result = new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
         return result;
     }
+
+    /// <summary>
+    /// Returns the number of milliseconds that have elapsed since 1970-01-01T00:00:00.000Z.
+    /// </summary>
+    /// <returns>The number of milliseconds that have elapsed since 1970-01-01T00:00:00.000Z</returns>
+    public static long GetUnixTimestamp(this DateTime input)
+    {
+        if (input == null)
+        {
+            return 0;
+        }
+
+        var result = new DateTimeOffset(input)
+            .ToUnixTimeMilliseconds();
+
+        return result;
+    }
 }
