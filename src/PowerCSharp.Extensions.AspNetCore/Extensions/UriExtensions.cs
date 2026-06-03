@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace PowerCSharp.Extensions.AspNetCore.Net;
+namespace PowerCSharp.Extensions.AspNetCore.Extensions;
 
 /// <summary>
 /// Extension methods for URI operations
