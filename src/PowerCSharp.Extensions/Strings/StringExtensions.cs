@@ -86,22 +86,79 @@ public static partial class StringExtensions
 #endif
 
     /// <summary>
-    /// Checks if a string is null, empty, or contains only whitespace
+    /// Checks if a string is null, empty, or contains only whitespace.
     /// </summary>
-    /// <param name="value">The string to check</param>
-    /// <returns>True if the string is null, empty, or whitespace; otherwise false</returns>
+    /// <param name="value">The string to check.</param>
+    /// <returns>
+    /// True if the string is null, empty, or contains only whitespace characters;
+    /// false if the string contains non-whitespace characters.
+    /// </returns>
+    /// <remarks>
+    /// This method provides a null-safe wrapper around string.IsNullOrWhiteSpace().
+    /// It handles null values gracefully and returns true for null, empty string (""),
+    /// or strings containing only whitespace characters (spaces, tabs, newlines, etc.).
+    /// 
+    /// Edge cases handled:
+    /// - null input: returns true
+    /// - empty string: returns true  
+    /// - whitespace only: returns true
+    /// - string with content: returns false
+    /// 
+    /// Example:
+    /// <code>
+    /// string? nullString = null;
+    /// string emptyString = "";
+    /// string whitespaceString = "   \t\n   ";
+    /// string contentString = "hello";
+    /// 
+    /// nullString.IsNullOrWhiteSpace(); // true
+    /// emptyString.IsNullOrWhiteSpace(); // true
+    /// whitespaceString.IsNullOrWhiteSpace(); // true
+    /// contentString.IsNullOrWhiteSpace(); // false
+    /// </code>
+    /// </remarks>
     public static bool IsNullOrWhiteSpace(this string? value)
     {
         return string.IsNullOrWhiteSpace(value);
     }
 
     /// <summary>
-    /// Safely gets a substring without throwing exceptions
+    /// Safely gets a substring without throwing exceptions.
+    /// This method provides a null-safe, bounds-safe alternative to string.Substring().
     /// </summary>
-    /// <param name="value">The source string</param>
-    /// <param name="startIndex">The starting index</param>
-    /// <param name="length">The length of the substring</param>
-    /// <returns>The substring or empty string if parameters are invalid</returns>
+    /// <param name="value">The source string to extract from.</param>
+    /// <param name="startIndex">The starting index (0-based). Must be non-negative.</param>
+    /// <param name="length">The desired length of the substring. Must be non-negative.</param>
+    /// <returns>
+    /// The substring if parameters are valid; otherwise returns an empty string.
+    /// The returned string may be shorter than requested if the parameters exceed the string length.
+    /// </returns>
+    /// <remarks>
+    /// This method handles all edge cases gracefully without throwing exceptions:
+    /// - null or empty input string: returns empty string
+    /// - negative startIndex or length: returns empty string
+    /// - startIndex >= string length: returns empty string
+    /// - length exceeds available characters: returns substring up to end of string
+    /// 
+    /// Security considerations:
+    /// - This method does not throw exceptions, making it safe for use in performance-critical paths
+    /// - Input validation prevents potential index out of range exceptions
+    /// 
+    /// Edge cases:
+    /// <code>
+    /// string? nullString = null;
+    /// nullString.SafeSubstring(0, 5); // "" (empty string)
+    /// 
+    /// string shortString = "abc";
+    /// shortString.SafeSubstring(1, 10); // "bc" (returns available characters)
+    /// shortString.SafeSubstring(5, 2); // "" (start index out of range)
+    /// shortString.SafeSubstring(0, -1); // "" (negative length)
+    /// shortString.SafeSubstring(-1, 2); // "" (negative start index)
+    /// </code>
+    /// 
+    /// Performance: This method performs bounds checking before substring extraction,
+    /// making it slightly slower than direct string.Substring() but safer for user input.
+    /// </remarks>
     public static string SafeSubstring(this string? value, int startIndex, int length)
     {
         if (string.IsNullOrEmpty(value))
@@ -119,10 +176,47 @@ public static partial class StringExtensions
     }
 
     /// <summary>
-    /// Converts a string to title case (first letter of each word capitalized)
+    /// Converts a string to title case (first letter of each word capitalized).
+    /// Handles null/empty input gracefully and preserves word boundaries.
     /// </summary>
-    /// <param name="value">The string to convert</param>
-    /// <returns>The title case string</returns>
+    /// <param name="value">The string to convert to title case.</param>
+    /// <returns>
+    /// The title case string, or empty string if input is null or empty.
+    /// Each word's first character is capitalized, subsequent characters are lowercase.
+    /// </returns>
+    /// <remarks>
+    /// This method handles various edge cases:
+    /// - null input: returns empty string
+    /// - empty string: returns empty string
+    /// - single word: capitalizes first letter only
+    /// - multiple words: capitalizes first letter of each word
+    /// - multiple spaces: treats consecutive spaces as word separators
+    /// - mixed case input: normalizes to proper title case
+    /// 
+    /// Edge case examples:
+    /// <code>
+    /// string? nullString = null;
+    /// nullString.ToTitleCase(); // ""
+    /// 
+    /// string emptyString = "";
+    /// emptyString.ToTitleCase(); // ""
+    /// 
+    /// string singleWord = "hello";
+    /// singleWord.ToTitleCase(); // "Hello"
+    /// 
+    /// string multipleWords = "hello world";
+    /// multipleWords.ToTitleCase(); // "Hello World"
+    /// 
+    /// string mixedCase = "hELLo wORLD";
+    /// mixedCase.ToTitleCase(); // "Hello World"
+    /// 
+    /// string multipleSpaces = "hello   world";
+    /// multipleSpaces.ToTitleCase(); // "Hello World" (extra spaces collapsed)
+    /// </code>
+    /// 
+    /// Note: This method uses StringSplitOptions.RemoveEmptyEntries, so multiple
+    /// consecutive spaces are treated as single word separators.
+    /// </remarks>
     public static string ToTitleCase(this string? value)
     {
         if (string.IsNullOrEmpty(value))
