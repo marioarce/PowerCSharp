@@ -41,6 +41,7 @@ PowerCSharp.Extensions/
 ├── Objects/
 │   ├── ExceptionExtensions.cs
 │   ├── GenericExtensions.cs
+│   ├── HashExtensions.cs
 │   └── ObjectExtensions.cs
 ├── Streams/
 │   └── StreamExtensions.cs
@@ -50,6 +51,8 @@ PowerCSharp.Extensions/
 ├── Types/
 │   ├── GenericTypeExtensions.cs
 │   └── TypeExtensions.cs
+├── IO/
+│   └── PathExtensions.cs
 └── Xml/
     └── XmlExtensions.cs
 ```
@@ -953,6 +956,162 @@ public class PluginLoader
         }
         
         throw new InvalidOperationException($"Plugin {typeName} not found");
+    }
+}
+```
+
+##### ComputeHash
+
+```csharp
+public static string ComputeHash(this object obj)
+```
+
+**Purpose**: Computes a short hash string from any object by serializing it to JSON and applying SHA256 hashing. Handles serialization failures gracefully by generating a fallback hash based on the exception and type name.
+
+**Returns**: A 16-character hexadecimal hash string representing the object's content. Returns "null" if the input object is null.
+
+**Examples**:
+
+```csharp
+var person = new { Name = "John", Age = 30, Email = "john@example.com" };
+string hash = person.ComputeHash(); // "A1B2C3D4E5F67890"
+
+// In a caching system
+public class CacheManager
+{
+    private readonly Dictionary<string, object> _cache = new();
+    
+    public T GetOrCreate<T>(string key, Func<T> factory) where T : class
+    {
+        var cacheKey = $"{key}_{factory.GetHashCode()}";
+        
+        if (_cache.TryGetValue(cacheKey, out var cached))
+        {
+            return (T)cached;
+        }
+        
+        var item = factory();
+        _cache[cacheKey] = item;
+        return item;
+    }
+    
+    public string GetObjectHash<T>(T obj) where T : class
+    {
+        return obj.ComputeHash();
+    }
+}
+
+// In a data integrity system
+public class DataIntegrityChecker
+{
+    public bool VerifyDataIntegrity<T>(T original, T current)
+    {
+        var originalHash = original.ComputeHash();
+        var currentHash = current.ComputeHash();
+        return originalHash == currentHash;
+    }
+}
+```
+
+### Secure Path Extensions
+
+CWE-73 compliant path operations with directory traversal protection.
+
+#### Methods
+
+##### CombineAndValidate
+
+```csharp
+public static string CombineAndValidate(string basePath, string relativePath)
+public static string CombineAndValidate(string basePath, params string[] paths)
+```
+
+**Purpose**: Combines path segments and validates the result to prevent directory traversal attacks (CWE-73). This method follows Veracode's recommended approach for path validation by canonicalizing the input and ensuring the result stays within the allowed base directory.
+
+**Returns**: The validated absolute path that is guaranteed to be within the base directory.
+
+**Exceptions**:
+- `ArgumentNullException`: Thrown when basePath or relativePath is null
+- `ArgumentException`: Thrown when basePath or relativePath is empty
+- `SecurityException`: Thrown when the combined path attempts directory traversal
+
+**Examples**:
+
+```csharp
+string basePath = "/var/www/uploads";
+string userFile = "../../etc/passwd"; // Malicious attempt
+
+try
+{
+    // This will throw SecurityException due to directory traversal attempt
+    string safePath = PathExtensions.CombineAndValidate(basePath, userFile);
+}
+catch (SecurityException ex)
+{
+    Console.WriteLine($"Security violation: {ex.Message}");
+}
+
+// Safe usage with valid relative paths
+string validPath = PathExtensions.CombineAndValidate(basePath, "images/photo.jpg");
+// Returns: "/var/www/uploads/images/photo.jpg"
+
+// Multiple path segments
+string multiPath = PathExtensions.CombineAndValidate(basePath, "documents", "2023", "report.pdf");
+// Returns: "/var/www/uploads/documents/2023/report.pdf"
+
+// In a file upload system
+public class SecureFileUploader
+{
+    private readonly string _baseUploadPath;
+    
+    public SecureFileUploader(string baseUploadPath)
+    {
+        _baseUploadPath = baseUploadPath;
+    }
+    
+    public string SaveUserFile(string userId, string fileName, Stream content)
+    {
+        var userFolder = Path.Combine(_baseUploadPath, "users", userId);
+        Directory.CreateDirectory(userFolder);
+        
+        // Validate the path to prevent directory traversal
+        var safePath = PathExtensions.CombineAndValidate(userFolder, fileName);
+        
+        using var fileStream = File.Create(safePath);
+        content.CopyTo(fileStream);
+        
+        return safePath;
+    }
+}
+
+// In a document management system
+public class DocumentManager
+{
+    private readonly string _documentRoot;
+    
+    public DocumentManager(string documentRoot)
+    {
+        _documentRoot = documentRoot;
+    }
+    
+    public string GetDocumentPath(string category, string subcategory, string fileName)
+    {
+        // Combine multiple path segments safely
+        return PathExtensions.CombineAndValidate(_documentRoot, category, subcategory, fileName);
+    }
+    
+    public bool ValidateDocumentPath(string requestedPath)
+    {
+        try
+        {
+            // This will throw if the path is outside the document root
+            var validatedPath = PathExtensions.CombineAndValidate(_documentRoot, requestedPath);
+            return true;
+        }
+        catch (SecurityException)
+        {
+            return false;
+        }
     }
 }
 ```

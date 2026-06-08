@@ -12,6 +12,8 @@ This document provides comprehensive API documentation for all extension methods
 - [Objects & Types](#objects--types)
 - [Streams](#streams)
 - [Strings](#strings)
+- [Hash Extensions](#hash-extensions)
+- [Path Extensions](#path-extensions)
 - [Interfaces](#interfaces)
 
 ## Collections
@@ -517,6 +519,94 @@ string firstLower = text.FirstCharToLowerCase(); // "hello world"
 string normalized = "User Name".NormalizeKey(); // "userName"
 bool isValid = "https://example.com".IsValidUrl(); // true
 ```
+
+## Hash Extensions
+
+### HashExtensions
+
+#### ComputeHash
+
+Computes a short hash string from any object by serializing it to JSON and applying SHA256 hashing.
+
+```csharp
+public static string ComputeHash(this object obj)
+```
+
+**Parameters:**
+- `obj`: The object to hash. Can be any serializable type or null.
+
+**Returns:** A 16-character hexadecimal hash string representing the object's content. Returns "null" if the input object is null. Returns a fallback hash if serialization fails, incorporating the type name and error information.
+
+**Exceptions:** None - handles serialization failures gracefully.
+
+**Example:**
+```csharp
+var person = new { Name = "John", Age = 30, Email = "john@example.com" };
+string hash = person.ComputeHash(); // "A1B2C3D4E5F67890"
+
+var complexObj = new Order 
+{ 
+    Id = 123, 
+    Customer = new Customer { Name = "Alice" }, 
+    Items = new List<Item> { new Item { Name = "Product1" } }
+};
+string orderHash = complexObj.ComputeHash(); // Consistent hash for caching/identification
+```
+
+**Notes:**
+- Uses JSON serialization with stable, deterministic options
+- Handles circular references and very large nested objects
+- Provides fallback hashing for non-serializable objects
+- Optimized for performance with minimal allocations
+
+## Path Extensions
+
+### PathExtensions
+
+#### CombineAndValidate
+
+Combines path segments and validates the result to prevent directory traversal attacks (CWE-73).
+
+```csharp
+public static string CombineAndValidate(string basePath, string relativePath)
+public static string CombineAndValidate(string basePath, params string[] paths)
+```
+
+**Parameters:**
+- `basePath`: The base directory path that serves as the security boundary
+- `relativePath`: The relative path to combine with the base path
+- `paths`: Additional path segments to combine (overload)
+
+**Returns:** The validated absolute path that is guaranteed to be within the base directory.
+
+**Exceptions:**
+- `ArgumentNullException`: Thrown when basePath or relativePath/paths is null
+- `ArgumentException`: Thrown when basePath is empty or no paths provided
+- `SecurityException`: Thrown when the combined path attempts directory traversal
+
+**Example:**
+```csharp
+string basePath = "/var/www/uploads";
+string userFile = "../../etc/passwd"; // Malicious attempt
+
+// This will throw SecurityException due to directory traversal attempt
+string safePath = PathExtensions.CombineAndValidate(basePath, userFile);
+
+// Safe usage with valid relative paths
+string validPath = PathExtensions.CombineAndValidate(basePath, "images/photo.jpg");
+// Returns: "/var/www/uploads/images/photo.jpg"
+
+// Multiple path segments
+string multiPath = PathExtensions.CombineAndValidate(basePath, "documents", "2023", "report.pdf");
+// Returns: "/var/www/uploads/documents/2023/report.pdf"
+```
+
+**Security Features:**
+- Implements Veracode CWE-73 remediation pattern
+- Canonicalizes paths to resolve ".", "..", "~" directives
+- Validates path stays within base directory
+- Logs security events for monitoring
+- Provides consistent error handling
 
 ## Interfaces
 

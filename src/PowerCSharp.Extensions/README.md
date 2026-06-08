@@ -161,6 +161,53 @@ await originalStream.CloneAsync(destinationStream);
 // destinationStream now contains the same data as originalStream
 ```
 
+### 🔐 Object Hash Extensions
+
+Generate consistent hash values from objects for caching and identification.
+
+```csharp
+using PowerCSharp.Extensions;
+
+var person = new { Name = "John", Age = 30, Email = "john@example.com" };
+string hash = person.ComputeHash(); // "A1B2C3D4E5F67890" (16-char hex string)
+
+// Handles complex objects with nested properties
+var complexObj = new Order 
+{ 
+    Id = 123, 
+    Customer = new Customer { Name = "Alice" }, 
+    Items = new List<Item> { new Item { Name = "Product1" } }
+};
+string orderHash = complexObj.ComputeHash(); // Consistent hash for caching/identification
+
+// Graceful error handling for non-serializable objects
+string fallbackHash = problematicObj.ComputeHash(); // Returns fallback hash based on type and error
+```
+
+### 🛡️ Secure Path Extensions
+
+CWE-73 compliant path operations with directory traversal protection.
+
+```csharp
+using PowerCSharp.Extensions;
+
+string basePath = "/var/www/uploads";
+string userFile = "../../etc/passwd"; // Malicious attempt
+
+// This will throw SecurityException due to directory traversal attempt
+string safePath = PathExtensions.CombineAndValidate(basePath, userFile);
+
+// Safe usage with valid relative paths
+string validPath = PathExtensions.CombineAndValidate(basePath, "images/photo.jpg");
+// Returns: "/var/www/uploads/images/photo.jpg"
+
+// Multiple path segments
+string multiPath = PathExtensions.CombineAndValidate(basePath, "documents", "2023", "report.pdf");
+// Returns: "/var/www/uploads/documents/2023/report.pdf"
+
+// Security events are automatically logged for monitoring
+```
+
 
 ## 🎯 Key Features
 
