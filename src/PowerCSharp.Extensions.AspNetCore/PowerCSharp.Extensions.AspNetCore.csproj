@@ -28,6 +28,11 @@
     <Description>ASP.NET Core specific extension methods for PowerCSharp library</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/marioarce/PowerCSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/marioarce/PowerCSharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>csharp;extensions;aspnetcore;dotnet</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

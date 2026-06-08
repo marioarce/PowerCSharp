@@ -25,6 +25,11 @@
     <Description>Extension methods for common .NET types to enhance productivity</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/marioarce/PowerCSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/marioarce/PowerCSharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>csharp;extensions;dotnet;productivity</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

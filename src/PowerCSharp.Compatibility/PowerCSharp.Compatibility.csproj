@@ -37,6 +37,11 @@
     <Description>.NET Framework compatibility layer for PowerCSharp with System.Web dependencies</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/marioarce/PowerCSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/marioarce/PowerCSharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>csharp;compatibility;framework;dotnet</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
