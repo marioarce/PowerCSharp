@@ -10,10 +10,12 @@
     <Title>PowerCSharp Core</Title>
     <Description>Core functionality and base classes for PowerCSharp extension methods library</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\docs\images\PowerCSharp_NuGet_Icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

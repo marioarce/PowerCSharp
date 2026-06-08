@@ -36,10 +36,12 @@
     <Title>PowerCSharp Compatibility</Title>
     <Description>.NET Framework compatibility layer for PowerCSharp with System.Web dependencies</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\docs\images\PowerCSharp_NuGet_Icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   
