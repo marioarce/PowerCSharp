@@ -696,4 +696,258 @@ public static partial class StringExtensions
         // The JWT is composed of three parts: header, payload, signature
         return parts.Length == 3;
     }
+
+    /// <summary>
+    /// Validates if the string given contains a valid XML
+    /// </summary>
+    /// <param name="input">A System.String that contains XML</param>
+    /// <returns><c>true</c> if the string is a valid XML; otherwise <c>false</c></returns>
+    public static bool IsValidXml(this string input)
+    {
+        try
+        {
+            var doc = new System.Xml.XmlDocument();
+            doc.LoadXml(input);
+        }
+        catch
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Mask the source string with the mask char given and using a fixed visibility
+    /// </summary>
+    /// <param name="value">The string to mask.</param>
+    /// <param name="mask">The character to use for masking.</param>
+    /// <returns>The masked string.</returns>
+    public static string Mask(this string value, char mask)
+    {
+        const int visibility = 4;
+        if (string.IsNullOrEmpty(value))
+        {
+            return value;
+        }
+
+        var visibleCharLength = value.Length / visibility;
+        return Mask(value, visibleCharLength, mask);
+    }
+
+    /// <summary>
+    /// Mask the source string with the mask char given
+    /// </summary>
+    /// <param name="value">The string to mask.</param>
+    /// <param name="visibleCharLength">Number of characters to keep visible at start and end.</param>
+    /// <param name="mask">The character to use for masking.</param>
+    /// <returns>The masked string.</returns>
+    public static string Mask(this string value, int visibleCharLength, char mask)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return value;
+        }
+
+        if (value?.Length <= (visibleCharLength * 2))
+        {
+            var masked = Enumerable.Repeat(mask, value.Length);
+            var result = string.Concat(masked);
+            return result;
+        }
+        else
+        {
+            var masked = Enumerable.Repeat(mask, value!.Length - (visibleCharLength * 2));
+            var prefix = value![..visibleCharLength];
+            var maskedString = string.Concat(masked);
+            var suffix = value[^visibleCharLength..];
+
+            var result = $"{prefix}{maskedString}{suffix}";
+            return result;
+        }
+    }
+#endif
+
+    /// <summary>
+    /// Converts the given string to an integer. 
+    /// If conversion fails, returns the specified default value.
+    /// </summary>
+    /// <param name="value">The string to convert.</param>
+    /// <param name="defaultValue">The value to return if conversion fails.</param>
+    /// <returns>The converted integer or the default value.</returns>
+    public static int ToIntOrDefault(this string? value, int defaultValue = 0)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return defaultValue;
+        }
+
+        return int.TryParse(value, out var result)
+            ? result
+            : defaultValue;
+    }
+
+    /// <summary>
+    /// Converts the given string to a double value using invariant culture.
+    /// If conversion fails or the input is null/empty, returns the specified default value.
+    /// </summary>
+    /// <param name="value">The string to convert.</param>
+    /// <param name="defaultValue">The value to return if conversion fails.</param>
+    /// <returns>The converted double or the default value.</returns>
+    public static double ToDoubleOrDefault(this string? value, double defaultValue = 0)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return defaultValue;
+        }
+
+        return double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var result)
+            ? result
+            : defaultValue;
+    }
+
+    /// <summary>
+    /// Returns the string if it is NOT null or empty; otherwise returns the fallback value.
+    /// </summary>
+    /// <param name="value">The primary string value.</param>
+    /// <param name="fallback">The fallback value to use if primary is null/empty.</param>
+    /// <returns>The primary string or fallback value.</returns>
+    public static string OrFallback(this string value, string? fallback)
+    {
+        return string.IsNullOrEmpty(value)
+            ? fallback
+            : value;
+    }
+
+    /// <summary>
+    /// Converts a string to byte array, trying Base64 decoding first, then falling back to UTF-8 encoding.
+    /// This is useful for secrets that may be stored in either Base64 or plain text format.
+    /// </summary>
+    /// <param name="value">The string to convert to bytes</param>
+    /// <returns>The byte array representation of the string, or empty array if value is null/empty</returns>
+    public static byte[] ToBytesFromBase64OrUtf8(this string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return Array.Empty<byte>();
+        }
+
+        try
+        {
+            // Try Base64 decode first
+            return Convert.FromBase64String(value);
+        }
+        catch (FormatException)
+        {
+            // If Base64 decode fails, treat as plain text UTF-8
+            return Encoding.UTF8.GetBytes(value);
+        }
+    }
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Normalizes a GUID string by removing all non-alphanumeric characters and converting it to lowercase.
+    /// </summary>
+    /// <param name="guid">The GUID string to normalize.</param>
+    /// <returns>A normalized GUID string containing only alphanumeric characters.</returns>
+    public static string NormalizeGuid(this string? guid)
+    {
+        if (string.IsNullOrWhiteSpace(guid))
+        {
+            return string.Empty;
+        }
+
+        // First pass: count valid chars
+        var count = 0;
+
+        foreach (var c in guid)
+        {
+            if (char.IsLetterOrDigit(c))
+            {
+                count++;
+            }
+        }
+
+        var result = string.Create(count, guid, (chars, state) =>
+        {
+            var pos = 0;
+
+            foreach (var c in state)
+            {
+                if (char.IsLetterOrDigit(c))
+                {
+                    chars[pos++] = char.ToLowerInvariant(c);
+                }
+            }
+        });
+
+        return result;
+    }
+#endif
+
+    /// <summary>
+    /// Validates if the string has a valid JWT format (header.payload.signature).
+    /// </summary>
+    /// <param name="input">The string to validate as JWT format.</param>
+    /// <returns><c>true</c> if the string has valid JWT format; otherwise <c>false</c>.</returns>
+    /// <remarks>
+    /// This method validates the basic JWT structure by checking:
+    /// - The string contains exactly three parts separated by dots
+    /// - Each part is a valid Base64URL-encoded string
+    /// - The string is not null or empty
+    /// This is a format validation only and does not validate the JWT signature or claims.
+    /// </remarks>
+    public static bool IsValidJwtFormat(this string? input)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return false;
+        }
+
+        var parts = input.Split('.');
+
+        if (parts.Length != 3)
+        {
+            return false;
+        }
+
+        // Validate each part is valid Base64URL
+        foreach (var part in parts)
+        {
+            if (string.IsNullOrEmpty(part))
+            {
+                return false;
+            }
+
+            // Try to decode as Base64URL to validate format
+            try
+            {
+                // Add padding if needed for Base64URL decoding
+                var base64 = part
+                    .Replace('-', '+')
+                    .Replace('_', '/');
+
+                switch (base64.Length % 4)
+                {
+                    case 2:
+                        base64 += "==";
+                        break;
+                    case 3:
+                        base64 += "=";
+                        break;
+                    case 1:
+                        return false; // Invalid padding
+                }
+
+                Convert.FromBase64String(base64);
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

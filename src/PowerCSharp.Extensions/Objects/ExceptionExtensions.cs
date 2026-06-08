@@ -285,4 +285,58 @@ public static class ExceptionExtensions
         // https://connect.microsoft.com/VisualStudio/feedback/details/689516/exceptiondispatchinfo-api-modifications (http://www.webcitation.org/6XQ7RoJmO)
         return exception;
     }
+
+    /// <summary>
+    /// Adds Context information to the Exception for Diagnostics and troubleshooting
+    /// </summary>
+    /// <typeparam name="T">The type of the exception, which must inherit from <see cref="Exception"/>.</typeparam>
+    /// <param name="input">The exception to add context to.</param>
+    /// <returns>The exception with added context information.</returns>
+    public static T AddContext<T>(this T input)
+        where T : Exception
+    {
+        if (input == null)
+        {
+            return input;
+        }
+
+        var exception = input.Demystify();
+
+        // TODO: Implement correlation ID management
+        // TODO: Replace with proper correlation ID retrieval
+        var correlationId = "TODO: Implement correlation ID retrieval";
+        
+        // TODO: Replace with proper context addition mechanism
+        // This should add context information to the exception for diagnostics
+        exception.TryAddData("CorrelationId", correlationId);
+
+        return exception;
+    }
+
+    /// <summary>
+    /// Adds Context information to the Exception for Diagnostics and troubleshooting
+    /// </summary>
+    /// <typeparam name="T">The type of the exception, which must inherit from <see cref="Exception"/>.</typeparam>
+    /// <param name="input">The exception to add context to.</param>
+    /// <param name="request">The HTTP request message to extract context from.</param>
+    /// <returns>The exception with added context information.</returns>
+    public static T AddContext<T>(this T input, System.Net.Http.HttpRequestMessage? request)
+        where T : Exception
+    {
+        if (input == null)
+        {
+            return input;
+        }
+
+        var exception = input.Demystify();
+
+        // TODO: Implement correlation ID extraction from HttpRequestMessage
+        var correlationId = "TODO: Implement correlation ID retrieval from HttpRequestMessage";
+        
+        // TODO: Replace with proper context addition mechanism
+        exception.TryAddData("CorrelationId", correlationId);
+        exception.TryAddData("RequestUri", request?.RequestUri?.ToString());
+
+        return exception;
+    }
 }

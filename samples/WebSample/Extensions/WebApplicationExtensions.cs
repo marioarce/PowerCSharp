@@ -42,6 +42,8 @@ public static class WebApplicationExtensions
         app.MapGet("/demo/compression", CompressionSampleEndpoints.GetDemoData);
         app.MapGet("/demo/http", HttpSampleEndpoints.GetDemoData);
         app.MapGet("/demo/datetime", DateTimeSampleEndpoints.GetDemoData);
+        app.MapGet("/demo/hash", HashSampleEndpoints.GetDemoData);
+        app.MapGet("/demo/path", PathSampleEndpoints.GetDemoData);
 
         // Helper Samples
         app.MapGet("/demo/crypto", CryptoSampleEndpoints.GetDemoData);

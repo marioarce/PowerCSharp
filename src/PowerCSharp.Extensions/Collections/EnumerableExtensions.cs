@@ -95,4 +95,35 @@ public static class EnumerableExtensions
             ? source.OrderByDescending(keySelector) 
             : source.OrderBy(keySelector);
     }
+
+    /// <summary>
+    /// Recursively flattens a hierarchical collection by traversing each item and its children.
+    /// This method performs a depth-first traversal, yielding each item before processing its descendants.
+    /// Useful for converting tree structures into flat lists while maintaining hierarchical order.
+    /// </summary>
+    /// <typeparam name="T">The type of items in the collection.</typeparam>
+    /// <param name="source">The root collection to traverse.</param>
+    /// <param name="selector">A function that returns the child items for a given parent item.</param>
+    /// <returns>
+    /// A flattened enumerable containing the current item followed by all its descendants in depth-first order.
+    /// </returns>
+    /// <example>
+    /// <code>
+    /// var allNodes = rootNodes.SelectRecursive(node => node.Children);
+    /// </code>
+    /// </example>
+    public static IEnumerable<T> SelectRecursive<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> selector)
+    {
+        foreach (var item in source)
+        {
+            yield return item; // Return the current item
+
+            // Recursively select children
+            var children = selector(item);
+            foreach (var child in SelectRecursive(children, selector))
+            {
+                yield return child;
+            }
+        }
+    }
 }
