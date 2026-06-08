@@ -1,8 +1,8 @@
 <Project>
   <PropertyGroup>
     <!-- Centralized version management for PowerCSharp packages -->
-    <PowerCSharpVersion>0.3.0</PowerCSharpVersion>
-    <PowerCSharpCompatibilityVersion>0.1.0</PowerCSharpCompatibilityVersion>
+    <PowerCSharpVersion>1.0.0</PowerCSharpVersion>
+    <PowerCSharpCompatibilityVersion>1.0.0</PowerCSharpCompatibilityVersion>
     
     <!-- Common package metadata -->
     <Authors>Mario Arce</Authors>
