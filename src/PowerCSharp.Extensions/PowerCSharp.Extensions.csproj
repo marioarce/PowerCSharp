@@ -23,6 +23,18 @@
     <PackageVersion>$(PowerCSharpVersion)</PackageVersion>
     <Title>PowerCSharp Extensions</Title>
     <Description>Extension methods for common .NET types to enhance productivity</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/marioarce/PowerCSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/marioarce/PowerCSharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>csharp;extensions;dotnet;productivity</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\docs\images\PowerCSharp_NuGet_Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>

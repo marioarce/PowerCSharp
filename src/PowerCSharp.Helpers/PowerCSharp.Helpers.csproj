@@ -16,7 +16,7 @@
     
     <!-- NuGet Package Metadata -->
     <PackageId>PowerCSharp.Helpers</PackageId>
-    <PackageVersion>0.2.0</PackageVersion>
+    <PackageVersion>$(PowerCSharpVersion)</PackageVersion>
     <Title>PowerCSharp Helpers</Title>
     <Description>Helper classes and methods for specialized programming tasks</Description>
     <Authors>Mario Arce</Authors>
@@ -29,6 +29,13 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\docs\images\PowerCSharp_NuGet_Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>

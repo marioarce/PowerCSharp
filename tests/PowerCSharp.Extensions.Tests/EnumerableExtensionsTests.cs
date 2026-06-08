@@ -1,4 +1,4 @@
-using PowerCSharp.Extensions;
+using PowerCSharp.Extensions.Collections;
 using Xunit;
 
 namespace PowerCSharp.Extensions.Tests;

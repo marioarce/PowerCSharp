@@ -3,6 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ main, develop, 'release/*' ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main, develop ]
   workflow_dispatch:
@@ -72,8 +73,11 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore PowerCSharp.sln
       
+    - name: Build
+      run: dotnet build PowerCSharp.sln --no-restore --configuration Release
+      
     - name: Pack
-      run: dotnet pack PowerCSharp.sln --no-restore --configuration Release --output ./packages
+      run: dotnet pack PowerCSharp.sln --no-build --configuration Release --output ./packages
       
     - name: Upload packages as artifacts
       uses: actions/upload-artifact@v7.0.1
@@ -105,9 +109,9 @@ jobs:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         
     - name: Publish to GitHub Packages
-      run: dotnet nuget push ./packages/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source https://nuget.pkg.github.com/marioarce/index.json --skip-duplicate
+      run: dotnet nuget push ./packages/*.nupkg --api-key ${{ secrets.PACKAGES_PAT }} --source https://nuget.pkg.github.com/marioarce/index.json --skip-duplicate
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PACKAGES_PAT: ${{ secrets.PACKAGES_PAT }}
 
   delete-feature-branch:
     name: Delete Feature Branch

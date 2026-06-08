@@ -4,6 +4,12 @@
 
 PowerCSharp.Utilities provides essential utility classes and helper methods for common programming tasks including file operations, mathematical computations, and validation. This package focuses on providing reliable, performant, and easy-to-use utilities that enhance developer productivity.
 
+**Recent Improvements (v0.2.0):**
+- **Enhanced Validation**: Improved validation utilities with better error messages
+- **File Operations**: Safer file handling with automatic directory creation
+- **Math Functions**: Enhanced mathematical utilities with edge case protection
+- **Better Testing**: Comprehensive unit test coverage for all utility methods
+
 ## Architecture
 
 ### Design Principles

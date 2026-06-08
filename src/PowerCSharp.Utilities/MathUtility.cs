@@ -5,7 +5,7 @@ namespace PowerCSharp.Utilities;
 /// <summary>
 /// Utility class for common mathematical operations
 /// </summary>
-public static class MathHelper
+public static class MathUtility
 {
     /// <summary>
     /// Clamps a value between a minimum and maximum

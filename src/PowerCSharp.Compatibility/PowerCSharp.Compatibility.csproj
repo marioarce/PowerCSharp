@@ -10,18 +10,23 @@
 
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="10.0.8" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Web" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="System.Web" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
     <Reference Include="System.Web" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -30,6 +35,19 @@
     <PackageVersion>$(PowerCSharpCompatibilityVersion)</PackageVersion>
     <Title>PowerCSharp Compatibility</Title>
     <Description>.NET Framework compatibility layer for PowerCSharp with System.Web dependencies</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/marioarce/PowerCSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/marioarce/PowerCSharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>csharp;compatibility;framework;dotnet</PackageTags>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\docs\images\PowerCSharp_NuGet_Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  
 </Project>

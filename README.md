@@ -2,9 +2,9 @@
 
 ![PowerCSharp Banner](docs/images/PowerCSharp_Banner.png)
 
-[![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v0.2.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
+[![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v1.0.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://github.com/marioarce/PowerCSharp/workflows/CI/badge.svg)](https://github.com/marioarce/PowerCSharp/actions)
+[![Build Status](https://github.com/marioarce/PowerCSharp/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/marioarce/PowerCSharp/actions)
 [![codecov](https://codecov.io/gh/marioarce/PowerCSharp/branch/main/graph/badge.svg)](https://codecov.io/gh/marioarce/PowerCSharp)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/PowerCSharp.Core.svg)](https://www.nuget.org/packages/PowerCSharp.Core)
 [![Code Quality](https://img.shields.io/badge/code%20quality-A%2B-brightgreen)](https://github.com/marioarce/PowerCSharp)
@@ -19,6 +19,27 @@ Enhanced C# extension methods and utilities for .NET developers
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Compatibility.svg)](https://www.nuget.org/packages/PowerCSharp.Compatibility)
 
 PowerCSharp is a comprehensive library of extension methods, utilities, and helper classes designed to enhance your C# development experience. Built by a senior C# architect with 20+ years of experience, this library provides practical, well-tested solutions for common programming challenges.
+
+**PowerCSharp v1.0.0 - Production Ready! 🎉**
+
+### Major Release Highlights:
+- **Production Stability**: Comprehensive testing and validation for enterprise use
+- **Complete API Surface**: All extension methods, utilities, and helpers finalized
+- **.NET 8.0 Optimization**: Full support for latest .NET features and performance improvements
+- **Semantic Versioning**: Proper version management for long-term maintenance
+- **Enhanced Documentation**: Complete API reference and migration guides
+- **NuGet Package Icons**: Professional package presentation on NuGet Gallery
+
+**Recent Improvements (v1.0.0):**
+- **Production Release**: Finalized all APIs for v1.0.0 stability
+- **NuGet Package Icons**: Added professional icons for all packages
+- **Code Quality**: Resolved nullable reference warnings and improved code coverage
+- **Documentation Updates**: Comprehensive v1.0.0 release notes and migration guides
+- **Architecture Refactoring**: Centralized interfaces in PowerCSharp.Core for better separation of concerns
+- **Package Separation**: Split ASP.NET Core extensions into dedicated package for cleaner dependencies
+- **Enhanced Performance**: Optimized implementations with reduced memory allocations
+- **Improved Documentation**: Comprehensive API documentation and usage examples
+- **Better Testing**: Expanded test coverage across all packages
 
 ## 📦 Packages
 
@@ -37,8 +58,10 @@ PowerCSharp follows a clean architectural pattern with **centralized interfaces*
 
 - **All interfaces** are located in `PowerCSharp.Core.Interfaces` namespace
 - **All models** are located in `PowerCSharp.Core.Models` namespace
-- Clear separation of concerns with proper dependency management
-- Consistent namespace organization across the entire ecosystem
+- **Clear separation of concerns** with proper dependency management
+- **Consistent namespace organization** across the entire ecosystem
+- **Modular design** allowing selective package installation
+- **Dependency-free core** for maximum compatibility
 
 ## 🚀 Installation
 
@@ -222,6 +245,44 @@ await originalStream.CloneAsync(destinationStream);
 // destinationStream now contains the same data as originalStream
 ```
 
+### Object Hash Extensions (PowerCSharp.Extensions)
+
+```csharp
+using PowerCSharp.Extensions;
+
+var person = new { Name = "John", Age = 30, Email = "john@example.com" };
+string hash = person.ComputeHash(); // "A1B2C3D4E5F67890" (16-char hex string)
+
+// Handles complex objects with nested properties
+var complexObj = new Order 
+{ 
+    Id = 123, 
+    Customer = new Customer { Name = "Alice" }, 
+    Items = new List<Item> { new Item { Name = "Product1" } }
+};
+string orderHash = complexObj.ComputeHash(); // Consistent hash for caching/identification
+```
+
+### Secure Path Extensions (PowerCSharp.Extensions)
+
+```csharp
+using PowerCSharp.Extensions;
+
+string basePath = "/var/www/uploads";
+string userFile = "../../etc/passwd"; // Malicious attempt
+
+// This will throw SecurityException due to directory traversal attempt
+string safePath = PathExtensions.CombineAndValidate(basePath, userFile);
+
+// Safe usage with valid relative paths
+string validPath = PathExtensions.CombineAndValidate(basePath, "images/photo.jpg");
+// Returns: "/var/www/uploads/images/photo.jpg"
+
+// Multiple path segments
+string multiPath = PathExtensions.CombineAndValidate(basePath, "documents", "2023", "report.pdf");
+// Returns: "/var/www/uploads/documents/2023/report.pdf"
+```
+
 
 ### Validation Utilities (PowerCSharp.Utilities)
 
@@ -266,10 +327,19 @@ string random = CryptoHelper.GenerateRandomString(10);
 
 ## 🎯 Target Frameworks
 
-- **Modern .NET**: .NET 8.0
+- **Modern .NET**: .NET 8.0 with full compatibility and latest features
 - **Cross-platform**: .NET Standard 2.0 (PowerCSharp.Core, Extensions, Helpers, Utilities)
 - **.NET Framework**: 4.6.2, 4.7.2, 4.8 (via PowerCSharp.Compatibility package)
 - **ASP.NET Core**: .NET 8.0 (PowerCSharp.Extensions.AspNetCore package)
+- **Legacy Support**: Seamless migration path from .NET Framework to modern .NET
+
+### 🔧 Recent Updates (v0.3.0)
+- **Architectural Refactoring**: Centralized interfaces in PowerCSharp.Core for better maintainability
+- **Package Separation**: Split ASP.NET Core extensions into dedicated package for cleaner dependencies
+- **Performance Optimization**: Reduced memory allocations and improved execution speed
+- **Enhanced Testing**: Expanded unit test coverage across all packages
+- **Documentation Overhaul**: Comprehensive API documentation and practical examples
+- **Build System**: Improved CI/CD pipeline with automated testing and packaging
 
 ## 🧪 Testing
 
