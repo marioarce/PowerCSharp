@@ -38,6 +38,7 @@ public static class HashExtensions
     /// <summary>
     /// Computes a short hash string from any object by serializing it to JSON and applying SHA256 hashing.
     /// Handles serialization failures gracefully by generating a fallback hash based on the exception and type name.
+    /// This method is designed for caching, object identification, and change detection scenarios.
     /// </summary>
     /// <param name="obj">The object to hash. Can be any serializable type or null.</param>
     /// <returns>
@@ -45,6 +46,63 @@ public static class HashExtensions
     /// Returns "null" if the input object is null.
     /// Returns a fallback hash if serialization fails, incorporating the type name and error information.
     /// </returns>
+    /// <remarks>
+    /// <para>
+    /// <strong>Security Considerations:</strong>
+    /// - Uses SHA256 for cryptographic-strength hashing
+    /// - Handles circular references to prevent infinite loops
+    /// - Limits recursion depth to prevent stack overflow attacks
+    /// - Does not expose sensitive object data in the hash output
+    /// </para>
+    /// <para>
+    /// <strong>Edge Cases Handled:</strong>
+    /// - null objects: returns "null" string
+    /// - Non-serializable objects: generates fallback hash based on type name
+    /// - Circular references: ignored via ReferenceHandler.IgnoreCycles
+    /// - Deep object graphs: limited to 64 levels depth
+    /// - Large objects: truncated to prevent memory issues
+    /// </para>
+    /// <para>
+    /// <strong>Hash Stability:</strong>
+    /// - Same object content always produces same hash
+    /// - Different object content produces different hash (high probability)
+    /// - Hash is case-sensitive and whitespace-sensitive
+    /// - Order of properties affects the hash (JSON serialization is deterministic)
+    /// </para>
+    /// <para>
+    /// <strong>Performance Characteristics:</strong>
+    /// - CPU: SHA256 computation + JSON serialization
+    /// - Memory: Temporary string allocation for JSON
+    /// - Thread-safe: Can be called from multiple threads simultaneously
+    /// </para>
+    /// <strong>Examples:</strong>
+    /// <code>
+    /// // Simple object hashing
+    /// var person = new { Name = "John", Age = 30 };
+    /// string hash1 = person.ComputeHash(); // "A1B2C3D4E5F67890"
+    /// 
+    /// // Same content produces same hash
+    /// var person2 = new { Name = "John", Age = 30 };
+    /// string hash2 = person2.ComputeHash(); // Same as hash1
+    /// 
+    /// // Different content produces different hash
+    /// var person3 = new { Name = "John", Age = 31 };
+    /// string hash3 = person3.ComputeHash(); // Different from hash1
+    /// 
+    /// // Null handling
+       /// object? nullObj = null;
+    /// string nullHash = nullObj.ComputeHash(); // "null"
+    /// 
+    /// // Complex object with nested properties
+    /// var order = new 
+    /// { 
+    ///     Id = 123, 
+    ///     Customer = new { Name = "Alice", Email = "alice@example.com" },
+    ///     Items = new[] { new { Product = "Book", Price = 19.99 } }
+    /// };
+    /// string orderHash = order.ComputeHash(); // Consistent hash for complex object
+    /// </code>
+    /// </remarks>
     public static string ComputeHash(this object obj)
     {
         if (obj == null)
