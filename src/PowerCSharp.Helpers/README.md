@@ -2,21 +2,27 @@
 
 ![PowerCSharp Banner](../docs/images/PowerCSharp_Banner.png)
 
-[![PowerCSharp.Helpers](https://img.shields.io/badge/PowerCSharp.Helpers-v0.1.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
+[![PowerCSharp.Helpers](https://img.shields.io/badge/PowerCSharp.Helpers-v0.2.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Helpers.svg)](https://www.nuget.org/packages/PowerCSharp.Helpers)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/PowerCSharp.Helpers.svg)](https://www.nuget.org/packages/PowerCSharp.Helpers)
 
 Specialized helper classes for cryptography, JSON operations, and environment management. These focused utilities provide secure and reliable implementations of common programming tasks.
 
+**Recent Improvements (v0.2.0):**
+- **Enhanced Security**: Improved cryptographic implementations with better error handling
+- **Performance Gains**: Optimized JSON serialization and deserialization
+- **Better Documentation**: Comprehensive usage examples and security best practices
+- **Environment Support**: Enhanced environment variable management with fallback values
+
 ## 📦 Package Information
 
 - **Package ID:** `PowerCSharp.Helpers`
-- **Version:** 0.1.0
+- **Version:** 0.2.0
 - **Target Frameworks:** .NET 8.0, .NET Standard 2.0
 - **Dependencies:** 
-  - `PowerCSharp.Core` (for shared interfaces)
-  - `System.Text.Json` (for JSON operations)
+  - `PowerCSharp.Core` v0.3.0 (for shared interfaces)
+  - `System.Text.Json` v10.0.8 (for JSON operations)
 
 ## 🚀 Installation
 

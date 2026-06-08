@@ -1,25 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
+    <PackageTags>csharp;extensions;utilities;core;dotnet</PackageTags>
     
     <!-- NuGet Package Metadata -->
     <PackageId>PowerCSharp.Core</PackageId>
-    <PackageVersion>0.2.0</PackageVersion>
+    <PackageVersion>$(PowerCSharpVersion)</PackageVersion>
     <Title>PowerCSharp Core</Title>
     <Description>Core functionality and base classes for PowerCSharp extension methods library</Description>
-    <Authors>Mario Arce</Authors>
-    <Copyright>Copyright © Mario Arce 2026</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/marioarce/PowerCSharp</PackageProjectUrl>
-        <PackageTags>csharp;extensions;utilities;core;dotnet</PackageTags>
     <RepositoryUrl>https://github.com/marioarce/PowerCSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageTags>csharp;extensions;utilities;core;dotnet</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\docs\images\PowerCSharp_NuGet_Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>

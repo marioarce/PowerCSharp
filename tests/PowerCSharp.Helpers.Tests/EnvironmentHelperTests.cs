@@ -1,4 +1,4 @@
-using PowerCSharp.Helpers;
+using PowerCSharp.Extensions.AspNetCore.Helpers;
 using Xunit;
 
 namespace PowerCSharp.Helpers.Tests;

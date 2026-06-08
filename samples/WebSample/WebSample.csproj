@@ -3,13 +3,14 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\PowerCSharp.Core\PowerCSharp.Core.csproj" />
     <ProjectReference Include="..\..\src\PowerCSharp.Extensions\PowerCSharp.Extensions.csproj" />
+    <ProjectReference Include="..\..\src\PowerCSharp.Extensions.AspNetCore\PowerCSharp.Extensions.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\PowerCSharp.Utilities\PowerCSharp.Utilities.csproj" />
     <ProjectReference Include="..\..\src\PowerCSharp.Helpers\PowerCSharp.Helpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.8" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.1" />
   </ItemGroup>
 
   <PropertyGroup>

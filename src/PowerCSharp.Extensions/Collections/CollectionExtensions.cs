@@ -67,14 +67,18 @@ public static class CollectionExtensions
     /// <param name="defaultValue">The default value to return if the key does not exist. Defaults to the default value of TValue.</param>
     /// <returns>The value associated with the specified key if found; otherwise, the default value.</returns>
     /// <exception cref="ArgumentNullException">The dictionary is null</exception>
-    public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue = default)
+    public static TValue? GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue? defaultValue = default)
     {
         if (dictionary == null)
         {
             throw new ArgumentNullException(nameof(dictionary));
         }
 
-        return dictionary.TryGetValue(key, out var value) ? value : defaultValue;
+        var result = dictionary.TryGetValue(key, out var value)
+            ? value
+            : defaultValue;
+
+        return result;
     }
 
     /// <summary>
@@ -96,6 +100,7 @@ public static class CollectionExtensions
                 }
 
                 var value = @this[key];
+
                 if (key != null && value != null)
                 {
                     result.AddOrUpdate(key, value);

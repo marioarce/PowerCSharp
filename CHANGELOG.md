@@ -125,6 +125,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - N/A
 
+## [1.0.0] - 2026-06-08
+
+### 🎉 Major Release - Production Ready
+
+This is the first stable production release of PowerCSharp, marking the transition from development to a fully supported library suitable for enterprise use.
+
+### Added
+- **Production Stability**: All APIs finalized and tested for production workloads
+- **NuGet Package Icons**: Professional 128x128 icons for all packages
+- **Enhanced Code Quality**: Resolved nullable reference warnings and improved code coverage
+- **Comprehensive Documentation**: Complete API reference and migration guides
+- **Semantic Versioning**: Proper version management for long-term maintenance
+- **Centralized Package Management**: All packages now use consistent versioning
+
+### Changed
+- **Version Update**: All packages updated to v1.0.0 for semantic versioning compliance
+- **API Finalization**: All extension methods, utilities, and helpers are now stable
+- **Documentation Overhaul**: Updated all documentation for v1.0.0 release
+- **Build System**: Enhanced CI/CD pipeline for production releases
+
+### Security
+- **Security Review**: Comprehensive security audit completed
+- **Dependency Updates**: All dependencies updated to latest stable versions
+- **Code Analysis**: Static analysis completed with no critical issues
+
+### Breaking Changes
+- **Version Requirements**: Minimum .NET 8.0 for modern packages (backward compatible via .NET Standard 2.0)
+- **API Stability**: All APIs are now considered stable and will follow semantic versioning
+
+### Migration Notes
+- **From v0.x.x**: This is a major version bump, but all APIs remain compatible
+- **.NET Framework**: Continue using PowerCSharp.Compatibility for legacy support
+- **Modern .NET**: All packages optimized for .NET 8.0 with .NET Standard 2.0 compatibility
+
+---
+
 ## [Unreleased]
 
 

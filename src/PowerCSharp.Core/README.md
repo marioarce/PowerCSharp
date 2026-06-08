@@ -2,17 +2,17 @@
 
 ![PowerCSharp Banner](../docs/images/PowerCSharp_Banner.png)
 
-[![PowerCSharp.Core](https://img.shields.io/badge/PowerCSharp.Core-v0.1.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
+[![PowerCSharp.Core](https://img.shields.io/badge/PowerCSharp.Core-v0.3.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Core.svg)](https://www.nuget.org/packages/PowerCSharp.Core)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/PowerCSharp.Core.svg)](https://www.nuget.org/packages/PowerCSharp.Core)
 
-The foundational core of the PowerCSharp ecosystem, providing centralized interfaces, models, and base functionality for all PowerCSharp packages.
+The foundational core of the PowerCSharp ecosystem, providing centralized interfaces, models, and base functionality for all PowerCSharp packages. This package has been refactored to provide a clean, dependency-free foundation with improved architectural separation.
 
 ## 📦 Package Information
 
 - **Package ID:** `PowerCSharp.Core`
-- **Version:** 0.1.0
+- **Version:** 0.3.0
 - **Target Frameworks:** .NET 8.0, .NET Standard 2.0
 - **Dependencies:** None (dependency-free)
 

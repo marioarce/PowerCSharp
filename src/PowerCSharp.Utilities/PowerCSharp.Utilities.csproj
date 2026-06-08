@@ -11,13 +11,13 @@
     <Folder Include="Attributes\" />
   </ItemGroup>
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     
     <!-- NuGet Package Metadata -->
     <PackageId>PowerCSharp.Utilities</PackageId>
-    <PackageVersion>0.2.0</PackageVersion>
+    <PackageVersion>$(PowerCSharpVersion)</PackageVersion>
     <Title>PowerCSharp Utilities</Title>
     <Description>Utility classes and helper methods for common programming tasks</Description>
     <Authors>Mario Arce</Authors>
@@ -30,6 +30,13 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\docs\images\PowerCSharp_NuGet_Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>

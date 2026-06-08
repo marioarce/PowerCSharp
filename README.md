@@ -2,9 +2,9 @@
 
 ![PowerCSharp Banner](docs/images/PowerCSharp_Banner.png)
 
-[![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v0.2.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
+[![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v1.0.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://github.com/marioarce/PowerCSharp/workflows/CI/badge.svg)](https://github.com/marioarce/PowerCSharp/actions)
+[![Build Status](https://github.com/marioarce/PowerCSharp/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/marioarce/PowerCSharp/actions)
 [![codecov](https://codecov.io/gh/marioarce/PowerCSharp/branch/main/graph/badge.svg)](https://codecov.io/gh/marioarce/PowerCSharp)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/PowerCSharp.Core.svg)](https://www.nuget.org/packages/PowerCSharp.Core)
 [![Code Quality](https://img.shields.io/badge/code%20quality-A%2B-brightgreen)](https://github.com/marioarce/PowerCSharp)
@@ -13,18 +13,41 @@ Enhanced C# extension methods and utilities for .NET developers
 
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Core.svg)](https://www.nuget.org/packages/PowerCSharp.Core)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Extensions.svg)](https://www.nuget.org/packages/PowerCSharp.Extensions)
+[![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Extensions.AspNetCore.svg)](https://www.nuget.org/packages/PowerCSharp.Extensions.AspNetCore)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Utilities.svg)](https://www.nuget.org/packages/PowerCSharp.Utilities)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Helpers.svg)](https://www.nuget.org/packages/PowerCSharp.Helpers)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Compatibility.svg)](https://www.nuget.org/packages/PowerCSharp.Compatibility)
 
 PowerCSharp is a comprehensive library of extension methods, utilities, and helper classes designed to enhance your C# development experience. Built by a senior C# architect with 20+ years of experience, this library provides practical, well-tested solutions for common programming challenges.
 
+**PowerCSharp v1.0.0 - Production Ready! 🎉**
+
+### Major Release Highlights:
+- **Production Stability**: Comprehensive testing and validation for enterprise use
+- **Complete API Surface**: All extension methods, utilities, and helpers finalized
+- **.NET 8.0 Optimization**: Full support for latest .NET features and performance improvements
+- **Semantic Versioning**: Proper version management for long-term maintenance
+- **Enhanced Documentation**: Complete API reference and migration guides
+- **NuGet Package Icons**: Professional package presentation on NuGet Gallery
+
+**Recent Improvements (v1.0.0):**
+- **Production Release**: Finalized all APIs for v1.0.0 stability
+- **NuGet Package Icons**: Added professional icons for all packages
+- **Code Quality**: Resolved nullable reference warnings and improved code coverage
+- **Documentation Updates**: Comprehensive v1.0.0 release notes and migration guides
+- **Architecture Refactoring**: Centralized interfaces in PowerCSharp.Core for better separation of concerns
+- **Package Separation**: Split ASP.NET Core extensions into dedicated package for cleaner dependencies
+- **Enhanced Performance**: Optimized implementations with reduced memory allocations
+- **Improved Documentation**: Comprehensive API documentation and usage examples
+- **Better Testing**: Expanded test coverage across all packages
+
 ## 📦 Packages
 
 PowerCSharp is organized into several focused packages:
 
 - **[PowerCSharp.Core](src/PowerCSharp.Core/README.md)** - Core foundation and base classes for PowerCSharp library, including centralized interfaces and models
-- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Comprehensive extension methods for collections, HTTP, LINQ, JSON, XML, objects, types, streams, strings, and configuration
+- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Cross-platform extension methods for collections, HTTP, LINQ, JSON, XML, objects, types, streams, and strings
+- **[PowerCSharp.Extensions.AspNetCore](src/PowerCSharp.Extensions.AspNetCore/README.md)** - ASP.NET Core specific extensions for configuration and web utilities
 - **[PowerCSharp.Utilities](src/PowerCSharp.Utilities/README.md)** - Utility classes for validation, file operations, and mathematics
 - **[PowerCSharp.Helpers](src/PowerCSharp.Helpers/README.md)** - Specialized helpers for JSON, cryptography, and environment operations
 - **[PowerCSharp.Compatibility](src/PowerCSharp.Compatibility/README.md)** - .NET Framework compatibility layer with System.Web dependencies for legacy applications
@@ -35,8 +58,10 @@ PowerCSharp follows a clean architectural pattern with **centralized interfaces*
 
 - **All interfaces** are located in `PowerCSharp.Core.Interfaces` namespace
 - **All models** are located in `PowerCSharp.Core.Models` namespace
-- Clear separation of concerns with proper dependency management
-- Consistent namespace organization across the entire ecosystem
+- **Clear separation of concerns** with proper dependency management
+- **Consistent namespace organization** across the entire ecosystem
+- **Modular design** allowing selective package installation
+- **Dependency-free core** for maximum compatibility
 
 ## 🚀 Installation
 
@@ -45,6 +70,7 @@ Install individual packages via NuGet:
 ```bash
 dotnet add package PowerCSharp.Core
 dotnet add package PowerCSharp.Extensions
+dotnet add package PowerCSharp.Extensions.AspNetCore
 dotnet add package PowerCSharp.Utilities
 dotnet add package PowerCSharp.Helpers
 dotnet add package PowerCSharp.Compatibility
@@ -55,6 +81,7 @@ Or install the complete suite:
 ```bash
 dotnet add package PowerCSharp.Core
 dotnet add package PowerCSharp.Extensions
+dotnet add package PowerCSharp.Extensions.AspNetCore
 dotnet add package PowerCSharp.Utilities
 dotnet add package PowerCSharp.Helpers
 dotnet add package PowerCSharp.Compatibility
@@ -108,10 +135,10 @@ var firstDay = date.FirstDayOfMonth();
 var lastDay = date.LastDayOfMonth();
 ```
 
-### HTTP & Network Extensions (PowerCSharp.Extensions)
+### HTTP & Network Extensions (PowerCSharp.Extensions.AspNetCore)
 
 ```csharp
-using PowerCSharp.Extensions;
+using PowerCSharp.Extensions.AspNetCore;
 using System.Net;
 
 // HTTP Status Code utilities
@@ -129,6 +156,16 @@ Uri withParam = uri.AddParameter("search", "test"); // https://example.com?searc
 using var request = new HttpRequestMessage(HttpMethod.Get, "https://api.example.com");
 var clonedRequest = request.Clone();
 var clonedAsync = await request.CloneAsync();
+```
+
+### Configuration Extensions (PowerCSharp.Extensions.AspNetCore)
+
+```csharp
+using PowerCSharp.Extensions.AspNetCore;
+using Microsoft.Extensions.Configuration;
+
+var configuration = new ConfigurationBuilder().Build();
+var options = configuration.GetOptions<MyAppOptions>("MyApp"); // Reads from "MyApp" section
 ```
 
 ### LINQ & Dynamic Query Extensions (PowerCSharp.Extensions)
@@ -208,15 +245,44 @@ await originalStream.CloneAsync(destinationStream);
 // destinationStream now contains the same data as originalStream
 ```
 
-### Configuration Extensions (PowerCSharp.Extensions)
+### Object Hash Extensions (PowerCSharp.Extensions)
 
 ```csharp
 using PowerCSharp.Extensions;
-using Microsoft.Extensions.Configuration;
 
-var configuration = new ConfigurationBuilder().Build();
-var options = configuration.GetOptions<MyAppOptions>("MyApp"); // Reads from "MyApp" section
+var person = new { Name = "John", Age = 30, Email = "john@example.com" };
+string hash = person.ComputeHash(); // "A1B2C3D4E5F67890" (16-char hex string)
+
+// Handles complex objects with nested properties
+var complexObj = new Order 
+{ 
+    Id = 123, 
+    Customer = new Customer { Name = "Alice" }, 
+    Items = new List<Item> { new Item { Name = "Product1" } }
+};
+string orderHash = complexObj.ComputeHash(); // Consistent hash for caching/identification
 ```
+
+### Secure Path Extensions (PowerCSharp.Extensions)
+
+```csharp
+using PowerCSharp.Extensions;
+
+string basePath = "/var/www/uploads";
+string userFile = "../../etc/passwd"; // Malicious attempt
+
+// This will throw SecurityException due to directory traversal attempt
+string safePath = PathExtensions.CombineAndValidate(basePath, userFile);
+
+// Safe usage with valid relative paths
+string validPath = PathExtensions.CombineAndValidate(basePath, "images/photo.jpg");
+// Returns: "/var/www/uploads/images/photo.jpg"
+
+// Multiple path segments
+string multiPath = PathExtensions.CombineAndValidate(basePath, "documents", "2023", "report.pdf");
+// Returns: "/var/www/uploads/documents/2023/report.pdf"
+```
+
 
 ### Validation Utilities (PowerCSharp.Utilities)
 
@@ -261,8 +327,19 @@ string random = CryptoHelper.GenerateRandomString(10);
 
 ## 🎯 Target Frameworks
 
-- **Modern .NET**: .NET 8.0
+- **Modern .NET**: .NET 8.0 with full compatibility and latest features
+- **Cross-platform**: .NET Standard 2.0 (PowerCSharp.Core, Extensions, Helpers, Utilities)
 - **.NET Framework**: 4.6.2, 4.7.2, 4.8 (via PowerCSharp.Compatibility package)
+- **ASP.NET Core**: .NET 8.0 (PowerCSharp.Extensions.AspNetCore package)
+- **Legacy Support**: Seamless migration path from .NET Framework to modern .NET
+
+### 🔧 Recent Updates (v0.3.0)
+- **Architectural Refactoring**: Centralized interfaces in PowerCSharp.Core for better maintainability
+- **Package Separation**: Split ASP.NET Core extensions into dedicated package for cleaner dependencies
+- **Performance Optimization**: Reduced memory allocations and improved execution speed
+- **Enhanced Testing**: Expanded unit test coverage across all packages
+- **Documentation Overhaul**: Comprehensive API documentation and practical examples
+- **Build System**: Improved CI/CD pipeline with automated testing and packaging
 
 ## 🧪 Testing
 
@@ -276,14 +353,16 @@ dotnet test
 
 ### Package-Specific Documentation
 - **[PowerCSharp.Core](src/PowerCSharp.Core/README.md)** - Core interfaces and architecture
-- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Extension methods reference  
+- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Cross-platform extension methods reference  
+- **[PowerCSharp.Extensions.AspNetCore](src/PowerCSharp.Extensions.AspNetCore/README.md)** - ASP.NET Core specific extensions
 - **[PowerCSharp.Utilities](src/PowerCSharp.Utilities/README.md)** - Utility classes guide
 - **[PowerCSharp.Helpers](src/PowerCSharp.Helpers/README.md)** - Specialized helpers reference
 - **[PowerCSharp.Compatibility](src/PowerCSharp.Compatibility/README.md)** - .NET Framework compatibility layer
 
 ### Detailed API Documentation
 - **[PowerCSharp.Core API](docs/PowerCSharp.Core.md)** - Complete core API reference
-- **[PowerCSharp.Extensions API](docs/PowerCSharp.Extensions.md)** - Detailed extensions documentation
+- **[PowerCSharp.Extensions API](docs/PowerCSharp.Extensions.md)** - Cross-platform extensions documentation
+- **[PowerCSharp.Extensions.AspNetCore API](docs/PowerCSharp.Extensions.AspNetCore.md)** - ASP.NET Core extensions API
 - **[PowerCSharp.Utilities API](docs/PowerCSharp.Utilities.md)** - Utilities API reference
 - **[PowerCSharp.Helpers API](docs/PowerCSharp.Helpers.md)** - Helpers API documentation
 - **[PowerCSharp.Compatibility API](docs/PowerCSharp.Compatibility.md)** - .NET Framework compatibility API

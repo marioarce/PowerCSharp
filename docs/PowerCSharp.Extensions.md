@@ -2,7 +2,16 @@
 
 ## Overview
 
-PowerCSharp.Extensions provides comprehensive extension methods for .NET developers that enhance productivity and simplify common programming tasks. This package contains over 100 extension methods organized into logical categories including strings, collections, LINQ, HTTP, JSON, XML, objects, types, streams, and configuration.
+PowerCSharp.Extensions provides cross-platform extension methods for .NET developers that enhance productivity and simplify common programming tasks. This package contains over 100 extension methods organized into logical categories including strings, collections, LINQ, JSON, XML, objects, types, streams, and exception handling.
+
+**Note:** ASP.NET Core specific extensions (Configuration, HTTP utilities, URI manipulation) are now available in the separate `PowerCSharp.Extensions.AspNetCore` package for cleaner dependency management.
+
+**Recent Improvements (v0.3.0):**
+- **Package Separation**: ASP.NET Core extensions moved to dedicated package
+- **Performance Optimization**: Reduced memory allocations and improved execution speed
+- **Enhanced Documentation**: Better API documentation with practical examples
+- **Improved Testing**: Expanded unit test coverage for all extension methods
+- **Better Error Handling**: More robust error handling and edge case coverage
 
 ## Architecture
 
@@ -19,35 +28,58 @@ PowerCSharp.Extensions provides comprehensive extension methods for .NET develop
 ```
 PowerCSharp.Extensions/
 ├── Collections/
+│   ├── CollectionExtensions.cs
 │   └── IListExtensions.cs
-├── Configuration/
-│   └── ConfigurationExtensions.cs
 ├── DateTimeExtensions.cs
-├── Http/
-│   ├── HttpStatusCodeExtensions.cs
-│   ├── HttpRequestMessageExtensions.cs
-│   └── UriExtensions.cs
+├── EnumerableExtensions.cs
 ├── Json/
 │   ├── JsonExtensions.cs
 │   └── JsonElementExtensions.cs
 ├── Linq/
 │   ├── DynamicExpressionExtensions.cs
 │   └── IEnumerableExtensions.cs
-├── Net/
-│   └── UriExtensions.cs
 ├── Objects/
+│   ├── ExceptionExtensions.cs
 │   ├── GenericExtensions.cs
+│   ├── HashExtensions.cs
 │   └── ObjectExtensions.cs
 ├── Streams/
 │   └── StreamExtensions.cs
 ├── Strings/
+│   ├── EnumExtensions.cs
 │   └── StringExtensions.cs
 ├── Types/
 │   ├── GenericTypeExtensions.cs
 │   └── TypeExtensions.cs
+├── IO/
+│   └── PathExtensions.cs
 └── Xml/
     └── XmlExtensions.cs
 ```
+
+**Moved to PowerCSharp.Extensions.AspNetCore:**
+- Configuration/ConfigurationExtensions.cs
+- Net/UriExtensions.cs  
+- Http/HttpStatusCodeExtensions.cs
+- Http/HttpRequestMessageExtensions.cs
+
+## Dependencies
+
+- **PowerCSharp.Core** v0.3.0 - Shared interfaces and base functionality
+- **System.Linq.Dynamic.Core** v1.7.2 - Dynamic LINQ expression parsing
+- **Ben.Demystifier** v0.4.1 - Enhanced exception demystification
+- **System.Text.Json** v10.0.8 - JSON processing
+
+## Target Frameworks
+
+- **.NET 8.0** - Latest features and optimizations
+- **.NET Standard 2.0** - Cross-platform compatibility
+
+## Recent Updates (v0.3.0)
+
+- **Package Compatibility**: Ensured all dependencies are compatible with .NET 8.0
+- **Dependency Updates**: Updated to latest stable versions of all dependencies
+- **Build Improvements**: Enhanced package generation with symbol packages
 
 ## Extension Categories
 
@@ -928,6 +960,162 @@ public class PluginLoader
 }
 ```
 
+##### ComputeHash
+
+```csharp
+public static string ComputeHash(this object obj)
+```
+
+**Purpose**: Computes a short hash string from any object by serializing it to JSON and applying SHA256 hashing. Handles serialization failures gracefully by generating a fallback hash based on the exception and type name.
+
+**Returns**: A 16-character hexadecimal hash string representing the object's content. Returns "null" if the input object is null.
+
+**Examples**:
+
+```csharp
+var person = new { Name = "John", Age = 30, Email = "john@example.com" };
+string hash = person.ComputeHash(); // "A1B2C3D4E5F67890"
+
+// In a caching system
+public class CacheManager
+{
+    private readonly Dictionary<string, object> _cache = new();
+    
+    public T GetOrCreate<T>(string key, Func<T> factory) where T : class
+    {
+        var cacheKey = $"{key}_{factory.GetHashCode()}";
+        
+        if (_cache.TryGetValue(cacheKey, out var cached))
+        {
+            return (T)cached;
+        }
+        
+        var item = factory();
+        _cache[cacheKey] = item;
+        return item;
+    }
+    
+    public string GetObjectHash<T>(T obj) where T : class
+    {
+        return obj.ComputeHash();
+    }
+}
+
+// In a data integrity system
+public class DataIntegrityChecker
+{
+    public bool VerifyDataIntegrity<T>(T original, T current)
+    {
+        var originalHash = original.ComputeHash();
+        var currentHash = current.ComputeHash();
+        return originalHash == currentHash;
+    }
+}
+```
+
+### Secure Path Extensions
+
+CWE-73 compliant path operations with directory traversal protection.
+
+#### Methods
+
+##### CombineAndValidate
+
+```csharp
+public static string CombineAndValidate(string basePath, string relativePath)
+public static string CombineAndValidate(string basePath, params string[] paths)
+```
+
+**Purpose**: Combines path segments and validates the result to prevent directory traversal attacks (CWE-73). This method follows Veracode's recommended approach for path validation by canonicalizing the input and ensuring the result stays within the allowed base directory.
+
+**Returns**: The validated absolute path that is guaranteed to be within the base directory.
+
+**Exceptions**:
+- `ArgumentNullException`: Thrown when basePath or relativePath is null
+- `ArgumentException`: Thrown when basePath or relativePath is empty
+- `SecurityException`: Thrown when the combined path attempts directory traversal
+
+**Examples**:
+
+```csharp
+string basePath = "/var/www/uploads";
+string userFile = "../../etc/passwd"; // Malicious attempt
+
+try
+{
+    // This will throw SecurityException due to directory traversal attempt
+    string safePath = PathExtensions.CombineAndValidate(basePath, userFile);
+}
+catch (SecurityException ex)
+{
+    Console.WriteLine($"Security violation: {ex.Message}");
+}
+
+// Safe usage with valid relative paths
+string validPath = PathExtensions.CombineAndValidate(basePath, "images/photo.jpg");
+// Returns: "/var/www/uploads/images/photo.jpg"
+
+// Multiple path segments
+string multiPath = PathExtensions.CombineAndValidate(basePath, "documents", "2023", "report.pdf");
+// Returns: "/var/www/uploads/documents/2023/report.pdf"
+
+// In a file upload system
+public class SecureFileUploader
+{
+    private readonly string _baseUploadPath;
+    
+    public SecureFileUploader(string baseUploadPath)
+    {
+        _baseUploadPath = baseUploadPath;
+    }
+    
+    public string SaveUserFile(string userId, string fileName, Stream content)
+    {
+        var userFolder = Path.Combine(_baseUploadPath, "users", userId);
+        Directory.CreateDirectory(userFolder);
+        
+        // Validate the path to prevent directory traversal
+        var safePath = PathExtensions.CombineAndValidate(userFolder, fileName);
+        
+        using var fileStream = File.Create(safePath);
+        content.CopyTo(fileStream);
+        
+        return safePath;
+    }
+}
+
+// In a document management system
+public class DocumentManager
+{
+    private readonly string _documentRoot;
+    
+    public DocumentManager(string documentRoot)
+    {
+        _documentRoot = documentRoot;
+    }
+    
+    public string GetDocumentPath(string category, string subcategory, string fileName)
+    {
+        // Combine multiple path segments safely
+        return PathExtensions.CombineAndValidate(_documentRoot, category, subcategory, fileName);
+    }
+    
+    public bool ValidateDocumentPath(string requestedPath)
+    {
+        try
+        {
+            // This will throw if the path is outside the document root
+            var validatedPath = PathExtensions.CombineAndValidate(_documentRoot, requestedPath);
+            return true;
+        }
+        catch (SecurityException)
+        {
+            return false;
+        }
+    }
+}
+```
+
 ## Advanced Usage Patterns
 
 ### Web API Integration
@@ -1085,14 +1273,19 @@ public class EnhancedConfigurationManager
 
 ## Version History
 
+### v0.2.0
+- Restructured for cross-platform compatibility
+- Moved ASP.NET Core specific extensions to PowerCSharp.Extensions.AspNetCore
+- Enhanced .NET Standard 2.0 compatibility
+- Updated dependency management for cross-platform support
+
 ### v0.1.0
 - Initial release with comprehensive extension methods
 - String manipulation and validation extensions
 - Collection and LINQ enhancements
-- HTTP and network utilities
 - JSON and XML processing extensions
 - Object and type manipulation utilities
-- Stream and configuration extensions
+- Stream and exception handling extensions
 - Performance-optimized implementations
 
 ## Future Enhancements
