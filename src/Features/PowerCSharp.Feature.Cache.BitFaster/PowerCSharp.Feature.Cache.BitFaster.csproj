@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>PowerCSharp.Feature.Cache.BitFaster</PackageId>
+    <PackageVersion>$(PowerCSharpFeatureCacheVersion)</PackageVersion>
+    <Title>PowerCSharp Cache Feature - BitFaster Provider</Title>
+    <Description>BitFaster-backed implementation of PowerCSharp.Feature.Cache. References BitFaster.Caching; this dependency is isolated here and never enters apps that do not reference this package.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
+    <PackageTags>csharp;dotnet;features;feature-flags;cache;bitfaster;clean-architecture</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BitFaster.Caching" Version="2.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PowerCSharp.Feature.Cache\PowerCSharp.Feature.Cache.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\..\docs\images\PowerCSharp_NuGet_Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>
