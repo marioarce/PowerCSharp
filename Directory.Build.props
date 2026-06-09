@@ -3,6 +3,12 @@
     <!-- Centralized version management for PowerCSharp packages -->
     <PowerCSharpVersion>2.0.0</PowerCSharpVersion>
     <PowerCSharpCompatibilityVersion>1.0.0</PowerCSharpCompatibilityVersion>
+
+    <!-- Features framework trio (Abstractions + Features + BuiltInFeatures) — evolve together -->
+    <PowerCSharpFeaturesVersion>1.0.0</PowerCSharpFeaturesVersion>
+
+    <!-- Per-pluggable-feature versions — ship independently -->
+    <PowerCSharpFeatureCacheVersion>1.0.0</PowerCSharpFeatureCacheVersion>
     
     <!-- Common package metadata -->
     <Authors>Mario Arce</Authors>
