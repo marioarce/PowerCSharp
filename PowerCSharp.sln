@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerCSharp.Features", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerCSharp.BuiltInFeatures", "src\Features\PowerCSharp.BuiltInFeatures\PowerCSharp.BuiltInFeatures.csproj", "{1A0E9E1B-0C63-492F-A07C-B961DCF0BF08}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerCSharp.Feature.Cache", "src\Features\PowerCSharp.Feature.Cache\PowerCSharp.Feature.Cache.csproj", "{3F4D37F4-692F-4CAB-A695-B7A42909E8BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +88,10 @@ Global
 		{1A0E9E1B-0C63-492F-A07C-B961DCF0BF08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A0E9E1B-0C63-492F-A07C-B961DCF0BF08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A0E9E1B-0C63-492F-A07C-B961DCF0BF08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F4D37F4-692F-4CAB-A695-B7A42909E8BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F4D37F4-692F-4CAB-A695-B7A42909E8BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F4D37F4-692F-4CAB-A695-B7A42909E8BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F4D37F4-692F-4CAB-A695-B7A42909E8BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{73835311-BC0A-4107-9E6D-4950DF565C46} = {493BDE4C-2EBA-49EE-BF44-10AAB73634D6}
@@ -100,5 +106,6 @@ Global
 		{99C0BB6F-5967-4CA8-9C71-E68C720E2B81} = {006F80FE-AC82-4752-972B-081BA6C6A651}
 		{E25F0402-F0C7-42B7-B781-4AEF16E580EB} = {006F80FE-AC82-4752-972B-081BA6C6A651}
 		{1A0E9E1B-0C63-492F-A07C-B961DCF0BF08} = {006F80FE-AC82-4752-972B-081BA6C6A651}
+		{3F4D37F4-692F-4CAB-A695-B7A42909E8BB} = {006F80FE-AC82-4752-972B-081BA6C6A651}
 	EndGlobalSection
 EndGlobal
