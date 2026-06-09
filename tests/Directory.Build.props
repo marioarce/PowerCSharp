@@ -1,0 +1,11 @@
+<Project>
+
+  <!-- Import the repository-root Directory.Build.props, then disable packaging for test projects. -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+</Project>
