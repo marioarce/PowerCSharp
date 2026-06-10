@@ -1,10 +1,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using PowerCSharp.Feature.Cache;
 using PowerCSharp.Feature.Cache.BitFaster;
+using PowerCSharp.Feature.Cache.Disk;
 using PowerCSharp.Feature.Cache.NoOp;
-using Xunit;
 
 namespace PowerCSharp.Feature.Cache.Tests;
 
@@ -202,5 +201,176 @@ public class CacheFeatureTests
 
         Assert.Equal(CacheProvider.BitFaster, options.Provider);
         Assert.Equal(500, options.Capacity);
+    }
+
+    [Fact]
+    public void Disk_Overrides_NoOp_Floor()
+    {
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Disk:DirectoryPath", Path.Combine(Path.GetTempPath(), $"test-disk-{Guid.NewGuid()}")));
+
+        var services = BaseServices();
+        services.AddCacheFeature(config);   // TryAdd NoOp floor
+        services.AddCacheDisk(config);       // plain Add overrides
+
+        using var provider = services.BuildServiceProvider();
+        Assert.IsType<DiskCacheService>(provider.GetRequiredService<IDiskCacheService>());
+    }
+
+    [Fact]
+    public async Task Disk_Roundtrip()
+    {
+        var testDir = Path.Combine(Path.GetTempPath(), $"test-disk-{Guid.NewGuid()}");
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
+            ("PowerFeatures:Cache:Disk:MaxEntries", "100"));
+
+        var services = BaseServices();
+        services.AddCacheDisk(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<IDiskCacheService>();
+
+        var data = new TestData { Id = 1, Name = "Test" };
+        await cache.SetAsync("key1", data);
+
+        var result = await cache.GetAsync<TestData>("key1");
+        Assert.NotNull(result);
+        Assert.Equal(1, result.Id);
+        Assert.Equal("Test", result.Name);
+
+        // Cleanup
+        Directory.Delete(testDir, recursive: true);
+    }
+
+    [Fact]
+    public async Task Disk_Eviction_When_MaxEntries_Exceeded()
+    {
+        var testDir = Path.Combine(Path.GetTempPath(), $"test-disk-{Guid.NewGuid()}");
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
+            ("PowerFeatures:Cache:Disk:MaxEntries", "3"));
+
+        var services = BaseServices();
+        services.AddCacheDisk(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = (DiskCacheService)provider.GetRequiredService<IDiskCacheService>();
+
+        // Add 5 entries (max is 3)
+        for (int i = 0; i < 5; i++)
+        {
+            await cache.SetAsync($"key{i}", i);
+        }
+
+        // Verify eviction happened (only 3 should remain)
+        await cache.GetAsync<int>("key0"); // Try to access oldest
+        await cache.GetAsync<int>("key4"); // Try to access newest
+
+        // Manual eviction check
+        cache.EvictToLimit();
+
+        // Cleanup
+        Directory.Delete(testDir, recursive: true);
+    }
+
+    [Fact]
+    public async Task Disk_Expiry_TTL()
+    {
+        var testDir = Path.Combine(Path.GetTempPath(), $"test-disk-{Guid.NewGuid()}");
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
+            ("PowerFeatures:Cache:Disk:DefaultTtlSeconds", "1"));
+
+        var services = BaseServices();
+        services.AddCacheDisk(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<IDiskCacheService>();
+
+        await cache.SetAsync("expiring", 42);
+
+        // Should be available immediately
+        var immediate = await cache.GetAsync<int>("expiring");
+        Assert.Equal(42, immediate);
+
+        // Wait for expiry
+        await Task.Delay(1500);
+
+        // Should be expired
+        var expired = await cache.GetAsync<int?>("expiring");
+        Assert.Null(expired);
+
+        // Cleanup
+        Directory.Delete(testDir, recursive: true);
+    }
+
+    [Fact]
+    public async Task Disk_Concurrency_Simultaneous_Writes()
+    {
+        var testDir = Path.Combine(Path.GetTempPath(), $"test-disk-{Guid.NewGuid()}");
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
+            ("PowerFeatures:Cache:Disk:MaxEntries", "100"));
+
+        var services = BaseServices();
+        services.AddCacheDisk(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<IDiskCacheService>();
+
+        // Simulate concurrent writes
+        var tasks = Enumerable.Range(0, 20)
+            .Select(i => cache.SetAsync($"key{i}", i).AsTask())
+            .ToArray();
+
+        await Task.WhenAll(tasks);
+
+        // Verify all writes succeeded
+        for (int i = 0; i < 20; i++)
+        {
+            var result = await cache.GetAsync<int>($"key{i}");
+            Assert.Equal(i, result);
+        }
+
+        // Cleanup
+        Directory.Delete(testDir, recursive: true);
+    }
+
+    [Fact]
+    public async Task Disk_PurgeExpired_Removes_Expired_Entries()
+    {
+        var testDir = Path.Combine(Path.GetTempPath(), $"test-disk-{Guid.NewGuid()}");
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
+            ("PowerFeatures:Cache:Disk:DefaultTtlSeconds", "1"));
+
+        var services = BaseServices();
+        services.AddCacheDisk(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = (DiskCacheService)provider.GetRequiredService<IDiskCacheService>();
+
+        await cache.SetAsync("expiring", 1);
+        await cache.SetAsync("expiring2", 2);
+
+        // Wait for expiry
+        await Task.Delay(1500);
+
+        // Manual purge
+        cache.PurgeExpired();
+
+        // Verify entries are gone
+        Assert.Null(await cache.GetAsync<int?>("expiring"));
+        Assert.Null(await cache.GetAsync<int?>("expiring2"));
+
+        // Cleanup
+        Directory.Delete(testDir, recursive: true);
+    }
+
+    private class TestData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }
