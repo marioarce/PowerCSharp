@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using BitFaster.Caching.Lru;
 using Microsoft.Extensions.Options;
-using PowerCSharp.Feature.Cache;
 
 namespace PowerCSharp.Feature.Cache.BitFaster;
 
@@ -14,8 +13,8 @@ public sealed class BitFasterCacheService : ICacheService
     private readonly ConcurrentLru<string, object?> _cache;
     private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new();
 
-    /// <summary>Creates the cache with capacity from <see cref="CacheFeatureOptions"/>.</summary>
-    public BitFasterCacheService(IOptions<CacheFeatureOptions> options)
+    /// <summary>Creates the cache with capacity from <see cref="BitFasterCacheOptions"/>.</summary>
+    public BitFasterCacheService(IOptions<BitFasterCacheOptions> options)
     {
         var capacity = Math.Max(1, options.Value.Capacity);
         _cache = new ConcurrentLru<string, object?>(capacity);
@@ -60,6 +59,7 @@ public sealed class BitFasterCacheService : ICacheService
 
         var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
         keyLock.Wait();
+
         try
         {
             if (TryGet<T>(key, out existing))
@@ -87,6 +87,7 @@ public sealed class BitFasterCacheService : ICacheService
 
         var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
         await keyLock.WaitAsync().ConfigureAwait(false);
+        
         try
         {
             if (TryGet<T>(key, out existing))
