@@ -47,7 +47,8 @@ public class CacheFeatureTests
 
         using var provider = services.BuildServiceProvider();
         Assert.IsType<BitFasterCacheService>(provider.GetRequiredService<ICacheService>());
-        Assert.IsType<FileDiskCacheService>(provider.GetRequiredService<IDiskCacheService>());
+        // BitFaster supplies only the in-memory cache; the disk floor remains NoOp.
+        Assert.IsType<NoOpDiskCacheService>(provider.GetRequiredService<IDiskCacheService>());
     }
 
     [Fact]
@@ -70,29 +71,6 @@ public class CacheFeatureTests
 
         cache.Remove("answer");
         Assert.False(cache.TryGet<int>("answer", out _));
-    }
-
-    [Fact]
-    public async Task FileDiskCache_Roundtrips()
-    {
-        var dir = Path.Combine(Path.GetTempPath(), "powercsharp-cache-tests", Guid.NewGuid().ToString("N"));
-        var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Enabled", "true"),
-            ("PowerFeatures:Cache:Provider", "BitFaster"),
-            ("PowerFeatures:Cache:Disk:DirectoryPath", dir));
-
-        var services = BaseServices();
-        services.AddCacheBitFaster(config);
-
-        using var provider = services.BuildServiceProvider();
-        var disk = provider.GetRequiredService<IDiskCacheService>();
-
-        await disk.SetAsync("user", "alice");
-        var result = await disk.GetAsync<string>("user");
-
-        Assert.Equal("alice", result);
-
-        Directory.Delete(dir, recursive: true);
     }
 
     [Fact]
