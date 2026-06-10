@@ -1,8 +1,8 @@
 namespace PowerCSharp.Feature.Cache;
 
 /// <summary>
-/// Asynchronous disk-backed cache abstraction. Concrete backends are supplied by provider packages;
-/// a NoOp is used when disabled or unconfigured.
+/// Asynchronous disk-backed cache abstraction. Concrete backends are supplied by provider packages
+/// (e.g. <c>PowerCSharp.Feature.Cache.Disk</c>); a NoOp is used when disabled or unconfigured.
 /// </summary>
 public interface IDiskCacheService
 {
