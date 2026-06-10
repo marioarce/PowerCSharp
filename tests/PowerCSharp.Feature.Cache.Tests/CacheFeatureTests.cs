@@ -96,6 +96,48 @@ public class CacheFeatureTests
     }
 
     [Fact]
+    public void BitFaster_GetKeys_And_Clear()
+    {
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Enabled", "true"),
+            ("PowerFeatures:Cache:Provider", "BitFaster"),
+            ("PowerFeatures:Cache:Capacity", "128"));
+
+        var services = BaseServices();
+        services.AddCacheBitFaster(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<ICacheService>();
+
+        cache.Set("alpha", 1);
+        cache.Set("beta", 2);
+
+        var keys = cache.GetKeys();
+        Assert.Equal(2, keys.Count);
+        Assert.Contains("alpha", keys);
+        Assert.Contains("beta", keys);
+
+        cache.Clear();
+        Assert.Empty(cache.GetKeys());
+        Assert.False(cache.TryGet<int>("alpha", out _));
+    }
+
+    [Fact]
+    public void NoOp_GetKeys_Empty_And_Clear_DoesNotThrow()
+    {
+        var services = BaseServices();
+        services.AddCacheFeature(BuildConfiguration());
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<ICacheService>();
+
+        cache.Set("ignored", 1);
+        Assert.Empty(cache.GetKeys());
+        cache.Clear();
+        Assert.Empty(cache.GetKeys());
+    }
+
+    [Fact]
     public void Options_Bind_Provider_Variant()
     {
         var config = BuildConfiguration(

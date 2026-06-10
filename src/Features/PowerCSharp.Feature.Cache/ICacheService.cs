@@ -14,4 +14,10 @@ public interface ICacheService
 
     /// <summary>Removes a cached value by key.</summary>
     void Remove(string key);
+
+    /// <summary>Removes all entries from the cache.</summary>
+    void Clear();
+
+    /// <summary>Gets a snapshot of all keys currently stored in the cache.</summary>
+    IReadOnlyCollection<string> GetKeys();
 }

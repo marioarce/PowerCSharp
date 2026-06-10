@@ -41,4 +41,10 @@ public sealed class BitFasterCacheService : ICacheService
 
     /// <inheritdoc />
     public void Remove(string key) => _cache.TryRemove(key);
+
+    /// <inheritdoc />
+    public void Clear() => _cache.Clear();
+
+    /// <inheritdoc />
+    public IReadOnlyCollection<string> GetKeys() => _cache.Keys.ToArray();
 }

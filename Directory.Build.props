@@ -8,7 +8,7 @@
     <PowerCSharpFeaturesVersion>1.0.0</PowerCSharpFeaturesVersion>
 
     <!-- Per-pluggable-feature versions — ship independently -->
-    <PowerCSharpFeatureCacheVersion>1.0.0</PowerCSharpFeatureCacheVersion>
+    <PowerCSharpFeatureCacheVersion>1.1.0</PowerCSharpFeatureCacheVersion>
     
     <!-- Common package metadata -->
     <Authors>Mario Arce</Authors>

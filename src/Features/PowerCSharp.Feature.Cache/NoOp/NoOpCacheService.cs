@@ -30,4 +30,12 @@ public sealed class NoOpCacheService : ICacheService
     public void Remove(string key)
     {
     }
+
+    /// <inheritdoc />
+    public void Clear()
+    {
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyCollection<string> GetKeys() => Array.Empty<string>();
 }
