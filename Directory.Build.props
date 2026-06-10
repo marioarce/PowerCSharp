@@ -7,8 +7,8 @@
     <!-- Features framework trio (Abstractions + Features + BuiltInFeatures) — evolve together -->
     <PowerCSharpFeaturesVersion>1.0.0</PowerCSharpFeaturesVersion>
 
-    <!-- Per-pluggable-feature versions — ship independently -->
-    <PowerCSharpFeatureCacheVersion>1.2.0</PowerCSharpFeatureCacheVersion>
+    <!-- Per-pluggable-feature versions — ship independently. Nothing published yet, so all at 1.0.0. -->
+    <PowerCSharpFeatureCacheVersion>1.0.0</PowerCSharpFeatureCacheVersion>
     
     <!-- Common package metadata -->
     <Authors>Mario Arce</Authors>
