@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using BitFaster.Caching.Lru;
 using Microsoft.Extensions.Options;
 using PowerCSharp.Feature.Cache;
@@ -11,6 +12,7 @@ namespace PowerCSharp.Feature.Cache.BitFaster;
 public sealed class BitFasterCacheService : ICacheService
 {
     private readonly ConcurrentLru<string, object?> _cache;
+    private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new();
 
     /// <summary>Creates the cache with capacity from <see cref="CacheFeatureOptions"/>.</summary>
     public BitFasterCacheService(IOptions<CacheFeatureOptions> options)
@@ -47,4 +49,58 @@ public sealed class BitFasterCacheService : ICacheService
 
     /// <inheritdoc />
     public IReadOnlyCollection<string> GetKeys() => _cache.Keys.ToArray();
+
+    /// <inheritdoc />
+    public T GetOrCreate<T>(string key, Func<T> factory, TimeSpan? ttl = null)
+    {
+        if (TryGet<T>(key, out var existing))
+        {
+            return existing;
+        }
+
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+        keyLock.Wait();
+        try
+        {
+            if (TryGet<T>(key, out existing))
+            {
+                return existing;
+            }
+
+            var created = factory();
+            Set(key, created, ttl);
+            return created;
+        }
+        finally
+        {
+            keyLock.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory, TimeSpan? ttl = null)
+    {
+        if (TryGet<T>(key, out var existing))
+        {
+            return existing;
+        }
+
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+        await keyLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            if (TryGet<T>(key, out existing))
+            {
+                return existing;
+            }
+
+            var created = await factory().ConfigureAwait(false);
+            Set(key, created, ttl);
+            return created;
+        }
+        finally
+        {
+            keyLock.Release();
+        }
+    }
 }

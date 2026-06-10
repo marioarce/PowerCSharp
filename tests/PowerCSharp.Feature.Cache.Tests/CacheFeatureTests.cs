@@ -138,6 +138,77 @@ public class CacheFeatureTests
     }
 
     [Fact]
+    public void BitFaster_GetOrCreate_Creates_Then_Caches()
+    {
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Enabled", "true"),
+            ("PowerFeatures:Cache:Provider", "BitFaster"),
+            ("PowerFeatures:Cache:Capacity", "128"));
+
+        var services = BaseServices();
+        services.AddCacheBitFaster(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<ICacheService>();
+
+        var calls = 0;
+        var first = cache.GetOrCreate("k", () => { calls++; return 7; });
+        var second = cache.GetOrCreate("k", () => { calls++; return 99; });
+
+        Assert.Equal(7, first);
+        Assert.Equal(7, second);   // served from cache, factory not re-run
+        Assert.Equal(1, calls);
+    }
+
+    [Fact]
+    public async Task BitFaster_GetOrCreateAsync_Stampede_Invokes_Factory_Once()
+    {
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Enabled", "true"),
+            ("PowerFeatures:Cache:Provider", "BitFaster"),
+            ("PowerFeatures:Cache:Capacity", "128"));
+
+        var services = BaseServices();
+        services.AddCacheBitFaster(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<ICacheService>();
+
+        var calls = 0;
+
+        async Task<int> Factory()
+        {
+            Interlocked.Increment(ref calls);
+            await Task.Delay(50);
+            return 42;
+        }
+
+        var tasks = Enumerable.Range(0, 20)
+            .Select(_ => cache.GetOrCreateAsync("hot", Factory))
+            .ToArray();
+
+        var results = await Task.WhenAll(tasks);
+
+        Assert.All(results, value => Assert.Equal(42, value));
+        Assert.Equal(1, calls);    // stampede protection: single factory invocation
+    }
+
+    [Fact]
+    public async Task NoOp_GetOrCreate_Always_Invokes_Factory()
+    {
+        var services = BaseServices();
+        services.AddCacheFeature(BuildConfiguration());
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<ICacheService>();
+
+        var calls = 0;
+        Assert.Equal(1, cache.GetOrCreate("k", () => { calls++; return 1; }));
+        Assert.Equal(1, await cache.GetOrCreateAsync("k", () => { calls++; return Task.FromResult(1); }));
+        Assert.Equal(2, calls);    // NoOp never caches
+    }
+
+    [Fact]
     public void Options_Bind_Provider_Variant()
     {
         var config = BuildConfiguration(

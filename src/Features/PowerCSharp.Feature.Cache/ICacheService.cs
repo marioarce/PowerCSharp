@@ -20,4 +20,18 @@ public interface ICacheService
 
     /// <summary>Gets a snapshot of all keys currently stored in the cache.</summary>
     IReadOnlyCollection<string> GetKeys();
+
+    /// <summary>
+    /// Returns the cached value for <paramref name="key"/>, or creates it with <paramref name="factory"/>,
+    /// stores it (with optional <paramref name="ttl"/>), and returns it. Implementations should guard
+    /// against cache stampedes so concurrent misses for the same key invoke the factory once.
+    /// </summary>
+    T GetOrCreate<T>(string key, Func<T> factory, TimeSpan? ttl = null);
+
+    /// <summary>
+    /// Asynchronous counterpart to <see cref="GetOrCreate{T}"/>: returns the cached value for
+    /// <paramref name="key"/>, or awaits <paramref name="factory"/> to create and store it.
+    /// Implementations should guard against cache stampedes for the same key.
+    /// </summary>
+    Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory, TimeSpan? ttl = null);
 }

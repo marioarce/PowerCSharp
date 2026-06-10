@@ -38,4 +38,11 @@ public sealed class NoOpCacheService : ICacheService
 
     /// <inheritdoc />
     public IReadOnlyCollection<string> GetKeys() => Array.Empty<string>();
+
+    /// <inheritdoc />
+    public T GetOrCreate<T>(string key, Func<T> factory, TimeSpan? ttl = null) => factory();
+
+    /// <inheritdoc />
+    public async Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory, TimeSpan? ttl = null)
+        => await factory().ConfigureAwait(false);
 }
