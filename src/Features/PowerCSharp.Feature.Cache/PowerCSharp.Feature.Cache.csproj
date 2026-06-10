@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PowerCSharp.Features.Abstractions\PowerCSharp.Features.Abstractions.csproj" />
+    <ProjectReference Include="..\PowerCSharp.Feature.Cache.Abstractions\PowerCSharp.Feature.Cache.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
