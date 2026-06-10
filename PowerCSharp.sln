@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerCSharp.Feature.Cache.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerCSharp.Feature.Cache.Abstractions", "src\Features\PowerCSharp.Feature.Cache.Abstractions\PowerCSharp.Feature.Cache.Abstractions.csproj", "{E61A4C83-42A8-42A5-B1F1-868ED5DE762F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerCSharp.Feature.Cache.Disk", "src\Features\PowerCSharp.Feature.Cache.Disk\PowerCSharp.Feature.Cache.Disk.csproj", "{137976EF-A677-499E-9567-A8B7E3B6F1BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -122,6 +124,10 @@ Global
 		{E61A4C83-42A8-42A5-B1F1-868ED5DE762F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E61A4C83-42A8-42A5-B1F1-868ED5DE762F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E61A4C83-42A8-42A5-B1F1-868ED5DE762F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{137976EF-A677-499E-9567-A8B7E3B6F1BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{137976EF-A677-499E-9567-A8B7E3B6F1BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{137976EF-A677-499E-9567-A8B7E3B6F1BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{137976EF-A677-499E-9567-A8B7E3B6F1BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{73835311-BC0A-4107-9E6D-4950DF565C46} = {493BDE4C-2EBA-49EE-BF44-10AAB73634D6}
@@ -142,5 +148,6 @@ Global
 		{115B57D5-CE53-4751-8540-1ED7FAEC6C2A} = {8507D629-2649-468E-8345-212CFC547FA8}
 		{01C67F51-0FE0-4576-9507-7CE856370C14} = {8507D629-2649-468E-8345-212CFC547FA8}
 		{E61A4C83-42A8-42A5-B1F1-868ED5DE762F} = {006F80FE-AC82-4752-972B-081BA6C6A651}
+		{137976EF-A677-499E-9567-A8B7E3B6F1BE} = {006F80FE-AC82-4752-972B-081BA6C6A651}
 	EndGlobalSection
 EndGlobal
