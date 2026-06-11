@@ -12,6 +12,9 @@ namespace PowerCSharp.Feature.Cache.Disk;
 /// </summary>
 public sealed class DiskCacheService : IDiskCacheService, IDisposable
 {
+    private const string IndexMutexPrefix = "Global\\PowerCSharp_DiskCache_Index_";
+    private const string KeyMutexPrefix = "Global\\PowerCSharp_DiskCache_Key_";
+    
     private readonly DiskCacheOptions _options;
     private readonly ILogger<DiskCacheService> _logger;
     private readonly string _rootDirectory;
@@ -21,6 +24,8 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
 
     private DiskCacheIndex _index = new();
     private System.Threading.Timer? _cleanupTimer;
+    private readonly ConcurrentDictionary<string, Mutex?> _keyMutexes = new();
+    private Mutex? _indexMutex;
     private bool _disposed;
 
     /// <summary>Creates the disk cache, ensuring the storage directory exists.</summary>
@@ -41,6 +46,12 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
             StartCleanupTimer();
         }
 
+        // Initialize cross-process Mutex if enabled
+        if (_options.EnableCrossProcessLocking)
+        {
+            _indexMutex = CreateIndexMutex();
+        }
+
         _logger.LogInformation("Disk cache initialized at {Directory}", _rootDirectory);
     }
 
@@ -56,6 +67,81 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
             interval,
             interval);
         _logger.LogDebug("Background cleanup timer started with interval {Interval}s", _options.CleanupIntervalSeconds);
+    }
+
+    /// <summary>
+    /// Creates the index Mutex for cross-process coordination.
+    /// </summary>
+    private Mutex CreateIndexMutex()
+    {
+        var mutexName = $"{IndexMutexPrefix}{_rootDirectory.GetHashCode():X8}";
+        
+        // Use simple Mutex creation for all TFMs to avoid security complexity
+        return new Mutex(false, mutexName);
+    }
+
+    /// <summary>
+    /// Gets or creates a Mutex for a specific key.
+    /// </summary>
+    private Mutex GetKeyMutex(string key)
+    {
+        if (!_options.EnableCrossProcessLocking)
+        {
+            throw new InvalidOperationException("Cross-process locking is disabled");
+        }
+
+        return _keyMutexes.GetOrAdd(key, k =>
+        {
+            var mutexName = $"{KeyMutexPrefix}{k.GetHashCode():X8}";
+            return new Mutex(false, mutexName);
+        })!;
+    }
+
+    /// <summary>
+    /// Executes an action with index Mutex protection.
+    /// </summary>
+    private void WithIndexLock(Action action)
+    {
+        if (_options.EnableCrossProcessLocking && _indexMutex != null)
+        {
+            _indexMutex.WaitOne();
+            try
+            {
+                action();
+            }
+            finally
+            {
+                _indexMutex.ReleaseMutex();
+            }
+        }
+        else
+        {
+            action();
+        }
+    }
+
+    /// <summary>
+    /// Executes an action with key Mutex protection.
+    /// </summary>
+    private void WithKeyLock(string key, Action action)
+    {
+        if (_options.EnableCrossProcessLocking)
+        {
+            var keyMutex = GetKeyMutex(key);
+            keyMutex.WaitOne();
+            try
+            {
+                action();
+            }
+            finally
+            {
+                keyMutex.ReleaseMutex();
+            }
+        }
+        else
+        {
+            action();
+        }
     }
 
     /// <inheritdoc />
@@ -112,39 +198,42 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
 
         try
         {
-            var fileName = HashFileName(key);
-            var filePath = Path.Combine(_rootDirectory, fileName);
-
-            // Atomic write: temp file then move
-            var tempPath = filePath + ".tmp";
-            using (var stream = File.Create(tempPath))
+            WithKeyLock(key, () =>
             {
-                await JsonSerializer.SerializeAsync(stream, value, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
+                var fileName = HashFileName(key);
+                var filePath = Path.Combine(_rootDirectory, fileName);
 
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
+                // Atomic write: temp file then move
+                var tempPath = filePath + ".tmp";
+                using (var stream = File.Create(tempPath))
+                {
+                    JsonSerializer.SerializeAsync(stream, value, cancellationToken: cancellationToken).GetAwaiter().GetResult();
+                }
 
-            File.Move(tempPath, filePath);
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
 
-            // Update index
-            var now = DateTime.UtcNow;
-            var entry = new DiskCacheIndexEntry
-            {
-                FilePath = fileName,
-                CreatedAtUtc = now,
-                LastAccessedUtc = now,
-                ExpiresAtUtc = _options.DefaultTtlSeconds > 0 ? now.AddSeconds(_options.DefaultTtlSeconds) : null
-            };
+                File.Move(tempPath, filePath);
 
-            lock (_indexLock)
-            {
-                _index.Entries[key] = entry;
-                EvictIfNeeded();
-                SaveIndex();
-            }
+                // Update index
+                var now = DateTime.UtcNow;
+                var entry = new DiskCacheIndexEntry
+                {
+                    FilePath = fileName,
+                    CreatedAtUtc = now,
+                    LastAccessedUtc = now,
+                    ExpiresAtUtc = _options.DefaultTtlSeconds > 0 ? now.AddSeconds(_options.DefaultTtlSeconds) : null
+                };
+
+                lock (_indexLock)
+                {
+                    _index.Entries[key] = entry;
+                    EvictIfNeeded();
+                    SaveIndex();
+                }
+            });
         }
         finally
         {
@@ -246,19 +335,22 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
 
     private void RemoveEntry(string key)
     {
-        lock (_indexLock)
+        WithKeyLock(key, () =>
         {
-            if (_index.Entries.TryGetValue(key, out var entry))
+            lock (_indexLock)
             {
-                var filePath = Path.Combine(_rootDirectory, entry.FilePath);
-                if (File.Exists(filePath))
+                if (_index.Entries.TryGetValue(key, out var entry))
                 {
-                    File.Delete(filePath);
-                }
+                    var filePath = Path.Combine(_rootDirectory, entry.FilePath);
+                    if (File.Exists(filePath))
+                    {
+                        File.Delete(filePath);
+                    }
 
-                _index.Entries.Remove(key);
+                    _index.Entries.Remove(key);
+                }
             }
-        }
+        });
     }
 
     private void EvictIfNeeded()
@@ -296,34 +388,40 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
 
     private void LoadIndex()
     {
-        if (File.Exists(_indexPath))
+        WithIndexLock(() =>
         {
-            try
+            if (File.Exists(_indexPath))
             {
-                var json = File.ReadAllText(_indexPath);
-                _index = JsonSerializer.Deserialize<DiskCacheIndex>(json) ?? new DiskCacheIndex();
-                _logger.LogInformation("Loaded index with {Count} entries", _index.Entries.Count);
+                try
+                {
+                    var json = File.ReadAllText(_indexPath);
+                    _index = JsonSerializer.Deserialize<DiskCacheIndex>(json) ?? new DiskCacheIndex();
+                    _logger.LogInformation("Loaded index with {Count} entries", _index.Entries.Count);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to load index, starting fresh");
+                    _index = new DiskCacheIndex();
+                }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to load index, starting fresh");
-                _index = new DiskCacheIndex();
-            }
-        }
+        });
     }
 
     private void SaveIndex()
     {
-        var tempPath = _indexPath + ".tmp";
-        var json = JsonSerializer.Serialize(_index, new JsonSerializerOptions { WriteIndented = false });
-        File.WriteAllText(tempPath, json);
-
-        if (File.Exists(_indexPath))
+        WithIndexLock(() =>
         {
-            File.Delete(_indexPath);
-        }
+            var tempPath = _indexPath + ".tmp";
+            var json = JsonSerializer.Serialize(_index, new JsonSerializerOptions { WriteIndented = false });
+            File.WriteAllText(tempPath, json);
 
-        File.Move(tempPath, _indexPath);
+            if (File.Exists(_indexPath))
+            {
+                File.Delete(_indexPath);
+            }
+
+            File.Move(tempPath, _indexPath);
+        });
     }
 
     public void Dispose()
@@ -332,6 +430,15 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
         _disposed = true;
 
         _cleanupTimer?.Dispose();
+
+        // Dispose cross-process Mutexes
+        _indexMutex?.Dispose();
+        
+        foreach (var keyMutex in _keyMutexes.Values)
+        {
+            keyMutex?.Dispose();
+        }
+        _keyMutexes.Clear();
 
         foreach (var keyLock in _keyLocks.Values)
         {
