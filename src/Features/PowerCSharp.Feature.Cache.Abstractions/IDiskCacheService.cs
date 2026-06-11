@@ -1,3 +1,5 @@
+using PowerCSharp.Feature.Cache.Abstractions;
+
 namespace PowerCSharp.Feature.Cache;
 
 /// <summary>
@@ -11,4 +13,10 @@ public interface IDiskCacheService
 
     /// <summary>Sets a value by key.</summary>
     ValueTask SetAsync<T>(string key, T value, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets a value by key with specified cache file kind, or <c>default</c> when absent.</summary>
+    ValueTask<T?> GetAsync<T>(string key, CacheFileKind fileKind, CancellationToken cancellationToken = default);
+
+    /// <summary>Sets a value by key with specified cache file kind.</summary>
+    ValueTask SetAsync<T>(string key, T value, CacheFileKind fileKind, CancellationToken cancellationToken = default);
 }

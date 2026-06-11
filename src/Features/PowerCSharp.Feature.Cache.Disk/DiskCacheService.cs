@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PowerCSharp.Extensions.Objects;
+using PowerCSharp.Feature.Cache.Abstractions;
 
 namespace PowerCSharp.Feature.Cache.Disk;
 
@@ -241,6 +242,103 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
         }
     }
 
+    /// <inheritdoc />
+    public async ValueTask<T?> GetAsync<T>(string key, CacheFileKind fileKind, CancellationToken cancellationToken = default)
+    {
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+        await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            if (!TryGetEntry(key, out var entry))
+            {
+                return default;
+            }
+
+            if (entry == null)
+            {
+                return default;
+            }
+
+            if (IsExpired(entry))
+            {
+                RemoveEntry(key);
+                return default;
+            }
+
+            UpdateLastAccessed(key, entry);
+            var filePath = Path.Combine(_rootDirectory, entry.FilePath);
+
+            if (!File.Exists(filePath))
+            {
+                _logger.LogWarning("Cache file missing for key {Key}, removing from index", key);
+                RemoveEntry(key);
+                return default;
+            }
+
+            using (var stream = File.OpenRead(filePath))
+            {
+                var value = await JsonSerializer.DeserializeAsync<T>(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
+                return value;
+            }
+        }
+        finally
+        {
+            keyLock.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask SetAsync<T>(string key, T value, CacheFileKind fileKind, CancellationToken cancellationToken = default)
+    {
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+        await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            WithKeyLock(key, () =>
+            {
+                var fileName = HashFileName(key, fileKind);
+                var filePath = Path.Combine(_rootDirectory, fileName);
+
+                // Atomic write: temp file then move
+                var tempPath = filePath + ".tmp";
+                using (var stream = File.Create(tempPath))
+                {
+                    JsonSerializer.SerializeAsync(stream, value, cancellationToken: cancellationToken).GetAwaiter().GetResult();
+                }
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+
+                File.Move(tempPath, filePath);
+
+                // Update index
+                var now = DateTime.UtcNow;
+                var entry = new DiskCacheIndexEntry
+                {
+                    FilePath = fileName,
+                    CreatedAtUtc = now,
+                    LastAccessedUtc = now,
+                    ExpiresAtUtc = _options.DefaultTtlSeconds > 0 ? now.AddSeconds(_options.DefaultTtlSeconds) : null
+                };
+
+                lock (_indexLock)
+                {
+                    _index.Entries[key] = entry;
+                    EvictIfNeeded();
+                    SaveIndex();
+                }
+            });
+        }
+        finally
+        {
+            keyLock.Release();
+        }
+    }
+
     /// <summary>
     /// Purges expired entries from the cache. Synchronous primitive that can be called manually
     /// or by the background timer.
@@ -384,6 +482,12 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     {
         var hash = key.ComputeHash();
         return hash + ".json";
+    }
+
+    private string HashFileName(string key, CacheFileKind fileKind)
+    {
+        var hash = key.ComputeHash();
+        return hash + fileKind.Extension;
     }
 
     private void LoadIndex()

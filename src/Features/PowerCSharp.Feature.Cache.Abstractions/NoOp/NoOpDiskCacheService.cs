@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using PowerCSharp.Feature.Cache.Abstractions;
 
 namespace PowerCSharp.Feature.Cache.NoOp;
 
@@ -20,5 +21,13 @@ public sealed class NoOpDiskCacheService : IDiskCacheService
 
     /// <inheritdoc />
     public ValueTask SetAsync<T>(string key, T value, CancellationToken cancellationToken = default)
+        => default;
+
+    /// <inheritdoc />
+    public ValueTask<T?> GetAsync<T>(string key, CacheFileKind fileKind, CancellationToken cancellationToken = default)
+        => new(default(T));
+
+    /// <inheritdoc />
+    public ValueTask SetAsync<T>(string key, T value, CacheFileKind fileKind, CancellationToken cancellationToken = default)
         => default;
 }
