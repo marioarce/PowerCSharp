@@ -20,6 +20,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new();
 
     private DiskCacheIndex _index = new();
+    private System.Threading.Timer? _cleanupTimer;
     private bool _disposed;
 
     /// <summary>Creates the disk cache, ensuring the storage directory exists.</summary>
@@ -35,7 +36,26 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
         _indexPath = Path.Combine(_rootDirectory, "index.json");
         LoadIndex();
 
+        if (_options.EnableBackgroundCleanup)
+        {
+            StartCleanupTimer();
+        }
+
         _logger.LogInformation("Disk cache initialized at {Directory}", _rootDirectory);
+    }
+
+    /// <summary>
+    /// Starts the background cleanup timer for all TFMs.
+    /// </summary>
+    private void StartCleanupTimer()
+    {
+        var interval = TimeSpan.FromSeconds(_options.CleanupIntervalSeconds);
+        _cleanupTimer = new System.Threading.Timer(
+            _ => PurgeExpired(),
+            null,
+            interval,
+            interval);
+        _logger.LogDebug("Background cleanup timer started with interval {Interval}s", _options.CleanupIntervalSeconds);
     }
 
     /// <inheritdoc />
@@ -294,6 +314,8 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     {
         if (_disposed) return;
         _disposed = true;
+
+        _cleanupTimer?.Dispose();
 
         foreach (var keyLock in _keyLocks.Values)
         {
