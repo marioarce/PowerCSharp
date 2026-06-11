@@ -51,7 +51,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     {
         var interval = TimeSpan.FromSeconds(_options.CleanupIntervalSeconds);
         _cleanupTimer = new System.Threading.Timer(
-            _ => PurgeExpired(),
+            async _ => await PurgeExpiredAsync().ConfigureAwait(false),
             null,
             interval,
             interval);
@@ -204,6 +204,22 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
             SaveIndex();
             _logger.LogInformation("Evicted {Count} LRU entries", toEvict.Count);
         }
+    }
+
+    /// <summary>
+    /// Asynchronously purges expired entries from the cache.
+    /// </summary>
+    public async ValueTask PurgeExpiredAsync(CancellationToken cancellationToken = default)
+    {
+        await Task.Run(() => PurgeExpired(), cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Asynchronously evicts least-recently-used entries to stay within the MaxEntries limit.
+    /// </summary>
+    public async ValueTask EvictToLimitAsync(CancellationToken cancellationToken = default)
+    {
+        await Task.Run(() => EvictToLimit(), cancellationToken).ConfigureAwait(false);
     }
 
     private bool TryGetEntry(string key, out DiskCacheIndexEntry? entry)
