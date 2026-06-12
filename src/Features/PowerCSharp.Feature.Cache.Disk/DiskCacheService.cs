@@ -339,6 +339,154 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
         }
     }
 
+    /// <inheritdoc />
+    public async ValueTask<CacheResult<T>> GetWithMetadataAsync<T>(string key, CancellationToken cancellationToken = default)
+    {
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+        await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            if (!TryGetEntry(key, out var entry))
+            {
+                return CacheResult<T>.NotFound(key);
+            }
+
+            if (entry == null)
+            {
+                return CacheResult<T>.NotFound(key);
+            }
+
+            if (IsExpired(entry))
+            {
+                var metadata = CreateMetadata(key, entry, isFresh: false);
+                RemoveEntry(key);
+                return CacheResult<T>.Expired(metadata);
+            }
+
+            UpdateLastAccessed(key, entry);
+            var filePath = Path.Combine(_rootDirectory, entry.FilePath);
+
+            if (!File.Exists(filePath))
+            {
+                _logger.LogWarning("Cache file missing for key {Key}, removing from index", key);
+                RemoveEntry(key);
+                return CacheResult<T>.Error(key);
+            }
+
+            long fileSize = 0;
+            T? value = default;
+
+            try
+            {
+                fileSize = new FileInfo(filePath).Length;
+                using (var stream = File.OpenRead(filePath))
+                {
+                    value = await JsonSerializer.DeserializeAsync<T>(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
+
+                if (value != null)
+                {
+                    var metadata = CreateMetadata(key, entry, fileSize, filePath, isFresh: true);
+                    return CacheResult<T>.Success(value, metadata);
+                }
+                else
+                {
+                    return CacheResult<T>.Error(key);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to read cache file for key {Key}", key);
+                return CacheResult<T>.Error(key);
+            }
+        }
+        finally
+        {
+            keyLock.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<CacheResult<T>> GetWithMetadataAsync<T>(string key, CacheFileKind fileKind, CancellationToken cancellationToken = default)
+    {
+        // For now, delegate to the standard GetWithMetadataAsync since file kind is already encoded in the file path
+        return await GetWithMetadataAsync<T>(key, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<CacheEntryMetadata?> GetMetadataAsync(string key, CancellationToken cancellationToken = default)
+    {
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+        await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            if (!TryGetEntry(key, out var entry))
+            {
+                return null;
+            }
+
+            if (entry == null)
+            {
+                return null;
+            }
+
+            var filePath = Path.Combine(_rootDirectory, entry.FilePath);
+            long? fileSize = null;
+
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    fileSize = new FileInfo(filePath).Length;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to get file size for key {Key}", key);
+                }
+            }
+
+            return CreateMetadata(key, entry, fileSize, filePath, isFresh: false);
+        }
+        finally
+        {
+            keyLock.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<CacheEntryMetadata?> GetMetadataAsync(string key, CacheFileKind fileKind, CancellationToken cancellationToken = default)
+    {
+        // For now, delegate to the standard GetMetadataAsync since file kind is already encoded in the file path
+        return await GetMetadataAsync(key, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates metadata from a cache index entry.
+    /// </summary>
+    private DiskCacheEntryMetadata CreateMetadata(string key, DiskCacheIndexEntry entry, long? sizeBytes = null, string? filePath = null, bool isFresh = false)
+    {
+        // Try to determine file kind from file extension
+        CacheFileKind? fileKind = null;
+        if (filePath != null)
+        {
+            var extension = Path.GetExtension(filePath);
+            var allKinds = CacheFileKind.All;
+            fileKind = allKinds.FirstOrDefault(k => k.MatchesExtension(extension));
+        }
+
+        return new DiskCacheEntryMetadata(
+            key: key,
+            fileKind: fileKind,
+            createdAtUtc: entry.CreatedAtUtc,
+            lastAccessedUtc: entry.LastAccessedUtc,
+            expiresAtUtc: entry.ExpiresAtUtc,
+            sizeBytes: sizeBytes,
+            filePath: filePath,
+            isFresh: isFresh);
+    }
+
     /// <summary>
     /// Purges expired entries from the cache. Synchronous primitive that can be called manually
     /// or by the background timer.
