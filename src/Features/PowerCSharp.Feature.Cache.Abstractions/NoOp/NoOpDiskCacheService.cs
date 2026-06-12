@@ -30,4 +30,20 @@ public sealed class NoOpDiskCacheService : IDiskCacheService
     /// <inheritdoc />
     public ValueTask SetAsync<T>(string key, T value, CacheFileKind fileKind, CancellationToken cancellationToken = default)
         => default;
+
+    /// <inheritdoc />
+    public ValueTask<CacheResult<T>> GetWithMetadataAsync<T>(string key, CancellationToken cancellationToken = default)
+        => new(CacheResult<T>.NotFound(key));
+
+    /// <inheritdoc />
+    public ValueTask<CacheResult<T>> GetWithMetadataAsync<T>(string key, CacheFileKind fileKind, CancellationToken cancellationToken = default)
+        => new(CacheResult<T>.NotFound(key));
+
+    /// <inheritdoc />
+    public ValueTask<CacheEntryMetadata?> GetMetadataAsync(string key, CancellationToken cancellationToken = default)
+        => new((CacheEntryMetadata?)null);
+
+    /// <inheritdoc />
+    public ValueTask<CacheEntryMetadata?> GetMetadataAsync(string key, CacheFileKind fileKind, CancellationToken cancellationToken = default)
+        => new((CacheEntryMetadata?)null);
 }

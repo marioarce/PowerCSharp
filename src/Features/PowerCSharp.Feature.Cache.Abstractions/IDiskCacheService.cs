@@ -19,4 +19,16 @@ public interface IDiskCacheService
 
     /// <summary>Sets a value by key with specified cache file kind.</summary>
     ValueTask SetAsync<T>(string key, T value, CacheFileKind fileKind, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets a cache result with value and metadata.</summary>
+    ValueTask<CacheResult<T>> GetWithMetadataAsync<T>(string key, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets a cache result with value and metadata using specified file kind.</summary>
+    ValueTask<CacheResult<T>> GetWithMetadataAsync<T>(string key, CacheFileKind fileKind, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets metadata for a cache entry without retrieving the value.</summary>
+    ValueTask<CacheEntryMetadata?> GetMetadataAsync(string key, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets metadata for a cache entry without retrieving the value using specified file kind.</summary>
+    ValueTask<CacheEntryMetadata?> GetMetadataAsync(string key, CacheFileKind fileKind, CancellationToken cancellationToken = default);
 }
