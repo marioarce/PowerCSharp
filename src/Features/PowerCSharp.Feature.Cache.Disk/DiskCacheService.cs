@@ -13,8 +13,25 @@ namespace PowerCSharp.Feature.Cache.Disk;
 /// </summary>
 public sealed class DiskCacheService : IDiskCacheService, IDisposable
 {
+    // Mutex prefixes for cross-process synchronization
     private const string IndexMutexPrefix = "Global\\PowerCSharp_DiskCache_Index_";
     private const string KeyMutexPrefix = "Global\\PowerCSharp_DiskCache_Key_";
+
+    // Performance and validation thresholds
+    private const int LargeCacheThreshold = 100_000;
+    private const int MinimumCleanupIntervalSeconds = 60;
+    private const int MaximumDefaultTtlSeconds = 86400; // 24 hours
+
+    // File and path constants
+    private const string DefaultCacheDirectoryName = "powercsharp-disk-cache";
+    private const string IndexFileName = "index.json";
+    private const string TestAccessFileName = ".cache_access_test";
+
+    // Validation character sets
+    private static readonly char[] ProblematicPathCharacters = { '<', '>', '"', '|', '*', '?' };
+
+    // Semaphore and concurrency constants
+    private const int SemaphoreMaxConcurrency = 1;
     
     private readonly DiskCacheOptions _options;
     private readonly ILogger<DiskCacheService> _logger;
@@ -32,14 +49,43 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     /// <summary>Creates the disk cache, ensuring the storage directory exists.</summary>
     public DiskCacheService(IOptions<DiskCacheOptions> options, ILogger<DiskCacheService> logger)
     {
+        ValidateOptions(options.Value);
+        
         _options = options.Value;
         _logger = logger;
 
+        // Log warnings for potentially problematic configurations
+        if (_options.MaxEntries > LargeCacheThreshold)
+        {
+            _logger.LogWarning(
+                "MaxEntries is set to {MaxEntries:N0}, which may impact performance. " +
+                "Consider using a smaller value for better memory usage.",
+                _options.MaxEntries);
+        }
+
+        if (_options.CleanupIntervalSeconds < MinimumCleanupIntervalSeconds && _options.EnableBackgroundCleanup)
+        {
+            _logger.LogWarning(
+                "CleanupIntervalSeconds is set to {CleanupIntervalSeconds} seconds, " +
+                "which may impact performance. Consider using a larger interval ({MinimumCleanupIntervalSeconds}+ seconds).",
+                _options.CleanupIntervalSeconds,
+                MinimumCleanupIntervalSeconds);
+        }
+
+        if (_options.DefaultTtlSeconds > MaximumDefaultTtlSeconds) // More than 24 hours
+        {
+            _logger.LogWarning(
+                "DefaultTtlSeconds is set to {DefaultTtlSeconds:N0} seconds ({Days:F1} days), " +
+                "which may result in stale cache entries. Consider using a shorter TTL.",
+                _options.DefaultTtlSeconds,
+                TimeSpan.FromSeconds(_options.DefaultTtlSeconds).TotalDays);
+        }
+
         _rootDirectory = _options.DirectoryPath
-            ?? Path.Combine(Path.GetTempPath(), "powercsharp-disk-cache");
+            ?? Path.Combine(Path.GetTempPath(), DefaultCacheDirectoryName);
         Directory.CreateDirectory(_rootDirectory);
 
-        _indexPath = Path.Combine(_rootDirectory, "index.json");
+        _indexPath = Path.Combine(_rootDirectory, IndexFileName);
         LoadIndex();
 
         if (_options.EnableBackgroundCleanup)
@@ -54,6 +100,111 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
         }
 
         _logger.LogInformation("Disk cache initialized at {Directory}", _rootDirectory);
+    }
+
+    /// <summary>
+    /// Validates the disk cache options and throws descriptive exceptions for invalid configurations.
+    /// </summary>
+    /// <param name="options">The options to validate.</param>
+    /// <exception cref="ArgumentException">Thrown when an option has an invalid value.</exception>
+    /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory path is invalid.</exception>
+    /// <exception cref="UnauthorizedAccessException">Thrown when the specified directory is not accessible.</exception>
+    private static void ValidateOptions(DiskCacheOptions options)
+    {
+        // Validate DirectoryPath if specified
+        if (!string.IsNullOrEmpty(options.DirectoryPath))
+        {
+            // Check for invalid path characters
+            var invalidChars = Path.GetInvalidPathChars();
+            if (options.DirectoryPath.IndexOfAny(invalidChars) >= 0)
+            {
+                var foundInvalidChars = options.DirectoryPath.Where(c => invalidChars.Contains(c)).Distinct();
+                throw new ArgumentException(
+                    $"DirectoryPath contains invalid characters: '{options.DirectoryPath}'. " +
+                    $"Invalid characters found: {string.Join(", ", foundInvalidChars.Select(c => $"'{c}'"))}",
+                    nameof(options.DirectoryPath));
+            }
+
+            // Additional validation for common problematic characters that might not be in GetInvalidPathChars
+            if (options.DirectoryPath.IndexOfAny(ProblematicPathCharacters) >= 0)
+            {
+                var foundProblematicChars = options.DirectoryPath.Where(c => ProblematicPathCharacters.Contains(c)).Distinct();
+                throw new ArgumentException(
+                    $"DirectoryPath contains problematic characters: '{options.DirectoryPath}'. " +
+                    $"Problematic characters found: {string.Join(", ", foundProblematicChars.Select(c => $"'{c}'"))}",
+                    nameof(options.DirectoryPath));
+            }
+
+            // Check if the path is absolute or relative
+            var fullPath = Path.GetFullPath(options.DirectoryPath);
+            
+            // Try to create the directory to validate accessibility
+            try
+            {
+                Directory.CreateDirectory(fullPath);
+                
+                // Test write access by creating a temporary file
+                var testFile = Path.Combine(fullPath, TestAccessFileName);
+                try
+                {
+                    File.WriteAllText(testFile, "test");
+                    File.Delete(testFile);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    throw new UnauthorizedAccessException(
+                        $"Directory '{fullPath}' is not writable. " +
+                        "Ensure the application has write permissions to the specified directory.");
+                }
+                catch (IOException ex)
+                {
+                    throw new IOException(
+                        $"Directory '{fullPath}' is not accessible for writing. " +
+                        "The path may be on a read-only filesystem or network drive.", ex);
+                }
+            }
+            catch (DirectoryNotFoundException)
+            {
+                throw new DirectoryNotFoundException(
+                    $"Directory path '{options.DirectoryPath}' (resolved to '{fullPath}') does not exist " +
+                    "and cannot be created. Ensure the parent directory exists and is accessible.");
+            }
+            catch (PathTooLongException)
+            {
+                throw new ArgumentException(
+                    $"Directory path '{options.DirectoryPath}' is too long. " +
+                    "The path exceeds the maximum allowed length.",
+                    nameof(options.DirectoryPath));
+            }
+        }
+
+        // Validate DefaultTtlSeconds
+        if (options.DefaultTtlSeconds < 0)
+        {
+            throw new ArgumentException(
+                $"DefaultTtlSeconds must be non-negative. Value provided: {options.DefaultTtlSeconds}. " +
+                "Use 0 for no expiry, or a positive number of seconds for TTL.",
+                nameof(options.DefaultTtlSeconds));
+        }
+
+        // Validate MaxEntries
+        if (options.MaxEntries <= 0)
+        {
+            throw new ArgumentException(
+                $"MaxEntries must be positive. Value provided: {options.MaxEntries}. " +
+                "The cache must be able to store at least one entry.",
+                nameof(options.MaxEntries));
+        }
+
+        // Validate CleanupIntervalSeconds when background cleanup is enabled
+        if (options.EnableBackgroundCleanup && options.CleanupIntervalSeconds <= 0)
+        {
+            throw new ArgumentException(
+                $"CleanupIntervalSeconds must be positive when EnableBackgroundCleanup is true. " +
+                $"Value provided: {options.CleanupIntervalSeconds}. " +
+                "The cleanup interval must be at least 1 second.",
+                nameof(options.CleanupIntervalSeconds));
+        }
     }
 
     /// <summary>
@@ -148,7 +299,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     /// <inheritdoc />
     public async ValueTask<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
     {
-        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
         await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         try
@@ -194,7 +345,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     /// <inheritdoc />
     public async ValueTask SetAsync<T>(string key, T value, CancellationToken cancellationToken = default)
     {
-        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
         await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         try
@@ -245,7 +396,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     /// <inheritdoc />
     public async ValueTask<T?> GetAsync<T>(string key, CacheFileKind fileKind, CancellationToken cancellationToken = default)
     {
-        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
         await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         try
@@ -291,7 +442,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     /// <inheritdoc />
     public async ValueTask SetAsync<T>(string key, T value, CacheFileKind fileKind, CancellationToken cancellationToken = default)
     {
-        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
         await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         try
@@ -342,7 +493,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     /// <inheritdoc />
     public async ValueTask<CacheResult<T>> GetWithMetadataAsync<T>(string key, CancellationToken cancellationToken = default)
     {
-        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
         await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         try
@@ -417,7 +568,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     /// <inheritdoc />
     public async ValueTask<CacheEntryMetadata?> GetMetadataAsync(string key, CancellationToken cancellationToken = default)
     {
-        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
         await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         try
