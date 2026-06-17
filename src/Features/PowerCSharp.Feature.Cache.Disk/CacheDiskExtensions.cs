@@ -17,8 +17,11 @@ public static class CacheDiskExtensions
     {
         services.Configure<DiskCacheOptions>(configuration.GetSection("PowerFeatures:Cache:Disk"));
 
-        // Plain Add takes precedence over the contracts package's TryAdd NoOp registration.
-        services.AddSingleton<IDiskCacheService, DiskCacheService>();
+        // Register concrete class first for hosted service dependency
+        services.AddSingleton<DiskCacheService>();
+        
+        // Then register interface mapping
+        services.AddSingleton<IDiskCacheService>(provider => provider.GetRequiredService<DiskCacheService>());
 
 #if NET8_0_OR_GREATER
         // Register the hosted-service wrapper on net8.0 only for host lifecycle integration.
