@@ -11,10 +11,10 @@ namespace PowerCSharp.Feature.Cache.Disk;
 /// </summary>
 internal sealed class DiskCacheBackgroundService : IHostedService
 {
-    private readonly DiskCacheService _cache;
+    private readonly IDiskCacheService _cache;
     private readonly ILogger<DiskCacheBackgroundService> _logger;
 
-    public DiskCacheBackgroundService(DiskCacheService cache, ILogger<DiskCacheBackgroundService> logger)
+    public DiskCacheBackgroundService(IDiskCacheService cache, ILogger<DiskCacheBackgroundService> logger)
     {
         _cache = cache;
         _logger = logger;
