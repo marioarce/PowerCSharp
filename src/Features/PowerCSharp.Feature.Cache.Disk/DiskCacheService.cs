@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PowerCSharp.Extensions.Objects;
 using PowerCSharp.Feature.Cache.Abstractions;
+using PowerCSharp.Helpers;
 
 namespace PowerCSharp.Feature.Cache.Disk;
 
@@ -13,6 +14,9 @@ namespace PowerCSharp.Feature.Cache.Disk;
 /// </summary>
 public sealed class DiskCacheService : IDiskCacheService, IDisposable
 {
+    private const string ProviderName = "DiskCache";
+    private const string CacheType = "Disk";
+
     // Mutex prefixes for cross-process synchronization
     private const string IndexMutexPrefix = "Global\\PowerCSharp_DiskCache_Index_";
     private const string KeyMutexPrefix = "Global\\PowerCSharp_DiskCache_Key_";
@@ -83,9 +87,11 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
 
         _rootDirectory = _options.DirectoryPath
             ?? Path.Combine(Path.GetTempPath(), DefaultCacheDirectoryName);
+
         Directory.CreateDirectory(_rootDirectory);
 
         _indexPath = Path.Combine(_rootDirectory, IndexFileName);
+
         LoadIndex();
 
         if (_options.EnableBackgroundCleanup)
@@ -116,9 +122,14 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
         {
             // Check for invalid path characters
             var invalidChars = Path.GetInvalidPathChars();
+
             if (options.DirectoryPath.IndexOfAny(invalidChars) >= 0)
             {
-                var foundInvalidChars = options.DirectoryPath.Where(c => invalidChars.Contains(c)).Distinct();
+                var foundInvalidChars = options
+                    .DirectoryPath
+                    .Where(c => invalidChars.Contains(c))
+                    .Distinct();
+
                 throw new ArgumentException(
                     $"DirectoryPath contains invalid characters: '{options.DirectoryPath}'. " +
                     $"Invalid characters found: {string.Join(", ", foundInvalidChars.Select(c => $"'{c}'"))}",
@@ -128,7 +139,11 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
             // Additional validation for common problematic characters that might not be in GetInvalidPathChars
             if (options.DirectoryPath.IndexOfAny(ProblematicPathCharacters) >= 0)
             {
-                var foundProblematicChars = options.DirectoryPath.Where(c => ProblematicPathCharacters.Contains(c)).Distinct();
+                var foundProblematicChars = options
+                    .DirectoryPath
+                    .Where(c => ProblematicPathCharacters.Contains(c))
+                    .Distinct();
+
                 throw new ArgumentException(
                     $"DirectoryPath contains problematic characters: '{options.DirectoryPath}'. " +
                     $"Problematic characters found: {string.Join(", ", foundProblematicChars.Select(c => $"'{c}'"))}",
@@ -145,6 +160,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
                 
                 // Test write access by creating a temporary file
                 var testFile = Path.Combine(fullPath, TestAccessFileName);
+
                 try
                 {
                     File.WriteAllText(testFile, "test");
@@ -213,11 +229,13 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     private void StartCleanupTimer()
     {
         var interval = TimeSpan.FromSeconds(_options.CleanupIntervalSeconds);
+
         _cleanupTimer = new System.Threading.Timer(
             async _ => await PurgeExpiredAsync().ConfigureAwait(false),
             null,
             interval,
             interval);
+
         _logger.LogDebug("Background cleanup timer started with interval {Interval}s", _options.CleanupIntervalSeconds);
     }
 
@@ -257,6 +275,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
         if (_options.EnableCrossProcessLocking && _indexMutex != null)
         {
             _indexMutex.WaitOne();
+
             try
             {
                 action();
@@ -281,6 +300,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
         {
             var keyMutex = GetKeyMutex(key);
             keyMutex.WaitOne();
+
             try
             {
                 action();
@@ -300,6 +320,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     public async ValueTask<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
     {
         var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
+
         await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         try
@@ -321,6 +342,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
             }
 
             UpdateLastAccessed(key, entry);
+
             var filePath = Path.Combine(_rootDirectory, entry.FilePath);
 
             if (!File.Exists(filePath))
@@ -333,6 +355,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
             using (var stream = File.OpenRead(filePath))
             {
                 var value = await JsonSerializer.DeserializeAsync<T>(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
+
                 return value;
             }
         }
@@ -346,20 +369,24 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     public async ValueTask SetAsync<T>(string key, T value, CancellationToken cancellationToken = default)
     {
         var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
+
         await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         try
         {
-            WithKeyLock(key, () =>
+            WithKeyLock(key, async() =>
             {
                 var fileName = HashFileName(key);
                 var filePath = Path.Combine(_rootDirectory, fileName);
 
                 // Atomic write: temp file then move
                 var tempPath = filePath + ".tmp";
+
                 using (var stream = File.Create(tempPath))
                 {
-                    JsonSerializer.SerializeAsync(stream, value, cancellationToken: cancellationToken).GetAwaiter().GetResult();
+                    await JsonSerializer
+                        .SerializeAsync(stream, value, cancellationToken: cancellationToken)
+                        .ConfigureAwait(false);
                 }
 
                 if (File.Exists(filePath))
@@ -371,6 +398,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
 
                 // Update index
                 var now = DateTime.UtcNow;
+
                 var entry = new DiskCacheIndexEntry
                 {
                     FilePath = fileName,
@@ -397,6 +425,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     public async ValueTask<T?> GetAsync<T>(string key, CacheFileKind fileKind, CancellationToken cancellationToken = default)
     {
         var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
+
         await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         try
@@ -418,6 +447,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
             }
 
             UpdateLastAccessed(key, entry);
+
             var filePath = Path.Combine(_rootDirectory, entry.FilePath);
 
             if (!File.Exists(filePath))
@@ -443,20 +473,24 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     public async ValueTask SetAsync<T>(string key, T value, CacheFileKind fileKind, CancellationToken cancellationToken = default)
     {
         var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
+
         await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         try
         {
-            WithKeyLock(key, () =>
+            WithKeyLock(key, async() =>
             {
                 var fileName = HashFileName(key, fileKind);
                 var filePath = Path.Combine(_rootDirectory, fileName);
 
                 // Atomic write: temp file then move
                 var tempPath = filePath + ".tmp";
+
                 using (var stream = File.Create(tempPath))
                 {
-                    JsonSerializer.SerializeAsync(stream, value, cancellationToken: cancellationToken).GetAwaiter().GetResult();
+                    await JsonSerializer
+                        .SerializeAsync(stream, value, cancellationToken: cancellationToken)
+                        .ConfigureAwait(false);
                 }
 
                 if (File.Exists(filePath))
@@ -491,38 +525,43 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     }
 
     /// <inheritdoc />
-    public async ValueTask<CacheResult<T>> GetWithMetadataAsync<T>(string key, CancellationToken cancellationToken = default)
+    public async ValueTask<CacheResult<T>> GetWithResultAsync<T>(string key, CancellationToken ct = default)
     {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
-        await keyLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        await keyLock.WaitAsync(ct).ConfigureAwait(false);
 
         try
         {
             if (!TryGetEntry(key, out var entry))
             {
-                return CacheResult<T>.NotFound(key);
+                return CacheResult<T>.NotFound(key, ProviderName, CacheType, stopwatch.Elapsed);
             }
 
             if (entry == null)
             {
-                return CacheResult<T>.NotFound(key);
+                return CacheResult<T>.NotFound(key, ProviderName, CacheType, stopwatch.Elapsed);
             }
 
             if (IsExpired(entry))
             {
                 var metadata = CreateMetadata(key, entry, isFresh: false);
                 RemoveEntry(key);
-                return CacheResult<T>.Expired(metadata);
+
+                return CacheResult<T>.Expired(metadata, ProviderName, CacheType, stopwatch.Elapsed);
             }
 
             UpdateLastAccessed(key, entry);
+
             var filePath = Path.Combine(_rootDirectory, entry.FilePath);
 
             if (!File.Exists(filePath))
             {
                 _logger.LogWarning("Cache file missing for key {Key}, removing from index", key);
                 RemoveEntry(key);
-                return CacheResult<T>.Error(key);
+
+                return CacheResult<T>.Error(key, ProviderName, CacheType, stopwatch.Elapsed);
             }
 
             long fileSize = 0;
@@ -533,36 +572,41 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
                 fileSize = new FileInfo(filePath).Length;
                 using (var stream = File.OpenRead(filePath))
                 {
-                    value = await JsonSerializer.DeserializeAsync<T>(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    value = await JsonSerializer
+                        .DeserializeAsync<T>(stream, cancellationToken: ct)
+                        .ConfigureAwait(false);
                 }
 
                 if (value != null)
                 {
                     var metadata = CreateMetadata(key, entry, fileSize, filePath, isFresh: true);
-                    return CacheResult<T>.Success(value, metadata);
+
+                    return CacheResult<T>.Success(value, metadata, ProviderName, CacheType, stopwatch.Elapsed);
                 }
                 else
                 {
-                    return CacheResult<T>.Error(key);
+                    return CacheResult<T>.Error(key, ProviderName, CacheType, stopwatch.Elapsed);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to read cache file for key {Key}", key);
-                return CacheResult<T>.Error(key);
+
+                return CacheResult<T>.Error(key, ProviderName, CacheType, stopwatch.Elapsed);
             }
         }
         finally
         {
             keyLock.Release();
+            stopwatch.Stop();
         }
     }
 
     /// <inheritdoc />
     public async ValueTask<CacheResult<T>> GetWithMetadataAsync<T>(string key, CacheFileKind fileKind, CancellationToken cancellationToken = default)
     {
-        // For now, delegate to the standard GetWithMetadataAsync since file kind is already encoded in the file path
-        return await GetWithMetadataAsync<T>(key, cancellationToken).ConfigureAwait(false);
+        // For now, delegate to the standard GetWithResultAsync since file kind is already encoded in the file path
+        return await GetWithResultAsync<T>(key, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -613,6 +657,295 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
         return await GetMetadataAsync(key, cancellationToken).ConfigureAwait(false);
     }
 
+    /// <inheritdoc />
+    public T? Get<T>(string key, CancellationToken ct = default)
+    {
+        return AsyncHelper.RunSync(() =>
+            GetAsync<T>(key, ct)
+        );
+    }
+
+    /// <inheritdoc />
+    public T? Get<T>(string key, CacheFileKind fileKind, CancellationToken ct = default)
+    {
+        return AsyncHelper.RunSync(() =>
+            GetAsync<T>(key, fileKind, ct)
+        );
+    }
+
+    /// <inheritdoc />
+    public void Set<T>(string key, T value, CancellationToken ct = default)
+    {
+        AsyncHelper.RunSync(() =>
+            SetAsync(key, value, ct)
+        );
+    }
+
+    /// <inheritdoc />
+    public void Set<T>(string key, T value, CacheFileKind fileKind, CancellationToken ct = default)
+    {
+        AsyncHelper.RunSync(() =>
+            SetAsync(key, value, fileKind, ct)
+        );
+    }
+
+    /// <inheritdoc />
+    public CacheResult<T> GetWithResult<T>(string key, CancellationToken ct = default)
+    {
+        return AsyncHelper.RunSync(() => GetWithResultAsync<T>(key, ct));
+    }
+
+    /// <inheritdoc />
+    public void Remove(string key, CancellationToken ct = default)
+    {
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
+
+        keyLock.Wait(ct);
+
+        try
+        {
+            RemoveEntry(key);
+        }
+        finally
+        {
+            keyLock.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task RemoveAsync(string key, CancellationToken ct = default)
+    {
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
+
+        await keyLock.WaitAsync(ct).ConfigureAwait(false);
+
+        try
+        {
+            RemoveEntry(key);
+        }
+        finally
+        {
+            keyLock.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public void Clear(CancellationToken ct = default)
+    {
+        lock (_indexLock)
+        {
+            var allKeys = _index.Entries.Keys.ToList();
+
+            foreach (var key in allKeys)
+            {
+                RemoveEntry(key);
+            }
+
+            SaveIndex();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task ClearAsync(CancellationToken ct = default)
+    {
+        await Task.Run(() => Clear(ct), ct).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyCollection<string> GetKeys(CancellationToken ct = default)
+    {
+        lock (_indexLock)
+        {
+            return _index.Entries.Keys.ToArray();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyCollection<string>> GetKeysAsync(CancellationToken ct = default)
+    {
+        return await Task.Run(() => GetKeys(ct), ct).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public CacheEntryMetadata? GetMetadata(string key, CancellationToken ct = default)
+    {
+        return AsyncHelper.RunSync(() => 
+        {
+            var valueTask = GetMetadataAsync(key, ct);
+            return valueTask.AsTask();
+        });
+    }
+
+    /// <inheritdoc />
+    async Task<CacheEntryMetadata?> ICacheStore.GetMetadataAsync(string key, CancellationToken ct)
+    {
+        return await GetMetadataAsync(key, ct)
+            .AsTask()
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<CacheResult<T>> GetWithResultAsync<T>(string key, CacheFileKind fileKind, CancellationToken ct = default)
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
+        await keyLock.WaitAsync(ct).ConfigureAwait(false);
+
+        try
+        {
+            if (!TryGetEntry(key, out var entry))
+            {
+                return CacheResult<T>.NotFound(key, ProviderName, CacheType, stopwatch.Elapsed);
+            }
+
+            if (entry == null)
+            {
+                return CacheResult<T>.NotFound(key, ProviderName, CacheType, stopwatch.Elapsed);
+            }
+
+            if (IsExpired(entry))
+            {
+                var metadata = CreateMetadata(key, entry, isFresh: false);
+
+                RemoveEntry(key);
+
+                return CacheResult<T>.Expired(metadata, ProviderName, CacheType, stopwatch.Elapsed);
+            }
+
+            UpdateLastAccessed(key, entry);
+            var filePath = Path.Combine(_rootDirectory, entry.FilePath);
+
+            if (!File.Exists(filePath))
+            {
+                _logger.LogWarning("Cache file missing for key {Key}, removing from index", key);
+                RemoveEntry(key);
+                return CacheResult<T>.Error(key, ProviderName, CacheType, stopwatch.Elapsed);
+            }
+
+            long fileSize = 0;
+            T? value = default;
+
+            try
+            {
+                fileSize = new FileInfo(filePath).Length;
+                using (var stream = File.OpenRead(filePath))
+                {
+                    value = await JsonSerializer.DeserializeAsync<T>(stream, cancellationToken: ct).ConfigureAwait(false);
+                }
+
+                if (value != null)
+                {
+                    var metadata = CreateMetadata(key, entry, fileSize, filePath, isFresh: true);
+                    return CacheResult<T>.Success(value, metadata, ProviderName, CacheType, stopwatch.Elapsed);
+                }
+                else
+                {
+                    return CacheResult<T>.Error(key, ProviderName, CacheType, stopwatch.Elapsed);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to read cache file for key {Key}", key);
+                return CacheResult<T>.Error(key, ProviderName, CacheType, stopwatch.Elapsed);
+            }
+        }
+        finally
+        {
+            keyLock.Release();
+            stopwatch.Stop();
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory, TimeSpan? ttl = null, CancellationToken ct = default)
+    {
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
+
+        await keyLock.WaitAsync(ct).ConfigureAwait(false);
+
+        try
+        {
+            // Try to get existing value
+            if (TryGetEntry(key, out var entry) && entry != null && !IsExpired(entry))
+            {
+                UpdateLastAccessed(key, entry);
+                var filePath = Path.Combine(_rootDirectory, entry.FilePath);
+
+                if (File.Exists(filePath))
+                {
+                    using (var stream = File.OpenRead(filePath))
+                    {
+                        var value = await JsonSerializer.DeserializeAsync<T>(stream, cancellationToken: ct).ConfigureAwait(false);
+                        return value!;
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Cache file missing for key {Key}, removing from index", key);
+                    RemoveEntry(key);
+                }
+            }
+
+            // Create new value
+            var created = await factory().ConfigureAwait(false);
+            await SetAsync(key, created, ct).ConfigureAwait(false);
+
+            return created;
+        }
+        finally
+        {
+            keyLock.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<T> GetOrCreateAsync<T>(string key, CacheFileKind fileKind, Func<Task<T>> factory, TimeSpan? ttl = null, CancellationToken ct = default)
+    {
+        var keyLock = _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(SemaphoreMaxConcurrency, SemaphoreMaxConcurrency));
+
+        await keyLock.WaitAsync(ct).ConfigureAwait(false);
+
+        try
+        {
+            // Try to get existing value
+            if (TryGetEntry(key, out var entry) && entry != null && !IsExpired(entry))
+            {
+                UpdateLastAccessed(key, entry);
+                var filePath = Path.Combine(_rootDirectory, entry.FilePath);
+
+                if (File.Exists(filePath))
+                {
+                    using (var stream = File.OpenRead(filePath))
+                    {
+                        var value = await JsonSerializer.DeserializeAsync<T>(stream, cancellationToken: ct).ConfigureAwait(false);
+                        return value!;
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Cache file missing for key {Key}, removing from index", key);
+                    RemoveEntry(key);
+                }
+            }
+
+            // Create new value
+            var created = await factory().ConfigureAwait(false);
+            await SetAsync(key, created, fileKind, ct).ConfigureAwait(false);
+
+            return created;
+        }
+        finally
+        {
+            keyLock.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public T GetOrCreate<T>(string key, Func<T> factory, TimeSpan? ttl = null, CancellationToken ct = default)
+    {
+        return AsyncHelper.RunSync(() => GetOrCreateAsync(key, () => Task.Run(factory, ct), ttl, ct));
+    }
+
     /// <summary>
     /// Creates metadata from a cache index entry.
     /// </summary>
@@ -620,6 +953,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     {
         // Try to determine file kind from file extension
         CacheFileKind? fileKind = null;
+
         if (filePath != null)
         {
             var extension = Path.GetExtension(filePath);
@@ -688,6 +1022,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
             }
 
             SaveIndex();
+
             _logger.LogInformation("Evicted {Count} LRU entries", toEvict.Count);
         }
     }
@@ -726,6 +1061,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
         lock (_indexLock)
         {
             entry.LastAccessedUtc = DateTime.UtcNow;
+
             SaveIndex();
         }
     }
@@ -739,6 +1075,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
                 if (_index.Entries.TryGetValue(key, out var entry))
                 {
                     var filePath = Path.Combine(_rootDirectory, entry.FilePath);
+
                     if (File.Exists(filePath))
                     {
                         File.Delete(filePath);
@@ -780,12 +1117,14 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     private string HashFileName(string key)
     {
         var hash = key.ComputeHash();
+
         return hash + ".json";
     }
 
     private string HashFileName(string key, CacheFileKind fileKind)
     {
         var hash = key.ComputeHash();
+
         return hash + fileKind.Extension;
     }
 
@@ -798,7 +1137,9 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
                 try
                 {
                     var json = File.ReadAllText(_indexPath);
+
                     _index = JsonSerializer.Deserialize<DiskCacheIndex>(json) ?? new DiskCacheIndex();
+
                     _logger.LogInformation("Loaded index with {Count} entries", _index.Entries.Count);
                 }
                 catch (Exception ex)
@@ -815,7 +1156,9 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
         WithIndexLock(() =>
         {
             var tempPath = _indexPath + ".tmp";
+
             var json = JsonSerializer.Serialize(_index, new JsonSerializerOptions { WriteIndented = false });
+
             File.WriteAllText(tempPath, json);
 
             if (File.Exists(_indexPath))
@@ -829,7 +1172,11 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
 
     public void Dispose()
     {
-        if (_disposed) return;
+        if (_disposed)
+        {
+            return;
+        }
+
         _disposed = true;
 
         _cleanupTimer?.Dispose();
@@ -841,6 +1188,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
         {
             keyMutex?.Dispose();
         }
+
         _keyMutexes.Clear();
 
         foreach (var keyLock in _keyLocks.Values)
