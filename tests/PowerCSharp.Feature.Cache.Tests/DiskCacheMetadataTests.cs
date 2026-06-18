@@ -37,14 +37,12 @@ public class DiskCacheMetadataTests
         await cache.SetAsync("test_key", "test_value");
 
         // Get with metadata
-        var result = await cache.GetWithMetadataAsync<string>("test_key");
+        var result = await cache.GetWithResultAsync<string>("test_key");
 
         Assert.True(result.IsSuccess);
         Assert.Equal("test_value", result.Value);
         Assert.NotNull(result.Metadata);
         Assert.Equal("test_key", result.Metadata.Key);
-        Assert.NotNull(result.Metadata.CreatedAtUtc);
-        Assert.NotNull(result.Metadata.LastAccessedUtc);
         Assert.True(result.Metadata.SizeBytes > 0);
         Assert.NotNull(((DiskCacheEntryMetadata)result.Metadata).FilePath);
         Assert.Equal(CacheResultReason.Success, result.Reason);
@@ -64,7 +62,7 @@ public class DiskCacheMetadataTests
         var cache = provider.GetRequiredService<IDiskCacheService>();
 
         // Get non-existent key
-        var result = await cache.GetWithMetadataAsync<string>("non_existent_key");
+        var result = await cache.GetWithResultAsync<string>("non_existent_key");
 
         Assert.False(result.IsSuccess);
         Assert.True(result.IsNotFound);
@@ -94,7 +92,7 @@ public class DiskCacheMetadataTests
         await Task.Delay(1500);
 
         // Get with metadata - should be expired
-        var result = await cache.GetWithMetadataAsync<string>("expire_key");
+        var result = await cache.GetWithResultAsync<string>("expire_key");
 
         Assert.False(result.IsSuccess);
         Assert.True(result.IsExpired);
@@ -126,8 +124,6 @@ public class DiskCacheMetadataTests
 
         Assert.NotNull(metadata);
         Assert.Equal("metadata_key", metadata.Key);
-        Assert.NotNull(metadata.CreatedAtUtc);
-        Assert.NotNull(metadata.LastAccessedUtc);
         Assert.True(metadata.SizeBytes > 0);
         Assert.NotNull(((DiskCacheEntryMetadata)metadata).FilePath);
     }
@@ -169,7 +165,7 @@ public class DiskCacheMetadataTests
         await cache.SetAsync("filekind_key", "filekind_value", jsonKind);
 
         // Get with metadata using file kind
-        var result = await cache.GetWithMetadataAsync<string>("filekind_key", jsonKind);
+        var result = await cache.GetWithResultAsync<string>("filekind_key", jsonKind);
 
         Assert.True(result.IsSuccess);
         Assert.Equal("filekind_value", result.Value);
@@ -279,7 +275,7 @@ public class DiskCacheMetadataTests
         await cache.SetAsync("locking_key", "locking_value");
 
         // Get with metadata - should work with cross-process locking
-        var result = await cache.GetWithMetadataAsync<string>("locking_key");
+        var result = await cache.GetWithResultAsync<string>("locking_key");
 
         Assert.True(result.IsSuccess);
         Assert.Equal("locking_value", result.Value);

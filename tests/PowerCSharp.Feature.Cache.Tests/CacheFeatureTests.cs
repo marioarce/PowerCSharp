@@ -65,11 +65,11 @@ public class CacheFeatureTests
         var cache = provider.GetRequiredService<ICacheService>();
 
         cache.Set("answer", 42);
-        Assert.True(cache.TryGet<int>("answer", out var value));
+        Assert.True(cache.TryGet<int>("answer", out var value, default));
         Assert.Equal(42, value);
 
         cache.Remove("answer");
-        Assert.False(cache.TryGet<int>("answer", out _));
+        Assert.False(cache.TryGet<int>("answer", out _, default));
     }
 
     [Fact]
@@ -89,14 +89,14 @@ public class CacheFeatureTests
         cache.Set("alpha", 1);
         cache.Set("beta", 2);
 
-        var keys = cache.GetKeys();
+        var keys = cache.GetKeys(default);
         Assert.Equal(2, keys.Count);
         Assert.Contains("alpha", keys);
         Assert.Contains("beta", keys);
 
-        cache.Clear();
-        Assert.Empty(cache.GetKeys());
-        Assert.False(cache.TryGet<int>("alpha", out _));
+        cache.Clear(default);
+        Assert.Empty(cache.GetKeys(default));
+        Assert.False(cache.TryGet<int>("alpha", out _, default));
     }
 
     [Fact]
@@ -109,9 +109,9 @@ public class CacheFeatureTests
         var cache = provider.GetRequiredService<ICacheService>();
 
         cache.Set("ignored", 1);
-        Assert.Empty(cache.GetKeys());
-        cache.Clear();
-        Assert.Empty(cache.GetKeys());
+        Assert.Empty(cache.GetKeys(default));
+        cache.Clear(default);
+        Assert.Empty(cache.GetKeys(default));
     }
 
     [Fact]
@@ -129,8 +129,8 @@ public class CacheFeatureTests
         var cache = provider.GetRequiredService<ICacheService>();
 
         var calls = 0;
-        var first = cache.GetOrCreate("k", () => { calls++; return 7; });
-        var second = cache.GetOrCreate("k", () => { calls++; return 99; });
+        var first = cache.GetOrCreate("k", () => { calls++; return 7; }, default);
+        var second = cache.GetOrCreate("k", () => { calls++; return 99; }, default);
 
         Assert.Equal(7, first);
         Assert.Equal(7, second);   // served from cache, factory not re-run
@@ -180,8 +180,8 @@ public class CacheFeatureTests
         var cache = provider.GetRequiredService<ICacheService>();
 
         var calls = 0;
-        Assert.Equal(1, cache.GetOrCreate("k", () => { calls++; return 1; }));
-        Assert.Equal(1, await cache.GetOrCreateAsync("k", () => { calls++; return Task.FromResult(1); }));
+        Assert.Equal(1, cache.GetOrCreate("k", () => { calls++; return 1; }, default));
+        Assert.Equal(1, await cache.GetOrCreateAsync("k", () => { calls++; return Task.FromResult(1); }, default));
         Assert.Equal(2, calls);    // NoOp never caches
     }
 
@@ -363,6 +363,221 @@ public class CacheFeatureTests
         // Verify entries are gone
         Assert.Null(await cache.GetAsync<int?>("expiring"));
         Assert.Null(await cache.GetAsync<int?>("expiring2"));
+
+        // Cleanup
+        Directory.Delete(testDir, recursive: true);
+    }
+
+    [Fact]
+    public void BitFaster_GetWithResult_Provides_Performance_Metrics()
+    {
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Enabled", "true"),
+            ("PowerFeatures:Cache:Provider", "BitFaster"),
+            ("PowerFeatures:Cache:Capacity", "128"));
+
+        var services = BaseServices();
+        services.AddCacheBitFaster(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<ICacheService>();
+
+        // Set a value
+        cache.Set("metrics_key", "test_value");
+
+        // Get with result
+        var result = cache.GetWithResult<string>("metrics_key");
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("test_value", result.Value);
+        Assert.NotNull(result.Metadata);
+        Assert.Equal("BitFaster", result.ProviderName);
+        Assert.Equal("Memory", result.CacheType);
+        Assert.True(result.RetrievalDuration >= TimeSpan.Zero);
+        Assert.True(result.TotalCacheTime >= TimeSpan.Zero);
+    }
+
+    [Fact]
+    public async Task BitFaster_GetWithResultAsync_Provides_Performance_Metrics()
+    {
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Enabled", "true"),
+            ("PowerFeatures:Cache:Provider", "BitFaster"),
+            ("PowerFeatures:Cache:Capacity", "128"));
+
+        var services = BaseServices();
+        services.AddCacheBitFaster(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<ICacheService>();
+
+        // Set a value
+        await cache.SetAsync("async_metrics_key", "async_test_value");
+
+        // Get with result async
+        var result = await cache.GetWithResultAsync<string>("async_metrics_key");
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("async_test_value", result.Value);
+        Assert.NotNull(result.Metadata);
+        Assert.Equal("BitFaster", result.ProviderName);
+        Assert.Equal("Memory", result.CacheType);
+        Assert.True(result.RetrievalDuration >= TimeSpan.Zero);
+        Assert.True(result.TotalCacheTime >= TimeSpan.Zero);
+    }
+
+    [Fact]
+    public void BitFaster_GetMetadata_Provides_Cache_Statistics()
+    {
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Enabled", "true"),
+            ("PowerFeatures:Cache:Provider", "BitFaster"),
+            ("PowerFeatures:Cache:Capacity", "128"));
+
+        var services = BaseServices();
+        services.AddCacheBitFaster(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<ICacheService>();
+
+        // Set a value
+        cache.Set("stats_key", "stats_value");
+
+        // Get metadata
+        var metadata = cache.GetMetadata("stats_key");
+
+        Assert.NotNull(metadata);
+        Assert.Equal("stats_key", metadata.Key);
+        Assert.True(metadata.AccessCount >= 1);
+        Assert.True(metadata.HitCount >= 0);
+        Assert.True(metadata.MissCount >= 0);
+    }
+
+    [Fact]
+    public async Task BitFaster_GetMetadataAsync_Provides_Cache_Statistics()
+    {
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Enabled", "true"),
+            ("PowerFeatures:Cache:Provider", "BitFaster"),
+            ("PowerFeatures:Cache:Capacity", "128"));
+
+        var services = BaseServices();
+        services.AddCacheBitFaster(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<ICacheService>();
+
+        // Set a value
+        await cache.SetAsync("async_stats_key", "async_stats_value");
+
+        // Get metadata async
+        var metadata = await cache.GetMetadataAsync("async_stats_key");
+
+        Assert.NotNull(metadata);
+        Assert.Equal("async_stats_key", metadata.Key);
+        Assert.True(metadata.AccessCount >= 1);
+        Assert.True(metadata.HitCount >= 0);
+        Assert.True(metadata.MissCount >= 0);
+    }
+
+    [Fact]
+    public void BitFaster_Cache_Hit_Miss_Statistics()
+    {
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Enabled", "true"),
+            ("PowerFeatures:Cache:Provider", "BitFaster"),
+            ("PowerFeatures:Cache:Capacity", "128"));
+
+        var services = BaseServices();
+        services.AddCacheBitFaster(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<ICacheService>();
+
+        // Miss - key doesn't exist
+        var missResult = cache.GetWithResult<string>("nonexistent_key");
+        Assert.False(missResult.IsSuccess);
+        Assert.True(missResult.IsNotFound);
+
+        // Set a value
+        cache.Set("hit_miss_key", "test_value");
+
+        // Hit - key exists
+        var hitResult = cache.GetWithResult<string>("hit_miss_key");
+        Assert.True(hitResult.IsSuccess);
+
+        // Check metadata
+        var metadata = cache.GetMetadata("hit_miss_key");
+        Assert.NotNull(metadata);
+        Assert.True(metadata.HitCount > 0);
+    }
+
+    [Fact]
+    public async Task BitFaster_Sync_Async_Consistency()
+    {
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Enabled", "true"),
+            ("PowerFeatures:Cache:Provider", "BitFaster"),
+            ("PowerFeatures:Cache:Capacity", "128"));
+
+        var services = BaseServices();
+        services.AddCacheBitFaster(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<ICacheService>();
+
+        // Test sync vs async consistency
+        cache.Set("sync_key", "sync_value");
+        await cache.SetAsync("async_key", "async_value");
+
+        var syncResult = cache.Get<string>("sync_key");
+        var asyncResult = await cache.GetAsync<string>("async_key");
+
+        Assert.Equal("sync_value", syncResult);
+        Assert.Equal("async_value", asyncResult);
+
+        // Test GetWithResult consistency
+        var syncWithResult = cache.GetWithResult<string>("sync_key");
+        var asyncWithResult = await cache.GetWithResultAsync<string>("async_key");
+
+        Assert.True(syncWithResult.IsSuccess);
+        Assert.True(asyncWithResult.IsSuccess);
+        Assert.Equal("sync_value", syncWithResult.Value);
+        Assert.Equal("async_value", asyncWithResult.Value);
+    }
+
+    [Fact]
+    public async Task Disk_Cache_Sync_Async_Methods()
+    {
+        var testDir = Path.Combine(Path.GetTempPath(), $"test-sync-async-{Guid.NewGuid()}");
+        var config = BuildConfiguration(
+            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+
+        var services = BaseServices();
+        services.AddCacheDisk(config);
+
+        using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<IDiskCacheService>();
+
+        // Test sync methods
+        cache.Set("sync_key", "sync_value");
+        var syncResult = cache.Get<string>("sync_key");
+        Assert.Equal("sync_value", syncResult);
+
+        // Test async methods
+        await cache.SetAsync("async_key", "async_value");
+        var asyncResult = await cache.GetAsync<string>("async_key");
+        Assert.Equal("async_value", asyncResult);
+
+        // Test sync GetWithResult
+        var syncWithResult = cache.GetWithResult<string>("sync_key");
+        Assert.True(syncWithResult.IsSuccess);
+        Assert.Equal("sync_value", syncWithResult.Value);
+
+        // Test async GetWithResult
+        var asyncWithResult = await cache.GetWithResultAsync<string>("async_key");
+        Assert.True(asyncWithResult.IsSuccess);
+        Assert.Equal("async_value", asyncWithResult.Value);
 
         // Cleanup
         Directory.Delete(testDir, recursive: true);
