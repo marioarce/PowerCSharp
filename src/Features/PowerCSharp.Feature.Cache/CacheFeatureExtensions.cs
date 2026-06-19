@@ -1,7 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using PowerCSharp.Feature.Cache.NoOp;
+using PowerCSharp.Feature.Cache.Abstractions;
+using PowerCSharp.Feature.Cache.Abstractions.NoOp;
 
 namespace PowerCSharp.Feature.Cache;
 

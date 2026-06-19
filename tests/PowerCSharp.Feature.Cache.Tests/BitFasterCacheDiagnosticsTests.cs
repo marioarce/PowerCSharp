@@ -1,8 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using PowerCSharp.Feature.Cache.BitFaster;
-using PowerCSharp.Feature.Cache.NoOp;
+using PowerCSharp.Feature.Cache.Abstractions;
 
 namespace PowerCSharp.Feature.Cache.Tests;
 

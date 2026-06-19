@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PowerCSharp.Feature.Cache.Abstractions;
 
 namespace PowerCSharp.Feature.Cache.BitFaster;
 

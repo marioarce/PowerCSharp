@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PowerCSharp.Feature.Cache.Abstractions;
 using PowerCSharp.Feature.Cache.Disk;
 
 namespace PowerCSharp.Feature.Cache.Tests;
