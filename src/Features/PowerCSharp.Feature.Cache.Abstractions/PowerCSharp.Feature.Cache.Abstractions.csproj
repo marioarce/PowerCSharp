@@ -25,14 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Enums\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
     <None Include="..\..\..\docs\images\PowerCSharp_NuGet_Icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Enums\" />
-  </ItemGroup>
 </Project>
