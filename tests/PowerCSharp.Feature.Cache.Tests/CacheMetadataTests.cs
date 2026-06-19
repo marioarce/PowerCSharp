@@ -351,12 +351,12 @@ public class CacheMetadataTests
 
         // Implicit conversion from result to value
         CacheResult<string> successResult = CacheResult<string>.Success("success_value");
-        string value = successResult;
+        string? value = successResult;
         Assert.Equal("success_value", value);
 
         // Implicit conversion from failed result returns default
         CacheResult<string> failResult = CacheResult<string>.NotFound("key");
-        string defaultValue = failResult;
+        string? defaultValue = failResult;
         Assert.Equal(default(string), defaultValue);
     }
 

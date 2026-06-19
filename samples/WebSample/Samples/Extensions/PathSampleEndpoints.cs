@@ -76,11 +76,11 @@ public static class PathSampleEndpoints
         try
         {
             var result = PathExtensions.CombineAndValidate(basePath, relativePath);
-            return new { success = true, path = result, error = (string)null };
+            return new { success = true, path = result, error = (string?)null };
         }
         catch (Exception ex)
         {
-            return new { success = false, path = (string)null, error = ex.Message };
+            return new { success = false, path = (string?)null, error = ex.Message };
         }
     }
 
@@ -92,11 +92,11 @@ public static class PathSampleEndpoints
         try
         {
             var result = PathExtensions.CombineAndValidate(basePath, paths);
-            return new { success = true, path = result, error = (string)null };
+            return new { success = true, path = result, error = (string?)null };
         }
         catch (Exception ex)
         {
-            return new { success = false, path = (string)null, error = ex.Message };
+            return new { success = false, path = (string?)null, error = ex.Message };
         }
     }
 }
