@@ -1,6 +1,6 @@
 using PowerCSharp.Feature.Cache.Abstractions;
 
-namespace PowerCSharp.Feature.Cache;
+namespace PowerCSharp.Feature.Cache.Abstractions;
 
 /// <summary>
 /// In-memory cache abstraction. Concrete backends are supplied by provider packages

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using PowerCSharp.Feature.Cache.Abstractions;
 
-namespace PowerCSharp.Feature.Cache.NoOp;
+namespace PowerCSharp.Feature.Cache.Abstractions.NoOp;
 
 /// <summary>
 /// Inert <see cref="IDiskCacheService"/> used when the Cache feature is disabled or no provider is

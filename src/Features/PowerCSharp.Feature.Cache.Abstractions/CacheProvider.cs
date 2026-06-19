@@ -1,4 +1,4 @@
-namespace PowerCSharp.Feature.Cache;
+namespace PowerCSharp.Feature.Cache.Abstractions;
 
 /// <summary>
 /// Selects the cache backend. Drives provider selection via the <c>PowerFeatures:Cache:Provider</c>

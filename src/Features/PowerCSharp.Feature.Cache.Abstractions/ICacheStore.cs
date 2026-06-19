@@ -1,6 +1,6 @@
 using PowerCSharp.Feature.Cache.Abstractions;
 
-namespace PowerCSharp.Feature.Cache;
+namespace PowerCSharp.Feature.Cache.Abstractions;
 
 /// <summary>
 /// Base interface for cache storage management operations.
