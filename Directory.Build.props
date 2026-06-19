@@ -17,7 +17,7 @@
     <PackageProjectUrl>https://github.com/marioarce/PowerCSharp</PackageProjectUrl>
     <RepositoryUrl>https://github.com/marioarce/PowerCSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Nullable>enable</Nullable>
