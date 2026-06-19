@@ -1,5 +1,3 @@
-using PowerCSharp.Feature.Cache.Abstractions;
-
 namespace PowerCSharp.Feature.Cache.Abstractions;
 
 /// <summary>

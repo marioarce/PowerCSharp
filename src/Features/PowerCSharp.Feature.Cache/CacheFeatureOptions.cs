@@ -1,4 +1,4 @@
-using PowerCSharp.Feature.Cache.Abstractions;
+using PowerCSharp.Feature.Cache.Abstractions.Enums;
 using PowerCSharp.Features.Abstractions;
 
 namespace PowerCSharp.Feature.Cache;
