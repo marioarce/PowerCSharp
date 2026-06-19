@@ -1170,6 +1170,10 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
         });
     }
 
+    /// <summary>
+    /// Releases the resources used by the disk cache service, including the cleanup timer
+    /// and cross-process mutexes.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)
