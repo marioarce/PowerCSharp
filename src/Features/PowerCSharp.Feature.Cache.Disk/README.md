@@ -49,3 +49,15 @@ var cache = (DiskCacheService)disk;
 cache.PurgeExpired();
 cache.EvictToLimit();
 ```
+
+## Details
+
+- **Package ID:** `PowerCSharp.Feature.Cache.Disk`
+- **Depends on:** `PowerCSharp.Feature.Cache.Abstractions` (+ `PowerCSharp.Core`, `PowerCSharp.Helpers`, `PowerCSharp.Extensions`)
+- **Target frameworks:** `netstandard2.0` and `net8.0`
+- **Activate:** `PowerFeatures:Cache:Provider = Disk` or call `services.AddCacheDisk(configuration)`
+
+## Namespaces
+
+- `PowerCSharp.Feature.Cache.Disk` — `DiskCacheService`, `DiskCacheOptions`, `AddCacheDisk`, `DiskCacheBackgroundService`.
+- `PowerCSharp.Feature.Cache.Abstractions` — `IDiskCacheService` contract.
