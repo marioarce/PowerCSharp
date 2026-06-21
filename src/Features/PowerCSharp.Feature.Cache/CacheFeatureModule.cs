@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using PowerCSharp.Feature.Cache.Abstractions;
 using PowerCSharp.Feature.Cache.Abstractions.NoOp;
 using PowerCSharp.Features.Abstractions;
+using System.Reflection;
+using System;
 
 namespace PowerCSharp.Feature.Cache;
 
@@ -27,6 +29,9 @@ public sealed class CacheFeatureModule : IFeatureModule
     /// <inheritdoc />
     public void ConfigureServices(IFeatureRegistrationContext context)
     {
+        // Ensure the abstractions assembly is loaded before registering services
+        var abstractionsAssembly = Assembly.Load("PowerCSharp.Feature.Cache.Abstractions");
+        
         context.Services.Configure<CacheFeatureOptions>(
             context.Configuration.GetSection($"PowerFeatures:{Key}"));
 
