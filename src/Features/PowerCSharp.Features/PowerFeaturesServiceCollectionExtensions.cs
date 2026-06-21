@@ -39,7 +39,19 @@ public static class PowerFeaturesServiceCollectionExtensions
         var flags = new CompositeFeatureFlagProvider(providers);
         services.AddSingleton<IFeatureFlagProvider>(flags);
 
+        Console.WriteLine($"[PowerFeatures] Discovering modules from {options.Assemblies.Count()} assemblies");
+        foreach (var assembly in options.Assemblies)
+        {
+            Console.WriteLine($"[PowerFeatures] Scanning assembly: {assembly.FullName}");
+        }
+        Console.WriteLine($"[PowerFeatures] Explicit modules: {options.Modules.Count()}");
+
         var modules = FeatureModuleDiscovery.Discover(options.Assemblies, options.Modules);
+        Console.WriteLine($"[PowerFeatures] Discovered {modules.Count()} modules:");
+        foreach (var module in modules)
+        {
+            Console.WriteLine($"[PowerFeatures]   - {module.FeatureKey} (Order: {module.Order})");
+        }
 
         var registry = new FeatureRegistry();
         var moduleEntries = new List<FeatureModuleEntry>(modules.Count);
@@ -49,6 +61,8 @@ public static class PowerFeaturesServiceCollectionExtensions
             var descriptor = BuildDescriptor(module);
             var value = flags.GetValue(module.FeatureKey);
             var enabled = value.HasValue ? value.AsBoolean(descriptor.DefaultEnabled) : descriptor.DefaultEnabled;
+
+            Console.WriteLine($"[PowerFeatures] Configuring module '{module.FeatureKey}': Enabled={enabled}, Source={value.Source}");
 
             registry.Add(new FeatureRegistryEntry
             {
@@ -70,6 +84,7 @@ public static class PowerFeaturesServiceCollectionExtensions
                 descriptor);
 
             module.ConfigureServices(context);
+            Console.WriteLine($"[PowerFeatures] Completed ConfigureServices for '{module.FeatureKey}'");
             moduleEntries.Add(new FeatureModuleEntry(module, descriptor));
         }
 
