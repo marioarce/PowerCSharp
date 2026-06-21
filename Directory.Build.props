@@ -7,8 +7,10 @@
     <!-- Features framework trio (Abstractions + Features + BuiltInFeatures) — evolve together -->
     <PowerCSharpFeaturesVersion>1.0.0</PowerCSharpFeaturesVersion>
 
-    <!-- Per-pluggable-feature versions — ship independently. Nothing published yet, so all at 1.0.0. -->
-    <PowerCSharpFeatureCacheVersion>1.0.0</PowerCSharpFeatureCacheVersion>
+    <!-- Per-pluggable-feature versions — ship independently. -->
+    <!-- Cache family bumped to 1.3.0: realigns Cache + BitFaster onto the post-split
+         PowerCSharp.Feature.Cache.Abstractions ICacheService (stale 1.2.0 predated the split). -->
+    <PowerCSharpFeatureCacheVersion>1.3.0</PowerCSharpFeatureCacheVersion>
     
     <!-- Common package metadata -->
     <Authors>Mario Arce</Authors>
