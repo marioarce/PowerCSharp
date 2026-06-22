@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <!-- Centralized version management for PowerCSharp packages -->
-    <PowerCSharpVersion>2.0.0</PowerCSharpVersion>
+    <PowerCSharpVersion>2.0.1</PowerCSharpVersion>
     <PowerCSharpCompatibilityVersion>1.0.0</PowerCSharpCompatibilityVersion>
 
     <!-- Features framework trio (Abstractions + Features + BuiltInFeatures) — evolve together -->
