@@ -26,7 +26,7 @@ Dependency direction: providers (`BitFaster`, `Disk`) reference only `Cache.Abst
 
 ## Key design decisions
 
-- **No `GetOptions()` in the core service.** The service takes a plain `DiskCacheOptions` POCO via constructor — framework-agnostic and unit-testable.
+- **No `GetOptions()` in the core service.** The service takes a plain `DiskCacheFeatureOptions` POCO via constructor — framework-agnostic and unit-testable.
 - **Config binding stays optional and framework-safe.** `AddCacheDisk(IServiceCollection, IConfiguration)` uses `Microsoft.Extensions.DependencyInjection.Abstractions` + `Microsoft.Extensions.Configuration.Abstractions` (both `netstandard2.0`). No ASP.NET Core required.
 - **Serializer:** `System.Text.Json` always (already pinned by `Helpers` at 10.0.8; `netstandard2.0`-safe).
 - **NoOp floors live in `Cache.Abstractions`** so Framework consumers get a safe default without the ASP.NET module.

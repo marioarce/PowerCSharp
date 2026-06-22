@@ -99,7 +99,6 @@ public sealed class CacheFeatureOptions : FeatureOptionsBase
 {
     public CacheProvider Provider { get; set; } = CacheProvider.None; // variant flag drives selection
     public int Capacity { get; set; } = 1000;
-    public DiskCacheOptions Disk { get; set; } = new();
 }
 
 // Defined in PowerCSharp.Feature.Cache.Abstractions.Enums

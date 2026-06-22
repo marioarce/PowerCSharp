@@ -7,7 +7,6 @@ Pair this package with `PowerCSharp.Feature.Cache.Abstractions` (contracts + NoO
 ## Contents
 
 - **`CacheFeatureOptions`** — options bound from `PowerFeatures:Cache` (variant `Provider` selects the backend).
-- **`DiskCacheOptions`** — disk-specific options.
 - **`CacheFeatureModule`** — auto-discoverable module; registers a NoOp floor so dependents always resolve.
 - **`AddCacheFeature`** — explicit registration extension.
 
