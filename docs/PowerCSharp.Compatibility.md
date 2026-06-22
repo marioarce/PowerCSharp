@@ -225,7 +225,9 @@ using PowerCSharp.Compatibility.Utilities.Attributes;
 public void ProcessData([ValidatedNotNull] string input)
 {
     if (input == null)
+    {
         throw new ArgumentNullException(nameof(input));
+    }
     
     // Process data
 }

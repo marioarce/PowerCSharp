@@ -173,7 +173,10 @@ public class DataAnalyzer
         var stats = CalculateStatistics(values);
         double range = stats.Max - stats.Min;
         
-        if (range == 0) return values.Select(v => newMin).ToList();
+        if (range == 0)
+        {
+            return values.Select(v => newMin).ToList();
+        }
         
         return values.Select(v =>
         {
@@ -184,7 +187,10 @@ public class DataAnalyzer
     
     public double CalculateGrowthRate(double oldValue, double newValue)
     {
-        if (oldValue == 0) return 0;
+        if (oldValue == 0)
+        {
+            return 0;
+        }
         return MathHelper.Percentage(newValue - oldValue, oldValue);
     }
 }

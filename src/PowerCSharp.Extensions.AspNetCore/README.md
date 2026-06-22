@@ -206,7 +206,10 @@ public class ResilientHttpClient
             }
             catch
             {
-                if (attempt == maxRetries) throw;
+                if (attempt == maxRetries)
+                {
+                    throw;
+                }
             }
         }
 
