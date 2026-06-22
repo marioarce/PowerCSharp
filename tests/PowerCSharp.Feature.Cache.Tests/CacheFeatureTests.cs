@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using PowerCSharp.Extensions.IO;
 using PowerCSharp.Feature.Cache.Abstractions;
 using PowerCSharp.Feature.Cache.Abstractions.Enums;
 using PowerCSharp.Feature.Cache.Abstractions.NoOp;
@@ -242,7 +243,7 @@ public class CacheFeatureTests
         Assert.Equal("Test", result.Name);
 
         // Cleanup
-        Directory.Delete(testDir, recursive: true);
+        DirectoryExtensions.TrySafeDelete(testDir, recursive: true);
     }
 
     [Fact]
@@ -273,7 +274,7 @@ public class CacheFeatureTests
         cache.EvictToLimit();
 
         // Cleanup
-        Directory.Delete(testDir, recursive: true);
+        DirectoryExtensions.TrySafeDelete(testDir, recursive: true);
     }
 
     [Fact]
@@ -304,7 +305,7 @@ public class CacheFeatureTests
         Assert.Null(expired);
 
         // Cleanup
-        Directory.Delete(testDir, recursive: true);
+        DirectoryExtensions.TrySafeDelete(testDir, recursive: true);
     }
 
     [Fact]
@@ -336,7 +337,7 @@ public class CacheFeatureTests
         }
 
         // Cleanup
-        Directory.Delete(testDir, recursive: true);
+        DirectoryExtensions.TrySafeDelete(testDir, recursive: true);
     }
 
     [Fact]
@@ -367,7 +368,7 @@ public class CacheFeatureTests
         Assert.Null(await cache.GetAsync<int?>("expiring2"));
 
         // Cleanup
-        Directory.Delete(testDir, recursive: true);
+        DirectoryExtensions.TrySafeDelete(testDir, recursive: true);
     }
 
     [Fact]
@@ -582,7 +583,7 @@ public class CacheFeatureTests
         Assert.Equal("async_value", asyncWithResult.Value);
 
         // Cleanup
-        Directory.Delete(testDir, recursive: true);
+        DirectoryExtensions.TrySafeDelete(testDir, recursive: true);
     }
 
     private class TestData
