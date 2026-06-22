@@ -11,7 +11,4 @@ public sealed class CacheFeatureOptions : FeatureOptionsBase
 
     /// <summary>Maximum number of in-memory entries.</summary>
     public int Capacity { get; set; } = 1000;
-
-    /// <summary>Disk-cache settings.</summary>
-    public DiskCacheOptions Disk { get; set; } = new();
 }
