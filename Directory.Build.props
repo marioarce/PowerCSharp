@@ -5,7 +5,7 @@
     <PowerCSharpCompatibilityVersion>1.0.0</PowerCSharpCompatibilityVersion>
 
     <!-- Features framework trio (Abstractions + Features + BuiltInFeatures) — evolve together -->
-    <PowerCSharpFeaturesVersion>1.0.1</PowerCSharpFeaturesVersion>
+    <PowerCSharpFeaturesVersion>1.0.2</PowerCSharpFeaturesVersion>
 
     <!-- Per-pluggable-feature versions — ship independently. -->
     <!-- Cache family bumped to 1.3.0: realigns Cache + BitFaster onto the post-split
