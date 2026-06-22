@@ -13,29 +13,6 @@ namespace PowerCSharp.Extensions.Objects;
 public static class HashExtensions
 {
     /// <summary>
-    /// JSON serialization options configured for stable, deterministic output.
-    /// Includes all fields and properties, handles circular references, and uses camelCase naming for consistency.
-    /// </summary>
-    private static readonly JsonSerializerOptions _jsonOptions = new()
-    {
-        WriteIndented = false,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
-
-        // Include all fields + properties
-        IncludeFields = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-
-#if NET6_0_OR_GREATER
-        // Handle circular references (object graphs with cycles)
-        ReferenceHandler = ReferenceHandler.IgnoreCycles,
-#endif
-
-        // Prevent runaway recursion (very large nested objects)
-        MaxDepth = 64
-    };
-
-    /// <summary>
     /// Computes a short hash string from any object by serializing it to JSON and applying SHA256 hashing.
     /// Handles serialization failures gracefully by generating a fallback hash based on the exception and type name.
     /// This method is designed for caching, object identification, and change detection scenarios.
@@ -134,6 +111,30 @@ public static class HashExtensions
 
         return ToHexString(hash, 0, 8);
     }
+
+    // Private fields and methods (moved to end)
+    /// <summary>
+    /// JSON serialization options configured for stable, deterministic output.
+    /// Includes all fields and properties, handles circular references, and uses camelCase naming for consistency.
+    /// </summary>
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        WriteIndented = false,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+
+        // Include all fields + properties
+        IncludeFields = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+
+#if NET6_0_OR_GREATER
+        // Handle circular references (object graphs with cycles)
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+#endif
+
+        // Prevent runaway recursion (very large nested objects)
+        MaxDepth = 64
+    };
 
 #if NET5_0_OR_GREATER
     private static byte[] ComputeSha256Hash(byte[] input)

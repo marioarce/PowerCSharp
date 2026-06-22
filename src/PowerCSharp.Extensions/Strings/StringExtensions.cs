@@ -11,80 +11,6 @@ namespace PowerCSharp.Extensions.Strings;
 /// </summary>
 public static partial class StringExtensions
 {
-#if NET8_0_OR_GREATER
-    [GeneratedRegex(@"\s+")]
-    private static partial Regex WhitespaceRegex();
-#else
-    private static readonly Regex WhitespaceRegex = new Regex(@"\s+", RegexOptions.Compiled);
-#endif
-
-#if NET8_0_OR_GREATER
-    [GeneratedRegex(@"<[^>]*>|&.*?;")]
-    private static partial Regex HtmlRegex();
-#else
-    private static readonly Regex HtmlRegex = new Regex(@"<[^>]*>|&.*?;", RegexOptions.Compiled);
-#endif
-
-#if NET8_0_OR_GREATER
-    [GeneratedRegex("[^0-9]")]
-    private static partial Regex NonDigitRegex();
-#else
-    private static readonly Regex NonDigitRegex = new Regex("[^0-9]", RegexOptions.Compiled);
-#endif
-
-#if NET8_0_OR_GREATER
-    [GeneratedRegex(@"(\d{3})(\d{3})(\d{4})")]
-    private static partial Regex PhoneRegex();
-#else
-    private static readonly Regex PhoneRegex = new Regex(@"(\d{3})(\d{3})(\d{4})", RegexOptions.Compiled);
-#endif
-
-#if NET8_0_OR_GREATER
-    [GeneratedRegex(@"^(?!.)(""([^""\r\\]|\\[""\r\\])*""|"
-        + @"([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)"
-        + @"@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$")]
-    private static partial Regex EmailRegex();
-#else
-    private static readonly Regex EmailRegex = new Regex(@"^(?!.)(""([^""\r\\]|\\[""\r\\])*""|"
-        + @"([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)"
-        + @"@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-#endif
-
-    private static Regex GetWhitespaceRegex() =>
-#if NET8_0_OR_GREATER
-        WhitespaceRegex();
-#else
-        WhitespaceRegex;
-#endif
-
-    private static Regex GetHtmlRegex() =>
-#if NET8_0_OR_GREATER
-        HtmlRegex();
-#else
-        HtmlRegex;
-#endif
-
-    private static Regex GetNonDigitRegex() =>
-#if NET8_0_OR_GREATER
-        NonDigitRegex();
-#else
-        NonDigitRegex;
-#endif
-
-    private static Regex GetPhoneRegex() =>
-#if NET8_0_OR_GREATER
-        PhoneRegex();
-#else
-        PhoneRegex;
-#endif
-
-    private static Regex GetEmailRegex() =>
-#if NET8_0_OR_GREATER
-        EmailRegex();
-#else
-        EmailRegex;
-#endif
-
     /// <summary>
     /// Checks if a string is null, empty, or contains only whitespace.
     /// </summary>
@@ -1047,4 +973,79 @@ public static partial class StringExtensions
 
         return true;
     }
+
+    // Private fields and methods (moved to end)
+#if NET8_0_OR_GREATER
+    [GeneratedRegex(@"\s+")]
+    private static partial Regex WhitespaceRegex();
+#else
+    private static readonly Regex WhitespaceRegex = new Regex(@"\s+", RegexOptions.Compiled);
+#endif
+
+#if NET8_0_OR_GREATER
+    [GeneratedRegex(@"<[^>]*>|&.*?;")]
+    private static partial Regex HtmlRegex();
+#else
+    private static readonly Regex HtmlRegex = new Regex(@"<[^>]*>|&.*?;", RegexOptions.Compiled);
+#endif
+
+#if NET8_0_OR_GREATER
+    [GeneratedRegex("[^0-9]")]
+    private static partial Regex NonDigitRegex();
+#else
+    private static readonly Regex NonDigitRegex = new Regex("[^0-9]", RegexOptions.Compiled);
+#endif
+
+#if NET8_0_OR_GREATER
+    [GeneratedRegex(@"(\d{3})(\d{3})(\d{4})")]
+    private static partial Regex PhoneRegex();
+#else
+    private static readonly Regex PhoneRegex = new Regex(@"(\d{3})(\d{3})(\d{4})", RegexOptions.Compiled);
+#endif
+
+#if NET8_0_OR_GREATER
+    [GeneratedRegex(@"^(?!.)(""([^""\r\\]|\\[""\r\\])*""|"
+        + @"([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)"
+        + @"@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$")]
+    private static partial Regex EmailRegex();
+#else
+    private static readonly Regex EmailRegex = new Regex(@"^(?!.)(""([^""\r\\]|\\[""\r\\])*""|"
+        + @"([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)"
+        + @"@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+#endif
+
+    private static Regex GetWhitespaceRegex() =>
+#if NET8_0_OR_GREATER
+        WhitespaceRegex();
+#else
+        WhitespaceRegex;
+#endif
+
+    private static Regex GetHtmlRegex() =>
+#if NET8_0_OR_GREATER
+        HtmlRegex();
+#else
+        HtmlRegex;
+#endif
+
+    private static Regex GetNonDigitRegex() =>
+#if NET8_0_OR_GREATER
+        NonDigitRegex();
+#else
+        NonDigitRegex;
+#endif
+
+    private static Regex GetPhoneRegex() =>
+#if NET8_0_OR_GREATER
+        PhoneRegex();
+#else
+        PhoneRegex;
+#endif
+
+    private static Regex GetEmailRegex() =>
+#if NET8_0_OR_GREATER
+        EmailRegex();
+#else
+        EmailRegex;
+#endif
 }
