@@ -7,15 +7,6 @@ using PowerCSharp.Core.Interfaces.Extensions.Linq;
 namespace PowerCSharp.Extensions.Linq;
 
 /// <summary>
-/// Represents an ordering clause for dynamic expression parsing
-/// </summary>
-internal class OrderClause
-{
-    public string Property { get; set; } = string.Empty;
-    public bool Descending { get; set; }
-}
-
-/// <summary>
 /// Extension methods for dynamic LINQ expression parsing and evaluation
 /// </summary>
 public static class DynamicExpressionExtensions

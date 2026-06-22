@@ -233,7 +233,10 @@ public class SecureDataStorage
     public bool VerifySecureData(string data, string storedData)
     {
         var parts = storedData.Split(':');
-        if (parts.Length != 2) return false;
+        if (parts.Length != 2)
+        {
+            return false;
+        }
         
         string salt = parts[0];
         string storedHash = parts[1];

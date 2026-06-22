@@ -76,10 +76,14 @@ public class DatabaseOptions : IAppOptions
     public void Validate()
     {
         if (string.IsNullOrEmpty(ConnectionString))
+        {
             throw new InvalidOperationException("Database connection string is required");
+        }
         
         if (Timeout <= 0)
+        {
             throw new InvalidOperationException("Database timeout must be greater than 0");
+        }
     }
 }
 ```
@@ -254,7 +258,10 @@ public class DynamicOrderProvider<T> : IDynamicOrderProvider<T>
 
     public void AddOrderDelegate(Func<T, object> keySelector, bool descending = false)
     {
-        if (keySelector == null) return;
+        if (keySelector == null)
+        {
+            return;
+        }
 
         lock (_lock)
         {
@@ -304,7 +311,10 @@ public class ExpressionOrderProvider<T> : IDynamicOrderProvider<T>
         foreach (var clause in clauses)
         {
             var parts = clause.Trim().Split(' ');
-            if (parts.Length == 0) continue;
+            if (parts.Length == 0)
+            {
+                continue;
+            }
 
             string propertyName = parts[0];
             bool descending = parts.Length > 1 && parts[1].Equals("DESC", StringComparison.OrdinalIgnoreCase);
@@ -383,7 +393,9 @@ public class QueryBuilder<T>
     {
         var orderDelegates = _orderProvider.GetOrderDelegates();
         if (orderDelegates == null || orderDelegates.Count == 0)
+        {
             return source;
+        }
 
         IOrderedEnumerable<T> ordered = null;
         foreach (var (keySelector, descending) in orderDelegates)
@@ -438,10 +450,14 @@ public class DatabaseOptions : IAppOptions, IValidatableOptions
     public void Validate()
     {
         if (string.IsNullOrWhiteSpace(ConnectionString))
+        {
             throw new InvalidOperationException("Database connection string is required");
+        }
         
         if (Timeout <= 0)
+        {
             throw new InvalidOperationException("Database timeout must be greater than 0");
+        }
     }
 }
 ```

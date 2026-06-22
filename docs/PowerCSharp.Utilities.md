@@ -449,9 +449,13 @@ public class ReportGenerator
             report.TotalSales += sale.Amount;
             
             if (sale.Channel == "Online")
+            {
                 report.OnlineSales += sale.Amount;
+            }
             else
+            {
                 report.RetailSales += sale.Amount;
+            }
         }
         
         return report;

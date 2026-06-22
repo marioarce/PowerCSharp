@@ -12,8 +12,14 @@ public static class MathUtility
     /// </summary>
     public static T Clamp<T>(T value, T min, T max) where T : IComparable<T>
     {
-        if (value.CompareTo(min) < 0) return min;
-        if (value.CompareTo(max) > 0) return max;
+        if (value.CompareTo(min) < 0)
+        {
+            return min;
+        }
+        if (value.CompareTo(max) > 0)
+        {
+            return max;
+        }
         return value;
     }
 
@@ -30,7 +36,10 @@ public static class MathUtility
     /// </summary>
     public static double Percentage(double part, double total)
     {
-        if (total == 0) return 0;
+        if (total == 0)
+        {
+            return 0;
+        }
         return (part / total) * 100;
     }
 

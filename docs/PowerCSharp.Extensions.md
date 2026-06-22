@@ -573,7 +573,10 @@ public class RetryHandler
             }
             catch
             {
-                if (i == maxRetries - 1) throw;
+                if (i == maxRetries - 1)
+                {
+                    throw;
+                }
             }
             
             await Task.Delay(1000 * (i + 1));

@@ -6,9 +6,6 @@ namespace PowerCSharp.Feature.Cache.Abstractions;
 /// </summary>
 public sealed class CacheFileKind : IEquatable<CacheFileKind>
 {
-    private static readonly List<CacheFileKind> _registry = new();
-    private static readonly object _registryLock = new();
-
     /// <summary>
     /// Gets the unique identifier for this cache file kind.
     /// </summary>
@@ -29,14 +26,6 @@ public sealed class CacheFileKind : IEquatable<CacheFileKind>
     /// </summary>
     public string Description { get; }
 
-    private CacheFileKind(string id, string name, string extension, string description)
-    {
-        Id = id ?? throw new ArgumentNullException(nameof(id));
-        Name = name ?? throw new ArgumentNullException(nameof(name));
-        Extension = extension ?? throw new ArgumentNullException(nameof(extension));
-        Description = description ?? throw new ArgumentNullException(nameof(description));
-    }
-
     /// <summary>
     /// Gets all registered cache file kinds.
     /// </summary>
@@ -56,7 +45,10 @@ public sealed class CacheFileKind : IEquatable<CacheFileKind>
     /// </summary>
     public static CacheFileKind? GetById(string id)
     {
-        if (id == null) throw new ArgumentNullException(nameof(id));
+        if (id == null)
+        {
+            throw new ArgumentNullException(nameof(id));
+        }
 
         lock (_registryLock)
         {
@@ -90,7 +82,10 @@ public sealed class CacheFileKind : IEquatable<CacheFileKind>
     /// </summary>
     public bool MatchesFile(string filePath)
     {
-        if (filePath == null) return false;
+        if (filePath == null)
+        {
+            return false;
+        }
         return Path.GetExtension(filePath).Equals(Extension, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -99,7 +94,10 @@ public sealed class CacheFileKind : IEquatable<CacheFileKind>
     /// </summary>
     public bool MatchesExtension(string extension)
     {
-        if (extension == null) return false;
+        if (extension == null)
+        {
+            return false;
+        }
         return extension.Equals(Extension, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -120,8 +118,14 @@ public sealed class CacheFileKind : IEquatable<CacheFileKind>
     /// </summary>
     public static bool operator ==(CacheFileKind? left, CacheFileKind? right)
     {
-        if (ReferenceEquals(left, right)) return true;
-        if (ReferenceEquals(left, null) || ReferenceEquals(right, null)) return false;
+        if (ReferenceEquals(left, right))
+        {
+            return true;
+        }
+        if (ReferenceEquals(left, null) || ReferenceEquals(right, null))
+        {
+            return false;
+        }
         return left.Equals(right);
     }
 
@@ -129,6 +133,18 @@ public sealed class CacheFileKind : IEquatable<CacheFileKind>
     /// Inequality operator.
     /// </summary>
     public static bool operator !=(CacheFileKind? left, CacheFileKind? right) => !(left == right);
+
+    // Private fields and constructor (moved to end)
+    private static readonly List<CacheFileKind> _registry = new();
+    private static readonly object _registryLock = new();
+
+    private CacheFileKind(string id, string name, string extension, string description)
+    {
+        Id = id ?? throw new ArgumentNullException(nameof(id));
+        Name = name ?? throw new ArgumentNullException(nameof(name));
+        Extension = extension ?? throw new ArgumentNullException(nameof(extension));
+        Description = description ?? throw new ArgumentNullException(nameof(description));
+    }
 
     // Built-in cache file kinds
     static CacheFileKind()
