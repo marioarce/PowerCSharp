@@ -56,7 +56,10 @@ public sealed class CacheFileKind : IEquatable<CacheFileKind>
     /// </summary>
     public static CacheFileKind? GetById(string id)
     {
-        if (id == null) throw new ArgumentNullException(nameof(id));
+        if (id == null)
+        {
+            throw new ArgumentNullException(nameof(id));
+        }
 
         lock (_registryLock)
         {
@@ -90,7 +93,10 @@ public sealed class CacheFileKind : IEquatable<CacheFileKind>
     /// </summary>
     public bool MatchesFile(string filePath)
     {
-        if (filePath == null) return false;
+        if (filePath == null)
+        {
+            return false;
+        }
         return Path.GetExtension(filePath).Equals(Extension, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -99,7 +105,10 @@ public sealed class CacheFileKind : IEquatable<CacheFileKind>
     /// </summary>
     public bool MatchesExtension(string extension)
     {
-        if (extension == null) return false;
+        if (extension == null)
+        {
+            return false;
+        }
         return extension.Equals(Extension, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -120,8 +129,14 @@ public sealed class CacheFileKind : IEquatable<CacheFileKind>
     /// </summary>
     public static bool operator ==(CacheFileKind? left, CacheFileKind? right)
     {
-        if (ReferenceEquals(left, right)) return true;
-        if (ReferenceEquals(left, null) || ReferenceEquals(right, null)) return false;
+        if (ReferenceEquals(left, right))
+        {
+            return true;
+        }
+        if (ReferenceEquals(left, null) || ReferenceEquals(right, null))
+        {
+            return false;
+        }
         return left.Equals(right);
     }
 

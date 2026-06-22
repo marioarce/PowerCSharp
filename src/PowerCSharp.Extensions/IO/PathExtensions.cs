@@ -40,8 +40,14 @@ public static class PathExtensions
         ArgumentNullException.ThrowIfNull(basePath);
         ArgumentNullException.ThrowIfNull(relativePath);
 #else
-        if (basePath == null) throw new ArgumentNullException(nameof(basePath));
-        if (relativePath == null) throw new ArgumentNullException(nameof(relativePath));
+        if (basePath == null)
+        {
+            throw new ArgumentNullException(nameof(basePath));
+        }
+        if (relativePath == null)
+        {
+            throw new ArgumentNullException(nameof(relativePath));
+        }
 #endif
 
         if (string.IsNullOrEmpty(basePath))
@@ -115,8 +121,14 @@ public static class PathExtensions
         ArgumentNullException.ThrowIfNull(basePath);
         ArgumentNullException.ThrowIfNull(paths);
 #else
-        if (basePath == null) throw new ArgumentNullException(nameof(basePath));
-        if (paths == null) throw new ArgumentNullException(nameof(paths));
+        if (basePath == null)
+        {
+            throw new ArgumentNullException(nameof(basePath));
+        }
+        if (paths == null)
+        {
+            throw new ArgumentNullException(nameof(paths));
+        }
 #endif
 
         if (string.IsNullOrEmpty(basePath))

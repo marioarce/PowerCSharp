@@ -20,7 +20,9 @@ public static class JsonElementExtensions
     public static bool TryGetPropertyCaseInsensitive(this JsonElement element, string propertyName, out JsonElement value)
     {
         if (propertyName == null)
+        {
             throw new ArgumentNullException(nameof(propertyName));
+        }
 
         var result = false;
         value = default;

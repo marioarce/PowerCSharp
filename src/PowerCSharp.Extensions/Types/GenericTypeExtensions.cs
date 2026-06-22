@@ -35,7 +35,9 @@ public static class GenericTypeExtensions
 
         // Check if the type is not generic
         if (!type.IsGenericType)
+        {
             return type.Name;
+        }
 
         // Get the names of the generic arguments and join them with commas
         var genericTypes = string.Join(",", type.GetGenericArguments().Select(t => t.Name).ToArray());

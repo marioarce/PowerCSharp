@@ -278,7 +278,10 @@ public sealed class CacheResult<T>
     /// <inheritdoc />
     public bool Equals(CacheResult<T>? other)
     {
-        if (other == null) return false;
+        if (other == null)
+        {
+            return false;
+        }
         
         return IsSuccess == other.IsSuccess &&
                Reason == other.Reason &&

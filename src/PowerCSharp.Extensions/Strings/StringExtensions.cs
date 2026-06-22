@@ -608,7 +608,10 @@ public static partial class StringExtensions
     public static decimal ParseToDecimal(this string input, decimal defaultValue)
     {
         var result = defaultValue;
-        if (string.IsNullOrEmpty(input)) return result;
+        if (string.IsNullOrEmpty(input))
+        {
+            return result;
+        }
         
         // Remove non-numeric characters except decimal point
         input = string.Concat(input?.Where(c => char.IsNumber(c) || c == '.') ?? "");
