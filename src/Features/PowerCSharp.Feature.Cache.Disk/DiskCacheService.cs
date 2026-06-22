@@ -37,7 +37,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     // Semaphore and concurrency constants
     private const int SemaphoreMaxConcurrency = 1;
     
-    private readonly DiskCacheOptions _options;
+    private readonly DiskCacheFeatureOptions _options;
     private readonly ILogger<DiskCacheService> _logger;
     private readonly string _rootDirectory;
     private readonly string _indexPath;
@@ -51,7 +51,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     private bool _disposed;
 
     /// <summary>Creates the disk cache, ensuring the storage directory exists.</summary>
-    public DiskCacheService(IOptions<DiskCacheOptions> options, ILogger<DiskCacheService> logger)
+    public DiskCacheService(IOptions<DiskCacheFeatureOptions> options, ILogger<DiskCacheService> logger)
     {
         ValidateOptions(options.Value);
         
@@ -115,7 +115,7 @@ public sealed class DiskCacheService : IDiskCacheService, IDisposable
     /// <exception cref="ArgumentException">Thrown when an option has an invalid value.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory path is invalid.</exception>
     /// <exception cref="UnauthorizedAccessException">Thrown when the specified directory is not accessible.</exception>
-    private static void ValidateOptions(DiskCacheOptions options)
+    private static void ValidateOptions(DiskCacheFeatureOptions options)
     {
         // Validate DirectoryPath if specified
         if (!string.IsNullOrEmpty(options.DirectoryPath))
