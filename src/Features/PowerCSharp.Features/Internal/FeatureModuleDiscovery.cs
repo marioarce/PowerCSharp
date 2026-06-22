@@ -15,20 +15,15 @@ internal static class FeatureModuleDiscovery
     {
         var byType = new Dictionary<Type, IFeatureModule>();
 
-        Console.WriteLine($"[Discovery] Processing {explicitModules.Count()} explicit modules");
         foreach (var module in explicitModules)
         {
             byType[module.GetType()] = module;
-            Console.WriteLine($"[Discovery] Added explicit module: {module.FeatureKey} (Type: {module.GetType().Name})");
         }
 
         foreach (var assembly in assemblies.Distinct())
         {
-            Console.WriteLine($"[Discovery] Processing assembly: {assembly.FullName}");
-            var types = GetLoadableTypes(assembly).ToList();
-            Console.WriteLine($"[Discovery] Found {types.Count} types in assembly");
-            
-            var moduleTypes = new List<Type>();
+            var types = GetLoadableTypes(assembly);
+
             foreach (var type in types)
             {
                 if (!typeof(IFeatureModule).IsAssignableFrom(type))
@@ -38,29 +33,19 @@ internal static class FeatureModuleDiscovery
 
                 if (type.IsAbstract || type.IsInterface || byType.ContainsKey(type))
                 {
-                    Console.WriteLine($"[Discovery] Skipping IFeatureModule type '{type.Name}' (abstract/interface/duplicate)");
                     continue;
                 }
 
                 if (type.GetConstructor(Type.EmptyTypes) is null)
                 {
-                    Console.WriteLine($"[Discovery] Skipping IFeatureModule type '{type.Name}' (no parameterless constructor)");
                     continue;
                 }
 
-                moduleTypes.Add(type);
                 if (Activator.CreateInstance(type) is IFeatureModule module)
                 {
                     byType[type] = module;
-                    Console.WriteLine($"[Discovery] Successfully created module: {module.FeatureKey} (Type: {type.Name})");
-                }
-                else
-                {
-                    Console.WriteLine($"[Discovery] Failed to create instance of IFeatureModule type: {type.Name}");
                 }
             }
-            
-            Console.WriteLine($"[Discovery] Found {moduleTypes.Count} IFeatureModule types in {assembly.FullName}");
         }
 
         return byType.Values

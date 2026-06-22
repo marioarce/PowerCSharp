@@ -161,8 +161,55 @@ This is the first stable production release of PowerCSharp, marking the transiti
 
 ---
 
-## [Unreleased]
+## [2.0.0] - 2026-06-22
 
+### Added
+
+- **PowerCSharp.Features.Abstractions v1.0.0** — Contracts package: `IFeatureModule`, `IFeatureFlagProvider`, `IFeatureRegistrationContext`, `IFeaturePipelineContext`, `FeatureOptionsBase`, `FeatureDescriptor`, `FeatureTier`, `FeatureFlagValue`, `FeatureFlagSource`. Zero third-party dependencies; targets `netstandard2.0` + `net8.0` so any feature can reference it cheaply.
+
+- **PowerCSharp.Features v1.0.0** — The Features engine: hybrid auto-scan + explicit module discovery (`FeatureModuleDiscovery`), composite flag resolver (override → custom providers → env vars → appsettings → default), DI orchestration, feature registry, and opt-in diagnostics HTTP endpoint. Entry points: `AddPowerFeatures()` / `UsePowerFeatures()`. Startup feature matrix logged via `ILogger` in `UsePowerFeatures`.
+
+- **PowerCSharp.BuiltInFeatures v1.0.0** — Bundle of lightweight, runtime-flag-toggled ASP.NET Core capabilities. Initial built-in: **CORS** (`PowerFeatures:Cors`). `AddBuiltInFeatures()` convenience extension opts the bundle into auto-discovery. Any built-in can be disabled and replaced by a custom Pluggable Feature.
+
+- **PowerCSharp.Feature.Cache.Abstractions v1.3.0** — Framework-agnostic cache contracts and NoOp safe-off floor: `ICacheService`, `IDiskCacheService`, `ICacheStore`, `CacheProvider` enum, `CacheResult<T>`, `CacheMetadata`, `CacheFileKind`, and NoOp implementations (`NoOpCacheService`, `NoOpDiskCacheService`). Targets `netstandard2.0` + `net8.0`.
+
+- **PowerCSharp.Feature.Cache v1.3.0** — Cache feature module (`CacheFeatureModule`), options (`CacheFeatureOptions`), and `AddCacheFeature()` explicit extension. Always registers the NoOp floor so dependents resolve safely when no provider is active.
+
+- **PowerCSharp.Feature.Cache.BitFaster v1.3.0** — BitFaster-backed in-memory LRU cache provider. Isolates `BitFaster.Caching` dependency. Targets `netstandard2.0` + `net8.0`. Implements full `ICacheService` sync/async API with performance metrics and stampede protection (`GetOrCreate` / `GetOrCreateAsync`).
+
+- **PowerCSharp.Feature.Cache.Disk v1.3.0** — Disk-backed LRU cache provider. Atomic writes, cross-process file-lock coordination, background cleanup timer, metadata-aware operations, and `DebugHelper` for troubleshooting. Targets `net8.0`.
+
+- **`DirectoryExtensions`** — `TrySafeDelete` and related safe directory-deletion helpers in `PowerCSharp.Extensions`.
+
+- **Comprehensive Features test suite** — `PowerCSharp.Features.Tests`, `PowerCSharp.BuiltInFeatures.Tests`, and `PowerCSharp.Feature.Cache.Tests` covering: engine discovery, CORS module, NoOp floor, BitFaster provider, disk cache (async, cross-process locking, timer, metadata, file kind, validation, LRU eviction).
+
+- **`.editorconfig`** — Comprehensive coding standards (member ordering, brace style, nullable, indentation) applied across the entire codebase.
+
+- **Local NuGet feed script** (`scripts/pack-local-feed.sh`) — Packs all projects to a local feed for integration testing with consumer projects (e.g. `PowerCSharp.CleanArchitecture`).
+
+### Changed
+
+- **`Directory.Build.props`** — Added `PowerCSharpFeaturesVersion` (1.0.0) and `PowerCSharpFeatureCacheVersion` (1.3.0) alongside the existing `PowerCSharpVersion`. Changed `GeneratePackageOnBuild` to `false` (explicit pack via CI only).
+- **`PowerCSharp.Feature.Cache.Abstractions`** — Reorganised into dedicated `Enums` and `NoOp` sub-namespaces. Removed redundant `using` statements. Nullable annotations updated throughout.
+- **`DiskCacheOptions`** — Renamed to `DiskCacheFeatureOptions` and moved to the `PowerCSharp.Feature.Cache.Disk` package (was incorrectly in the core Cache package).
+- **`DiskCacheService`** — Refactored to use `IDiskCacheService` abstraction; background timer moved to core service for cross-platform compatibility.
+- **`BitFasterCacheService`** — Extended with comprehensive sync/async methods and metadata tracking.
+- **Member ordering** — All affected files reorganised to follow EditorConfig standards (fields, constructors, properties, methods).
+- **Conditional statements** — Block braces applied consistently across `PowerCSharp.Extensions`, `PowerCSharp.Utilities`, and Feature packages.
+- **`JsonExtensions`** — Removed duplicate class (consolidated into `JsonElementExtensions`).
+- **`OrderClause`** — Extracted to its own file from `DynamicExpressionExtensions`.
+- **`AsyncHelper`** — Extended with `ValueTask` support for async-to-sync bridging.
+- **Nullable reference type annotations** — Updated in cache abstractions, sample endpoints, and test support files.
+
+### Fixed
+
+- **`Console.WriteLine` removed from `PowerFeaturesServiceCollectionExtensions` and `FeatureModuleDiscovery`** — Debug output replaced by proper `ILogger` startup summary in `UsePowerFeatures` → `FeatureDiagnostics.LogMatrix`.
+- **`Console.WriteLine` removed from `ObjectExtensions.MapTo`** — Exception in property-copy helper now silenced without writing to stdout.
+- **Unused variable warning** in `CacheFeatureModule` — `Assembly.Load` result now uses the discard pattern (`_`).
+
+---
+
+## [Unreleased]
 
 ---
 
@@ -170,23 +217,14 @@ This is the first stable production release of PowerCSharp, marking the transiti
 
 ### Future Releases
 
-#### [1.1.0] - Planned
-- Additional string manipulation methods
-- Enhanced cryptographic utilities
-- Performance optimizations
-- More validation helpers
+#### [2.1.0] - Planned
+- `PowerCSharp.Feature.Cache.Memory` — native `IMemoryCache` provider
+- Additional Built-in Features: correlation ID, security headers, exception handling middleware
+- Hotfix branch support in CI/CD (`hotfix/*` → `main` + `develop`)
 
-#### [1.2.0] - Planned
-- Async extension methods
-- Caching utilities
-- Logging helpers
-- Configuration extensions
-
-#### [2.0.0] - Planned (Breaking Changes)
-- .NET 9.0 support
-- Updated API design
-- Removed deprecated methods
-- Enhanced performance
+#### [3.0.0] - Planned
+- .NET 9.0 / .NET 10.0 support
+- `PowerCSharp.Feature.Observability` — OpenTelemetry integration
 
 ---
 

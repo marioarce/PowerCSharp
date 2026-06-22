@@ -29,8 +29,8 @@ public sealed class CacheFeatureModule : IFeatureModule
     /// <inheritdoc />
     public void ConfigureServices(IFeatureRegistrationContext context)
     {
-        // Ensure the abstractions assembly is loaded before registering services
-        var abstractionsAssembly = Assembly.Load("PowerCSharp.Feature.Cache.Abstractions");
+        // Force-load the abstractions assembly so the CLR can resolve its types during discovery.
+        _ = Assembly.Load("PowerCSharp.Feature.Cache.Abstractions");
         
         context.Services.Configure<CacheFeatureOptions>(
             context.Configuration.GetSection($"PowerFeatures:{Key}"));

@@ -154,9 +154,8 @@ public static class ObjectExtensions
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine(ex.Message);
         }
 
         // Return the new object

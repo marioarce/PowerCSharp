@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       release_type:
-        description: 'Release type'
+        description: 'Release type (patch / minor / major)'
         required: true
         default: 'patch'
         type: choice
@@ -17,6 +17,15 @@ on:
           - patch
           - minor
           - major
+      package_family:
+        description: 'Package family to bump'
+        required: true
+        default: 'core'
+        type: choice
+        options:
+          - core       # PowerCSharpVersion — Core, Extensions, Helpers, Utilities, Compatibility, AspNetCore
+          - features   # PowerCSharpFeaturesVersion — Features.Abstractions, Features, BuiltInFeatures
+          - cache      # PowerCSharpFeatureCacheVersion — Feature.Cache.*, Feature.Cache.BitFaster, Feature.Cache.Disk
 
 permissions:
   contents: write
@@ -220,20 +229,37 @@ jobs:
         
     - name: Update version
       run: |
-        echo "Updating version for ${{ github.event.inputs.release_type }} release"
-        
+        FAMILY="${{ github.event.inputs.package_family }}"
+        RELEASE_TYPE="${{ github.event.inputs.release_type }}"
+        echo "Bumping $FAMILY packages ($RELEASE_TYPE)"
+
+        # Select the correct XML element and tag prefix based on family
+        case "$FAMILY" in
+          "features")
+            VERSION_ELEMENT="PowerCSharpFeaturesVersion"
+            TAG_PREFIX="features-v"
+            ;;
+          "cache")
+            VERSION_ELEMENT="PowerCSharpFeatureCacheVersion"
+            TAG_PREFIX="cache-v"
+            ;;
+          *)
+            VERSION_ELEMENT="PowerCSharpVersion"
+            TAG_PREFIX="v"
+            ;;
+        esac
+
         # Read current version
-        CURRENT_VERSION=$(grep '<PowerCSharpVersion>' Directory.Build.props | sed 's/.*<PowerCSharpVersion>\(.*\)<\/PowerCSharpVersion>.*/\1/')
-        echo "Current version: $CURRENT_VERSION"
-        
-        # Split version into parts
+        CURRENT_VERSION=$(grep "<$VERSION_ELEMENT>" Directory.Build.props | sed "s/.*<$VERSION_ELEMENT>\(.*\)<\/$VERSION_ELEMENT>.*/\1/")
+        echo "Current $VERSION_ELEMENT: $CURRENT_VERSION"
+
+        # Split and bump
         IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
         MAJOR=${VERSION_PARTS[0]}
         MINOR=${VERSION_PARTS[1]}
         PATCH=${VERSION_PARTS[2]}
-        
-        # Update version based on release type
-        case "${{ github.event.inputs.release_type }}" in
+
+        case "$RELEASE_TYPE" in
           "major")
             MAJOR=$((MAJOR + 1))
             MINOR=0
@@ -247,31 +273,37 @@ jobs:
             PATCH=$((PATCH + 1))
             ;;
         esac
-        
+
         NEW_VERSION="$MAJOR.$MINOR.$PATCH"
-        echo "New version: $NEW_VERSION"
-        
+        echo "New $VERSION_ELEMENT: $NEW_VERSION"
+
         # Update Directory.Build.props
-        sed -i "s/<PowerCSharpVersion>.*<\/PowerCSharpVersion>/<PowerCSharpVersion>$NEW_VERSION<\/PowerCSharpVersion>/" Directory.Build.props
-        
-        # Commit and push changes
+        sed -i "s/<$VERSION_ELEMENT>.*<\/$VERSION_ELEMENT>/<$VERSION_ELEMENT>$NEW_VERSION<\/$VERSION_ELEMENT>/" Directory.Build.props
+
+        # Commit and push
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add Directory.Build.props
-        git commit -m "chore: bump version to $NEW_VERSION"
+        git commit -m "chore: bump $VERSION_ELEMENT to $NEW_VERSION"
         git push
+
+        # Export for the tag step
+        echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+        echo "TAG_PREFIX=$TAG_PREFIX" >> $GITHUB_ENV
         
     - name: Create release tag
       uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
       with:
         script: |
-          const version = require('fs').readFileSync('Directory.Build.props', 'utf8')
-            .match(/<PowerCSharpVersion>(.+?)<\/PowerCSharpVersion>/)[1];
-          
+          const tagPrefix = process.env.TAG_PREFIX;
+          const version   = process.env.NEW_VERSION;
+          const tag = `${tagPrefix}${version}`;
+          console.log(`Creating tag: ${tag}`);
+
           await github.rest.git.createRef({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            ref: `refs/tags/v${version}`,
+            ref: `refs/tags/${tag}`,
             sha: context.sha
           });
 

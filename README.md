@@ -2,7 +2,7 @@
 
 ![PowerCSharp Banner](docs/images/PowerCSharp_Banner.png)
 
-[![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v1.0.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
+[![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v2.0.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/marioarce/PowerCSharp/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/marioarce/PowerCSharp/actions)
 [![codecov](https://codecov.io/gh/marioarce/PowerCSharp/branch/main/graph/badge.svg)](https://codecov.io/gh/marioarce/PowerCSharp)
@@ -17,40 +17,48 @@ Enhanced C# extension methods and utilities for .NET developers
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Utilities.svg)](https://www.nuget.org/packages/PowerCSharp.Utilities)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Helpers.svg)](https://www.nuget.org/packages/PowerCSharp.Helpers)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Compatibility.svg)](https://www.nuget.org/packages/PowerCSharp.Compatibility)
+[![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Features.Abstractions.svg)](https://www.nuget.org/packages/PowerCSharp.Features.Abstractions)
+[![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Features.svg)](https://www.nuget.org/packages/PowerCSharp.Features)
+[![NuGet](https://img.shields.io/nuget/v/PowerCSharp.BuiltInFeatures.svg)](https://www.nuget.org/packages/PowerCSharp.BuiltInFeatures)
+[![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Feature.Cache.svg)](https://www.nuget.org/packages/PowerCSharp.Feature.Cache)
 
 PowerCSharp is a comprehensive library of extension methods, utilities, and helper classes designed to enhance your C# development experience. Built by a senior C# architect with 20+ years of experience, this library provides practical, well-tested solutions for common programming challenges.
 
-**PowerCSharp v1.0.0 - Production Ready! 🎉**
+**PowerCSharp v2.0.0 — Features Framework Release**
 
-### Major Release Highlights:
-- **Production Stability**: Comprehensive testing and validation for enterprise use
-- **Complete API Surface**: All extension methods, utilities, and helpers finalized
-- **.NET 8.0 Optimization**: Full support for latest .NET features and performance improvements
-- **Semantic Versioning**: Proper version management for long-term maintenance
-- **Enhanced Documentation**: Complete API reference and migration guides
-- **NuGet Package Icons**: Professional package presentation on NuGet Gallery
-
-**Recent Improvements (v1.0.0):**
-- **Production Release**: Finalized all APIs for v1.0.0 stability
-- **NuGet Package Icons**: Added professional icons for all packages
-- **Code Quality**: Resolved nullable reference warnings and improved code coverage
-- **Documentation Updates**: Comprehensive v1.0.0 release notes and migration guides
-- **Architecture Refactoring**: Centralized interfaces in PowerCSharp.Core for better separation of concerns
-- **Package Separation**: Split ASP.NET Core extensions into dedicated package for cleaner dependencies
-- **Enhanced Performance**: Optimized implementations with reduced memory allocations
-- **Improved Documentation**: Comprehensive API documentation and usage examples
-- **Better Testing**: Expanded test coverage across all packages
+### What's New in v2.0.0:
+- **Features Framework**: Brand-new `PowerCSharp.Features` engine — hybrid auto-scan + explicit module discovery, composite flag resolution (config → env vars → overrides), DI orchestration, opt-in diagnostics endpoint
+- **Built-in Features**: `PowerCSharp.BuiltInFeatures` bundle — runtime-flag-toggled ASP.NET Core capabilities (CORS), toggled via `PowerFeatures:<Key>:Enabled`
+- **Cache Feature Family**: `PowerCSharp.Feature.Cache` (module + options), `PowerCSharp.Feature.Cache.Abstractions` (contracts + NoOp, `netstandard2.0` + `net8.0`), `PowerCSharp.Feature.Cache.BitFaster` (BitFaster-backed LRU), `PowerCSharp.Feature.Cache.Disk` (disk-backed LRU with cross-process locking)
+- **EditorConfig**: Comprehensive coding standards applied across the entire codebase
+- **Directory Extensions**: `TrySafeDelete` and related safe I/O helpers
+- **Code Quality**: Nullable annotations, member ordering, and namespace cleanup throughout
 
 ## 📦 Packages
 
-PowerCSharp is organized into several focused packages:
+PowerCSharp is organized into focused, independently versioned packages.
 
-- **[PowerCSharp.Core](src/PowerCSharp.Core/README.md)** - Core foundation and base classes for PowerCSharp library, including centralized interfaces and models
+### Core Libraries (`v2.0.0`)
+
+- **[PowerCSharp.Core](src/PowerCSharp.Core/README.md)** - Core foundation and base classes, including centralized interfaces and models
 - **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Cross-platform extension methods for collections, HTTP, LINQ, JSON, XML, objects, types, streams, and strings
 - **[PowerCSharp.Extensions.AspNetCore](src/PowerCSharp.Extensions.AspNetCore/README.md)** - ASP.NET Core specific extensions for configuration and web utilities
 - **[PowerCSharp.Utilities](src/PowerCSharp.Utilities/README.md)** - Utility classes for validation, file operations, and mathematics
 - **[PowerCSharp.Helpers](src/PowerCSharp.Helpers/README.md)** - Specialized helpers for JSON, cryptography, and environment operations
-- **[PowerCSharp.Compatibility](src/PowerCSharp.Compatibility/README.md)** - .NET Framework compatibility layer with System.Web dependencies for legacy applications
+- **[PowerCSharp.Compatibility](src/PowerCSharp.Compatibility/README.md)** - .NET Framework compatibility layer (`net462`/`net472`/`net48`)
+
+### Features Framework (`v1.0.0`)
+
+- **[PowerCSharp.Features.Abstractions](src/Features/PowerCSharp.Features.Abstractions/README.md)** - Contracts only: `IFeatureModule`, `IFeatureFlagProvider`, `FeatureOptionsBase`, `FeatureDescriptor`. Zero third-party dependencies.
+- **[PowerCSharp.Features](src/Features/PowerCSharp.Features/README.md)** - The engine: assembly discovery, composite flag resolution, DI orchestration, feature registry, and diagnostics. Entry points: `AddPowerFeatures()` / `UsePowerFeatures()`.
+- **[PowerCSharp.BuiltInFeatures](src/Features/PowerCSharp.BuiltInFeatures/README.md)** - Bundle of lightweight, runtime-toggled ASP.NET Core capabilities (CORS). Toggle via `PowerFeatures:<Key>:Enabled`.
+
+### Cache Feature Family (`v1.3.0`)
+
+- **[PowerCSharp.Feature.Cache.Abstractions](src/Features/PowerCSharp.Feature.Cache.Abstractions/README.md)** - Cache contracts (`ICacheService`, `IDiskCacheService`, metadata types) and NoOp safe-off implementations. Targets `netstandard2.0` + `net8.0`.
+- **[PowerCSharp.Feature.Cache](src/Features/PowerCSharp.Feature.Cache/README.md)** - Cache feature module, options, and `AddCacheFeature()` wiring. Pair with a provider package.
+- **[PowerCSharp.Feature.Cache.BitFaster](src/Features/PowerCSharp.Feature.Cache.BitFaster/README.md)** - BitFaster-backed in-memory LRU cache. Isolates `BitFaster.Caching` dependency.
+- **[PowerCSharp.Feature.Cache.Disk](src/Features/PowerCSharp.Feature.Cache.Disk/README.md)** - Disk-backed LRU cache with atomic writes, cross-process file-lock coordination, and background cleanup.
 
 ### 🏗️ Architecture
 
@@ -65,7 +73,7 @@ PowerCSharp follows a clean architectural pattern with **centralized interfaces*
 
 ## 🚀 Installation
 
-Install individual packages via NuGet:
+### Core libraries
 
 ```bash
 dotnet add package PowerCSharp.Core
@@ -76,15 +84,20 @@ dotnet add package PowerCSharp.Helpers
 dotnet add package PowerCSharp.Compatibility
 ```
 
-Or install the complete suite:
+### Features framework
 
 ```bash
-dotnet add package PowerCSharp.Core
-dotnet add package PowerCSharp.Extensions
-dotnet add package PowerCSharp.Extensions.AspNetCore
-dotnet add package PowerCSharp.Utilities
-dotnet add package PowerCSharp.Helpers
-dotnet add package PowerCSharp.Compatibility
+dotnet add package PowerCSharp.Features.Abstractions
+dotnet add package PowerCSharp.Features
+dotnet add package PowerCSharp.BuiltInFeatures
+```
+
+### Cache feature (pick a provider)
+
+```bash
+dotnet add package PowerCSharp.Feature.Cache
+dotnet add package PowerCSharp.Feature.Cache.BitFaster   # in-memory LRU (BitFaster)
+dotnet add package PowerCSharp.Feature.Cache.Disk        # disk-backed LRU
 ```
 
 ## 💡 Usage Examples
@@ -166,6 +179,48 @@ using Microsoft.Extensions.Configuration;
 
 var configuration = new ConfigurationBuilder().Build();
 var options = configuration.GetOptions<MyAppOptions>("MyApp"); // Reads from "MyApp" section
+```
+
+### Features Framework (PowerCSharp.Features + PowerCSharp.BuiltInFeatures)
+
+```csharp
+// Program.cs
+builder.Services.AddPowerFeatures(builder.Configuration, options =>
+{
+    options.AddBuiltInFeatures();          // opt-in the built-in bundle (CORS, etc.)
+    options.ScanAssemblies(              // opt-in pluggable feature assemblies
+        typeof(CacheFeatureModule).Assembly);
+    options.Override("Cache", true);     // optional code-level override
+    options.EnableDiagnosticsEndpoint(); // GET /power-features — off by default
+});
+
+var app = builder.Build();
+app.UsePowerFeatures();
+```
+
+```json
+// appsettings.json
+{
+  "PowerFeatures": {
+    "Cors": { "Enabled": true, "AllowedOrigins": [ "https://example.com" ] },
+    "Cache": { "Enabled": true, "Provider": "BitFaster", "Capacity": 1000 }
+  }
+}
+```
+
+Flag resolution order (highest precedence first): explicit code override → custom `IFeatureFlagProvider` → environment variables (`POWERFEATURES__<KEY>__ENABLED`) → `appsettings` → feature default.
+
+### Cache Feature (PowerCSharp.Feature.Cache + provider)
+
+```csharp
+// Resolves to the active provider (BitFaster or Disk) or NoOp if disabled.
+var cache = app.Services.GetRequiredService<ICacheService>();
+
+await cache.SetAsync("key", myObject, TimeSpan.FromMinutes(5));
+var result = await cache.GetAsync<MyObject>("key");
+
+if (result.Hit)
+    Console.WriteLine(result.Value);
 ```
 
 ### LINQ & Dynamic Query Extensions (PowerCSharp.Extensions)
@@ -327,19 +382,10 @@ string random = CryptoHelper.GenerateRandomString(10);
 
 ## 🎯 Target Frameworks
 
-- **Modern .NET**: .NET 8.0 with full compatibility and latest features
-- **Cross-platform**: .NET Standard 2.0 (PowerCSharp.Core, Extensions, Helpers, Utilities)
-- **.NET Framework**: 4.6.2, 4.7.2, 4.8 (via PowerCSharp.Compatibility package)
-- **ASP.NET Core**: .NET 8.0 (PowerCSharp.Extensions.AspNetCore package)
-- **Legacy Support**: Seamless migration path from .NET Framework to modern .NET
-
-### 🔧 Recent Updates (v0.3.0)
-- **Architectural Refactoring**: Centralized interfaces in PowerCSharp.Core for better maintainability
-- **Package Separation**: Split ASP.NET Core extensions into dedicated package for cleaner dependencies
-- **Performance Optimization**: Reduced memory allocations and improved execution speed
-- **Enhanced Testing**: Expanded unit test coverage across all packages
-- **Documentation Overhaul**: Comprehensive API documentation and practical examples
-- **Build System**: Improved CI/CD pipeline with automated testing and packaging
+- **Modern .NET**: .NET 8.0 — core libraries, Features engine, BuiltInFeatures, Cache feature modules
+- **.NET Standard 2.0 + .NET 8.0**: `PowerCSharp.Features.Abstractions`, `PowerCSharp.Feature.Cache.Abstractions`, `PowerCSharp.Feature.Cache.BitFaster` — usable from .NET Framework and .NET Core
+- **.NET Framework**: 4.6.2, 4.7.2, 4.8 — via `PowerCSharp.Compatibility`
+- **ASP.NET Core**: .NET 8.0 — `PowerCSharp.Extensions.AspNetCore`, Features engine, BuiltInFeatures
 
 ## 🧪 Testing
 
@@ -352,12 +398,25 @@ dotnet test
 ## 📚 Documentation
 
 ### Package-Specific Documentation
+
+**Core libraries**
 - **[PowerCSharp.Core](src/PowerCSharp.Core/README.md)** - Core interfaces and architecture
-- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Cross-platform extension methods reference  
+- **[PowerCSharp.Extensions](src/PowerCSharp.Extensions/README.md)** - Cross-platform extension methods reference
 - **[PowerCSharp.Extensions.AspNetCore](src/PowerCSharp.Extensions.AspNetCore/README.md)** - ASP.NET Core specific extensions
 - **[PowerCSharp.Utilities](src/PowerCSharp.Utilities/README.md)** - Utility classes guide
 - **[PowerCSharp.Helpers](src/PowerCSharp.Helpers/README.md)** - Specialized helpers reference
 - **[PowerCSharp.Compatibility](src/PowerCSharp.Compatibility/README.md)** - .NET Framework compatibility layer
+
+**Features framework**
+- **[PowerCSharp.Features.Abstractions](src/Features/PowerCSharp.Features.Abstractions/README.md)** - Contracts reference
+- **[PowerCSharp.Features](src/Features/PowerCSharp.Features/README.md)** - Engine integration guide
+- **[PowerCSharp.BuiltInFeatures](src/Features/PowerCSharp.BuiltInFeatures/README.md)** - Built-in bundle guide
+
+**Cache feature family**
+- **[PowerCSharp.Feature.Cache.Abstractions](src/Features/PowerCSharp.Feature.Cache.Abstractions/README.md)** - Cache contracts reference
+- **[PowerCSharp.Feature.Cache](src/Features/PowerCSharp.Feature.Cache/README.md)** - Cache module guide
+- **[PowerCSharp.Feature.Cache.BitFaster](src/Features/PowerCSharp.Feature.Cache.BitFaster/README.md)** - BitFaster provider guide
+- **[PowerCSharp.Feature.Cache.Disk](src/Features/PowerCSharp.Feature.Cache.Disk/README.md)** - Disk provider guide
 
 ### Detailed API Documentation
 - **[PowerCSharp.Core API](docs/PowerCSharp.Core.md)** - Complete core API reference
@@ -367,6 +426,10 @@ dotnet test
 - **[PowerCSharp.Helpers API](docs/PowerCSharp.Helpers.md)** - Helpers API documentation
 - **[PowerCSharp.Compatibility API](docs/PowerCSharp.Compatibility.md)** - .NET Framework compatibility API
 - **[Extensions API Reference](docs/PowerCSharp.Extensions-API.md)** - Complete extensions catalog
+- **[Features Architecture](docs/PowerCSharp.Features.Architecture.md)** - Features system design
+- **[Features Authoring Guide](docs/PowerCSharp.Features.Authoring-Guide.md)** - How to build a new feature
+- **[Features Flag Reference](docs/PowerCSharp.Features.FlagReference.md)** - Flag schema and provider precedence
+- **[Cache Feature API](docs/PowerCSharp.Feature.Cache.md)** - Cache family API reference
 
 ### Development Documentation
 - [Examples and Samples](samples/) - Working code examples

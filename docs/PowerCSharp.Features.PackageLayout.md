@@ -1,6 +1,6 @@
 # PowerCSharp Features — Package Layout & Build Proposal
 
-> **Status:** Implementation-prep proposal (no code yet). Defines the proposed solution/folder layout for the Features packages, `Directory.Build.props` version additions, the local-NuGet-feed workflow for the `PowerCSharp.CleanArchitecture` template, and README stub templates for each new package.
+> **Status:** Implemented. Defines the solution/folder layout for the Features packages, `Directory.Build.props` version additions, the local-NuGet-feed workflow for the `PowerCSharp.CleanArchitecture` template, and README reference for each package. All packages described here are shipped as of v2.0.0.
 
 ---
 
