@@ -261,10 +261,10 @@ public class DiskCacheValidationTests
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new[]
             {
-                new KeyValuePair<string, string?>("PowerFeatures:Cache:Disk:DefaultTtlSeconds", "1800"),
-                new KeyValuePair<string, string?>("PowerFeatures:Cache:Disk:MaxEntries", "2000"),
-                new KeyValuePair<string, string?>("PowerFeatures:Cache:Disk:EnableBackgroundCleanup", "true"),
-                new KeyValuePair<string, string?>("PowerFeatures:Cache:Disk:CleanupIntervalSeconds", "120")
+                new KeyValuePair<string, string?>("PowerFeatures:DiskCache:DefaultTtlSeconds", "1800"),
+                new KeyValuePair<string, string?>("PowerFeatures:DiskCache:MaxEntries", "2000"),
+                new KeyValuePair<string, string?>("PowerFeatures:DiskCache:EnableBackgroundCleanup", "true"),
+                new KeyValuePair<string, string?>("PowerFeatures:DiskCache:CleanupIntervalSeconds", "120")
             })
             .Build();
 
@@ -291,7 +291,7 @@ public class DiskCacheValidationTests
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new[]
             {
-                new KeyValuePair<string, string?>("PowerFeatures:Cache:Disk:MaxEntries", "-1") // Invalid
+                new KeyValuePair<string, string?>("PowerFeatures:DiskCache:MaxEntries", "-1") // Invalid
             })
             .Build();
 

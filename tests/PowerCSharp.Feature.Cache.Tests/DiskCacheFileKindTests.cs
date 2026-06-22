@@ -24,7 +24,7 @@ public class DiskCacheFileKindTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-filekind-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -53,7 +53,7 @@ public class DiskCacheFileKindTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-mixed-kinds-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -90,7 +90,7 @@ public class DiskCacheFileKindTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-custom-kind-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -121,7 +121,7 @@ public class DiskCacheFileKindTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-mixed-ops-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -156,7 +156,7 @@ public class DiskCacheFileKindTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-persistence-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -187,8 +187,8 @@ public class DiskCacheFileKindTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-filekind-locking-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:EnableCrossProcessLocking", "true"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:EnableCrossProcessLocking", "true"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -226,8 +226,8 @@ public class DiskCacheFileKindTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-filekind-expiry-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:DefaultTtlSeconds", "1"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:DefaultTtlSeconds", "1"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);

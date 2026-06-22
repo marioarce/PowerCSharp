@@ -25,7 +25,7 @@ public class DiskCacheMetadataTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-metadata-success-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -53,7 +53,7 @@ public class DiskCacheMetadataTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-metadata-notfound-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -76,8 +76,8 @@ public class DiskCacheMetadataTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-metadata-expired-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:DefaultTtlSeconds", "1"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:DefaultTtlSeconds", "1"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -108,7 +108,7 @@ public class DiskCacheMetadataTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-metadata-get-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -133,7 +133,7 @@ public class DiskCacheMetadataTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-metadata-get-notfound-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -152,7 +152,7 @@ public class DiskCacheMetadataTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-metadata-filekind-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -182,7 +182,7 @@ public class DiskCacheMetadataTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-metadata-detection-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -208,7 +208,7 @@ public class DiskCacheMetadataTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-metadata-age-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -235,8 +235,8 @@ public class DiskCacheMetadataTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-metadata-expiry-calc-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:DefaultTtlSeconds", "30"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:DefaultTtlSeconds", "30"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -262,8 +262,8 @@ public class DiskCacheMetadataTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-metadata-locking-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:EnableCrossProcessLocking", "true"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:EnableCrossProcessLocking", "true"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -287,7 +287,7 @@ public class DiskCacheMetadataTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-metadata-persistence-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         // Create first cache instance
         using var provider1 = BaseServices().AddCacheDisk(config).BuildServiceProvider();

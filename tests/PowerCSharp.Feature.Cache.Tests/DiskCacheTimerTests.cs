@@ -24,10 +24,10 @@ public class DiskCacheTimerTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-timer-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:EnableBackgroundCleanup", "true"),
-            ("PowerFeatures:Cache:Disk:CleanupIntervalSeconds", "1"),
-            ("PowerFeatures:Cache:Disk:DefaultTtlSeconds", "2"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:EnableBackgroundCleanup", "true"),
+            ("PowerFeatures:DiskCache:CleanupIntervalSeconds", "1"),
+            ("PowerFeatures:DiskCache:DefaultTtlSeconds", "2"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -59,9 +59,9 @@ public class DiskCacheTimerTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-no-timer-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:EnableBackgroundCleanup", "false"),
-            ("PowerFeatures:Cache:Disk:DefaultTtlSeconds", "0")); // No expiry
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:EnableBackgroundCleanup", "false"),
+            ("PowerFeatures:DiskCache:DefaultTtlSeconds", "0")); // No expiry
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -92,8 +92,8 @@ public class DiskCacheTimerTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-timer-core-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:EnableBackgroundCleanup", "true"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:EnableBackgroundCleanup", "true"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);

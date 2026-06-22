@@ -209,7 +209,7 @@ public class CacheFeatureTests
     public void Disk_Overrides_NoOp_Floor()
     {
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", Path.Combine(Path.GetTempPath(), $"test-disk-{Guid.NewGuid()}")));
+            ("PowerFeatures:DiskCache:DirectoryPath", Path.Combine(Path.GetTempPath(), $"test-disk-{Guid.NewGuid()}")));
 
         var services = BaseServices();
         services.AddCacheFeature(config);   // TryAdd NoOp floor
@@ -224,8 +224,8 @@ public class CacheFeatureTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-disk-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:MaxEntries", "100"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:MaxEntries", "100"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -250,8 +250,8 @@ public class CacheFeatureTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-disk-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:MaxEntries", "3"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:MaxEntries", "3"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -281,8 +281,8 @@ public class CacheFeatureTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-disk-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:DefaultTtlSeconds", "1"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:DefaultTtlSeconds", "1"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -312,8 +312,8 @@ public class CacheFeatureTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-disk-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:MaxEntries", "100"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:MaxEntries", "100"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -344,8 +344,8 @@ public class CacheFeatureTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-disk-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:DefaultTtlSeconds", "1"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:DefaultTtlSeconds", "1"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -553,7 +553,7 @@ public class CacheFeatureTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-sync-async-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
