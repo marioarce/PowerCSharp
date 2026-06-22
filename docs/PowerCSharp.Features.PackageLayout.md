@@ -18,24 +18,29 @@ PowerCSharp/
 │  ├─ PowerCSharp.Utilities/                    (existing)
 │  ├─ PowerCSharp.Compatibility/                (existing)
 │  │
-│  └─ Features/                                 (NEW group)
-│     ├─ PowerCSharp.Features.Abstractions/     contracts only, zero third-party deps
-│     ├─ PowerCSharp.Features/                  engine (discovery, flag resolution, DI, diagnostics)
-│     ├─ PowerCSharp.BuiltInFeatures/           Group 1 bundle
-│     ├─ PowerCSharp.Feature.Cache/             Group 2 — contracts + module + options + NoOp
-│     └─ PowerCSharp.Feature.Cache.BitFaster/   Group 2 — BitFaster implementation (isolated dep)
+│  └─ Features/                                     (NEW group)
+│     ├─ PowerCSharp.Features.Abstractions/         contracts only, zero third-party deps
+│     ├─ PowerCSharp.Features/                      engine (discovery, flag resolution, DI, diagnostics)
+│     ├─ PowerCSharp.BuiltInFeatures/               Group 1 bundle
+│     ├─ PowerCSharp.Feature.Cache.Abstractions/    Group 2 — contracts + NoOp (zero third-party deps)
+│     ├─ PowerCSharp.Feature.Cache/                 Group 2 — module + options + ASP.NET Core wiring
+│     ├─ PowerCSharp.Feature.Cache.BitFaster/       Group 2 — BitFaster implementation (isolated dep)
+│     └─ PowerCSharp.Feature.Cache.Disk/            Group 2 — disk-backed LRU implementation
 │
 ├─ tests/
 │  ├─ PowerCSharp.Features.Tests/               engine + abstractions + flag resolution
 │  ├─ PowerCSharp.BuiltInFeatures.Tests/
-│  └─ PowerCSharp.Feature.Cache.Tests/          incl. isolation/NoOp/provider-selection tests
+│  ├─ PowerCSharp.Feature.Cache.Tests/          incl. isolation/NoOp/provider-selection tests
+│  └─ PowerCSharp.Feature.Cache.Abstractions.Tests/  (optional) contracts + NoOp behavior tests
 │
 └─ PowerCSharp.sln                              add the new projects + a "Features" solution folder
 ```
 
 **Solution folder**: add a `Features` solution folder (GUID type `{2150E333-...}`, same as existing `src`/`tests` virtual folders) and nest the new `.csproj` entries under it for IDE grouping.
 
-**Target framework**: `net8.0` (matches the ecosystem). `PowerCSharp.Features.Abstractions` may multi-target `netstandard2.0;net8.0` to maximize reach, mirroring `PowerCSharp.Core`.
+**Target frameworks**:
+- `net8.0` for the engine, built-ins, and feature modules (matches the ASP.NET Core ecosystem).
+- `netstandard2.0;net8.0` for feature abstractions packages (e.g. `PowerCSharp.Features.Abstractions`, `PowerCSharp.Feature.Cache.Abstractions`) so providers and console apps can run on .NET Framework and .NET Core.
 
 ---
 
@@ -99,10 +104,12 @@ dotnet pack -c Release \
 
 ### Reference from the template
 ```bash
-dotnet add package PowerCSharp.Features            --version 1.0.0-dev.*
-dotnet add package PowerCSharp.BuiltInFeatures      --version 1.0.0-dev.*
-dotnet add package PowerCSharp.Feature.Cache        --version 1.0.0-dev.*
-dotnet add package PowerCSharp.Feature.Cache.BitFaster --version 1.0.0-dev.*
+dotnet add package PowerCSharp.Features                     --version 1.0.0-dev.*
+dotnet add package PowerCSharp.BuiltInFeatures              --version 1.0.0-dev.*
+dotnet add package PowerCSharp.Feature.Cache.Abstractions   --version 1.0.0-dev.*
+dotnet add package PowerCSharp.Feature.Cache                --version 1.0.0-dev.*
+dotnet add package PowerCSharp.Feature.Cache.BitFaster      --version 1.0.0-dev.*
+dotnet add package PowerCSharp.Feature.Cache.Disk           --version 1.0.0-dev.*
 ```
 
 **Inside the PowerCSharp solution itself**, use `ProjectReference` between feature projects for fast inner-loop development; only the template consumes via the feed.
@@ -152,15 +159,28 @@ by a custom Pluggable Feature.
 - **Depends on:** PowerCSharp.Features + Microsoft.AspNetCore.App
 ```
 
+### `PowerCSharp.Feature.Cache.Abstractions/README.md`
+```markdown
+# PowerCSharp.Feature.Cache.Abstractions
+
+Framework-agnostic cache contracts and NoOp floors for the PowerCSharp Cache feature.
+No third-party dependencies; targets netstandard2.0 and net8.0.
+
+- **Package ID:** PowerCSharp.Feature.Cache.Abstractions
+- **Depends on:** Microsoft.Extensions.Logging.Abstractions
+- **Namespaces:** PowerCSharp.Feature.Cache.Abstractions (and .Enums, .NoOp)
+- See: docs/PowerCSharp.Features.Authoring-Guide.md
+```
+
 ### `PowerCSharp.Feature.Cache/README.md`
 ```markdown
 # PowerCSharp.Feature.Cache
 
-Cache feature contracts + module + options + NoOp (no third-party deps). Pair with a
-provider package (e.g. PowerCSharp.Feature.Cache.BitFaster) to choose a backend.
+Cache feature module + options + ASP.NET Core wiring. Pair with the abstractions package
+and a provider package (e.g. PowerCSharp.Feature.Cache.BitFaster) to choose a backend.
 
 - **Package ID:** PowerCSharp.Feature.Cache
-- **Depends on:** PowerCSharp.Features.Abstractions
+- **Depends on:** PowerCSharp.Features.Abstractions + PowerCSharp.Feature.Cache.Abstractions
 - **Flag:** PowerFeatures:Cache (Enabled, Provider, Capacity, Disk)
 - See: docs/PowerCSharp.Features.Authoring-Guide.md
 ```
@@ -169,25 +189,39 @@ provider package (e.g. PowerCSharp.Feature.Cache.BitFaster) to choose a backend.
 ```markdown
 # PowerCSharp.Feature.Cache.BitFaster
 
-BitFaster-backed implementation of PowerCSharp.Feature.Cache. References BitFaster.Caching;
+BitFaster-backed implementation of the PowerCSharp Cache feature. References BitFaster.Caching;
 this dependency is isolated here and never enters apps that don't reference this package.
 
 - **Package ID:** PowerCSharp.Feature.Cache.BitFaster
-- **Depends on:** PowerCSharp.Feature.Cache + BitFaster.Caching
+- **Depends on:** PowerCSharp.Feature.Cache.Abstractions + BitFaster.Caching
 - **Activate:** PowerFeatures:Cache:Provider = BitFaster
+```
+
+### `PowerCSharp.Feature.Cache.Disk/README.md`
+```markdown
+# PowerCSharp.Feature.Cache.Disk
+
+Disk-backed LRU implementation of the PowerCSharp Cache feature. Targets netstandard2.0
+and net8.0; no third-party dependencies beyond framework packages.
+
+- **Package ID:** PowerCSharp.Feature.Cache.Disk
+- **Depends on:** PowerCSharp.Feature.Cache.Abstractions
+- **Activate:** call services.AddCacheDisk(configuration) or set PowerFeatures:Cache:Provider = Disk
 ```
 
 ---
 
 ## 5. Implementation Order (when we start building code)
 
-1. `PowerCSharp.Features.Abstractions` — contracts (`IFeatureModule`, `IFeatureFlagProvider`, `FeatureFlagValue`, `FeatureOptionsBase`, `FeatureDescriptor`).
+1. `PowerCSharp.Features.Abstractions` — framework contracts (`IFeatureModule`, `IFeatureFlagProvider`, `FeatureFlagValue`, `FeatureOptionsBase`, `FeatureDescriptor`).
 2. `PowerCSharp.Features` — engine (discovery, composite flag resolver, `FeatureRegistry`, `AddPowerFeatures`/`UsePowerFeatures`, diagnostics + endpoint).
 3. `PowerCSharp.BuiltInFeatures` — start with one trivial built-in (e.g. CORS) to exercise the pipeline.
-4. `PowerCSharp.Feature.Cache` — contracts + module + options + NoOp.
-5. `PowerCSharp.Feature.Cache.BitFaster` — migrate the BitFaster/disk-cache implementation from the source project.
-6. Tests for each, including the **isolation validation** described in the Authoring Guide §7.
-7. Wire the `PowerCSharp.CleanArchitecture` template to consume via the local feed and validate end-to-end.
+4. `PowerCSharp.Feature.Cache.Abstractions` — cache contracts + metadata + NoOp floors.
+5. `PowerCSharp.Feature.Cache` — module + options + `AddCacheFeature` extension.
+6. `PowerCSharp.Feature.Cache.BitFaster` — BitFaster-backed in-memory provider.
+7. `PowerCSharp.Feature.Cache.Disk` — disk-backed LRU provider.
+8. Tests for each, including the **isolation validation** described in the Authoring Guide §7.
+9. Wire the `PowerCSharp.CleanArchitecture` template to consume via the local feed and validate end-to-end.
 
 > Each step is a separate, reviewable unit of work — no implementation begins until explicitly approved.
 

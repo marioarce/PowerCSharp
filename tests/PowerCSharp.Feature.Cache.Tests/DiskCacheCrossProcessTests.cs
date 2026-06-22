@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PowerCSharp.Feature.Cache.Abstractions;
 using PowerCSharp.Feature.Cache.Disk;
 
 namespace PowerCSharp.Feature.Cache.Tests;
@@ -23,8 +24,8 @@ public class DiskCacheCrossProcessTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-cross-process-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:EnableCrossProcessLocking", "true"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:EnableCrossProcessLocking", "true"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -51,8 +52,8 @@ public class DiskCacheCrossProcessTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-no-cross-process-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:EnableCrossProcessLocking", "false"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:EnableCrossProcessLocking", "false"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -79,8 +80,8 @@ public class DiskCacheCrossProcessTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-concurrent-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:EnableCrossProcessLocking", "true"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:EnableCrossProcessLocking", "true"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -111,8 +112,8 @@ public class DiskCacheCrossProcessTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-same-key-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:EnableCrossProcessLocking", "true"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:EnableCrossProcessLocking", "true"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -141,9 +142,9 @@ public class DiskCacheCrossProcessTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-index-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:EnableCrossProcessLocking", "true"),
-            ("PowerFeatures:Cache:Disk:MaxEntries", "3"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:EnableCrossProcessLocking", "true"),
+            ("PowerFeatures:DiskCache:MaxEntries", "3"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -184,8 +185,8 @@ public class DiskCacheCrossProcessTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-dispose-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:EnableCrossProcessLocking", "true"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:EnableCrossProcessLocking", "true"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -211,12 +212,12 @@ public class DiskCacheCrossProcessTests
         var testDir2 = Path.Combine(Path.GetTempPath(), $"test-perf-off-{Guid.NewGuid()}");
 
         var configWithLocking = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir1),
-            ("PowerFeatures:Cache:Disk:EnableCrossProcessLocking", "true"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir1),
+            ("PowerFeatures:DiskCache:EnableCrossProcessLocking", "true"));
 
         var configWithoutLocking = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir2),
-            ("PowerFeatures:Cache:Disk:EnableCrossProcessLocking", "false"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir2),
+            ("PowerFeatures:DiskCache:EnableCrossProcessLocking", "false"));
 
         // Test with locking
         var services1 = BaseServices();

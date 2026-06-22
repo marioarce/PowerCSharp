@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PowerCSharp.Feature.Cache.Abstractions;
 using PowerCSharp.Feature.Cache.Disk;
 
 namespace PowerCSharp.Feature.Cache.Tests;
@@ -23,8 +24,8 @@ public class DiskCacheAsyncTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-async-purge-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:DefaultTtlSeconds", "1"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:DefaultTtlSeconds", "1"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -61,8 +62,8 @@ public class DiskCacheAsyncTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-async-evict-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:MaxEntries", "2"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:MaxEntries", "2"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -102,8 +103,8 @@ public class DiskCacheAsyncTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-async-sync-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir),
-            ("PowerFeatures:Cache:Disk:DefaultTtlSeconds", "1"));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir),
+            ("PowerFeatures:DiskCache:DefaultTtlSeconds", "1"));
 
         var services = BaseServices();
         services.AddCacheDisk(config);
@@ -147,7 +148,7 @@ public class DiskCacheAsyncTests
     {
         var testDir = Path.Combine(Path.GetTempPath(), $"test-async-cancel-{Guid.NewGuid()}");
         var config = BuildConfiguration(
-            ("PowerFeatures:Cache:Disk:DirectoryPath", testDir));
+            ("PowerFeatures:DiskCache:DirectoryPath", testDir));
 
         var services = BaseServices();
         services.AddCacheDisk(config);

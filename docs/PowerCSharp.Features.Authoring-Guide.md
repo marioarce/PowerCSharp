@@ -51,20 +51,30 @@ Every feature, regardless of tier, provides:
 
 ## 3. Worked Example — The Cache Family
 
-The Cache feature is packaged as a **family** to demonstrate the full framework: contracts/module separate from the third-party-bearing implementation.
+The Cache feature is packaged as a **family** to demonstrate the full framework: contracts are split into a zero-dependency abstractions package, the module/options live in the ASP.NET Core package, and each backend is isolated in its own provider package.
 
 ```
-PowerCSharp.Feature.Cache            → contracts + module + options/flag + NoOp (NO third-party deps)
-PowerCSharp.Feature.Cache.BitFaster  → BitFaster-backed implementation (isolates BitFaster.Caching)
+PowerCSharp.Feature.Cache.Abstractions  → contracts + NoOp floors (NO third-party deps, netstandard2.0 + net8.0)
+PowerCSharp.Feature.Cache               → module + options + AddCacheFeature (ASP.NET Core, net8.0)
+PowerCSharp.Feature.Cache.BitFaster     → BitFaster-backed implementation (isolates BitFaster.Caching)
+PowerCSharp.Feature.Cache.Disk          → disk-backed LRU implementation (no third-party deps)
 ```
 
-### 3.1 Contracts package — `PowerCSharp.Feature.Cache`
+### 3.1 Contracts package — `PowerCSharp.Feature.Cache.Abstractions`
 
-**Dependencies:** `PowerCSharp.Features.Abstractions` only.
+**Dependencies:** `Microsoft.Extensions.Logging.Abstractions` only.
+
+**Namespaces:**
+
+- `PowerCSharp.Feature.Cache.Abstractions` — `ICacheService`, `IDiskCacheService`, `CacheResult<T>`, metadata types.
+- `PowerCSharp.Feature.Cache.Abstractions.Enums` — `CacheProvider`, `CacheResultReason`, `CacheEntryPriority`.
+- `PowerCSharp.Feature.Cache.Abstractions.NoOp` — `NoOpCacheService`, `NoOpDiskCacheService`.
 
 **Contracts** (modeled on the source project's `Infrastructure/Services/Cache/*`):
 
 ```csharp
+using PowerCSharp.Feature.Cache.Abstractions;
+
 public interface ICacheService
 {
     bool TryGet<T>(string key, out T value);
@@ -82,19 +92,30 @@ public interface IDiskCacheService
 **Options** — bound from `PowerFeatures:Cache`:
 
 ```csharp
+using PowerCSharp.Feature.Cache;
+using PowerCSharp.Feature.Cache.Abstractions.Enums;
+
 public sealed class CacheFeatureOptions : FeatureOptionsBase
 {
     public CacheProvider Provider { get; set; } = CacheProvider.None; // variant flag drives selection
     public int Capacity { get; set; } = 1000;
-    public DiskCacheOptions Disk { get; set; } = new();
 }
 
-public enum CacheProvider { None, BitFaster, Memory }
+// Defined in PowerCSharp.Feature.Cache.Abstractions.Enums
+public enum CacheProvider { None, BitFaster, Disk, Memory }
 ```
+
+### 3.2 Module package — `PowerCSharp.Feature.Cache`
+
+**Dependencies:** `PowerCSharp.Features.Abstractions` + `PowerCSharp.Feature.Cache.Abstractions`.
 
 **Module** — supports BOTH auto-discovery and explicit registration:
 
 ```csharp
+using PowerCSharp.Feature.Cache.Abstractions;
+using PowerCSharp.Feature.Cache.Abstractions.NoOp;
+using PowerCSharp.Features.Abstractions;
+
 public sealed class CacheFeatureModule : IFeatureModule
 {
     public string FeatureKey => "Cache";
@@ -117,8 +138,7 @@ public sealed class CacheFeatureModule : IFeatureModule
 
         // Provider selection via the variant flag/option.
         // NOTE: concrete provider registration lives in the provider package
-        //       (e.g. AddCacheBitFaster). The contracts package only knows the
-        //       contracts + NoOp; it never references a third-party.
+        //       (e.g. AddCacheBitFaster). This module only wires options and the NoOp floor.
     }
 
     public void ConfigurePipeline(IFeaturePipelineContext context) { /* no middleware */ }
@@ -128,6 +148,8 @@ public sealed class CacheFeatureModule : IFeatureModule
 **Explicit extension** (optional convenience):
 
 ```csharp
+using PowerCSharp.Feature.Cache;
+
 public static class CacheFeatureExtensions
 {
     public static IServiceCollection AddCacheFeature(this IServiceCollection services, IConfiguration configuration)
@@ -135,11 +157,14 @@ public static class CacheFeatureExtensions
 }
 ```
 
-### 3.2 Implementation package — `PowerCSharp.Feature.Cache.BitFaster`
+### 3.3 Implementation package — `PowerCSharp.Feature.Cache.BitFaster`
 
-**Dependencies:** `PowerCSharp.Feature.Cache` + `BitFaster.Caching` (**the isolated third-party**).
+**Dependencies:** `PowerCSharp.Feature.Cache.Abstractions` + `BitFaster.Caching` (**the isolated third-party**).
 
 ```csharp
+using PowerCSharp.Feature.Cache.Abstractions;
+using PowerCSharp.Feature.Cache.BitFaster;
+
 public static class CacheBitFasterExtensions
 {
     // Called by the host when it chooses the BitFaster provider, or by the module
@@ -150,7 +175,6 @@ public static class CacheBitFasterExtensions
 
         services.AddLru<string, object>(b => b.WithCapacity(options.Capacity).Build());
         services.AddSingleton<ICacheService, BitFasterCacheService>();
-        services.AddSingleton<IDiskCacheService, BitFasterDiskCacheService>();
         return services;
     }
 }
@@ -158,15 +182,15 @@ public static class CacheBitFasterExtensions
 
 > The BitFaster reference exists **only** in this package. An app that does not reference `PowerCSharp.Feature.Cache.BitFaster` never pulls `BitFaster.Caching` — Layer 1 isolation in action.
 
-### 3.3 What the Cache family demonstrates
+### 3.4 What the Cache family demonstrates
 
 | Mechanism | How |
 |---|---|
 | **Layer 1 isolation** | Don't reference `.BitFaster` → `BitFaster.Caching` absent from the dependency tree. |
 | **Layer 2 flag** | Reference it but flag off → `NoOp*` registered (mirrors source `NoOpDiskCacheService`). |
-| **Non-boolean flag** | `Provider` variant (`BitFaster`/`Memory`) selects the implementation. |
+| **Non-boolean flag** | `Provider` variant (`BitFaster`/`Disk`/`Memory`) selects the implementation. |
 | **Swappable backend** | A future `PowerCSharp.Feature.Cache.Memory` drops in without touching contracts. |
-| **Hybrid registration** | `CacheFeatureModule` (auto) + `AddCacheFeature`/`AddCacheBitFaster` (explicit). |
+| **Hybrid registration** | `CacheFeatureModule` (auto) + `AddCacheFeature`/`AddCacheBitFaster`/`AddCacheDisk` (explicit). |
 
 ---
 
@@ -193,11 +217,12 @@ If a contract is only resolved by the feature's own active code, you may skip th
 - [ ] Add XML docs on public types; add a section to the bundle README.
 
 ### Pluggable Feature (Group 2)
-- [ ] Create `PowerCSharp.Feature.<Name>` (contracts + module + options + NoOp), depending only on `Abstractions`.
-- [ ] If swappable backends: create `PowerCSharp.Feature.<Name>.<Provider>` for each implementation; isolate third-party deps there.
-- [ ] Provide both an `IFeatureModule` and an explicit `Add<Name>Feature()` extension.
+- [ ] Create `PowerCSharp.Feature.<Name>.Abstractions` (contracts + NoOp), depending only on framework `Abstractions` (and minimal third-party deps such as logging).
+- [ ] Create `PowerCSharp.Feature.<Name>` (module + options + registration extensions), depending on `PowerCSharp.Features.Abstractions` + `PowerCSharp.Feature.<Name>.Abstractions`.
+- [ ] If swappable backends: create `PowerCSharp.Feature.<Name>.<Provider>` for each implementation; isolate third-party deps there. Each provider depends only on `PowerCSharp.Feature.<Name>.Abstractions`, not on the module package.
+- [ ] Provide both an `IFeatureModule` (in the module package) and explicit `Add<Name>Feature()` / `Add<Name><Provider>()` extensions.
 - [ ] Implement Layer 2 flag-off behavior (NoOp where needed).
-- [ ] Add a per-feature version variable to `Directory.Build.props` (e.g. `PowerCSharpFeature<Name>Version`).
+- [ ] Add a per-feature version variable to `Directory.Build.props` (e.g. `PowerCSharpFeature<Name>Version`). Share it across `Abstractions`, module, and all providers in the family.
 - [ ] Add a `README.md` to each package; add the feature to the catalog.
 - [ ] Add tests; validate isolation by building a consumer that does NOT reference the provider package.
 
@@ -219,10 +244,11 @@ If a contract is only resolved by the feature's own active code, you may skip th
 
 Because dependency isolation is the headline benefit, prove it:
 
-1. In the `PowerCSharp.CleanArchitecture` template (or a scratch consumer), reference **only** `PowerCSharp.Feature.Cache` (not `.BitFaster`).
+1. In the `PowerCSharp.CleanArchitecture` template (or a scratch consumer), reference **only** `PowerCSharp.Feature.Cache` + `PowerCSharp.Feature.Cache.Abstractions` (not `.BitFaster`).
 2. Build and inspect the dependency tree (`dotnet list package --include-transitive`).
 3. Confirm `BitFaster.Caching` is **absent**.
 4. Add `PowerCSharp.Feature.Cache.BitFaster`, rebuild, confirm it now appears — and that toggling the flag off swaps in the NoOp at runtime.
+5. (Optional) Prove providers can be used without the ASP.NET Core module: reference only `PowerCSharp.Feature.Cache.Abstractions` + `PowerCSharp.Feature.Cache.BitFaster` in a console app and confirm `PowerCSharp.Feature.Cache` (and `Microsoft.AspNetCore.App`) is **not** required.
 
 ---
 

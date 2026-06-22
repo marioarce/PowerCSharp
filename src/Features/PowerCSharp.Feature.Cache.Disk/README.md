@@ -2,7 +2,7 @@
 
 Disk-backed LRU cache implementation for the PowerCSharp Cache feature.
 
-- Targets `netstandard2.0` and `net8.0`, so it runs on **.NET Framework** and **.NET Core**.
+- Targets `net8.0`, so it runs on **.NET 8.0 and later**.
 - Atomic writes (temp file + `File.Move`) so readers never see partial files.
 - LRU eviction with configurable count cap and TTL expiry.
 - Background cleanup via portable timer (all TFMs) + `IHostedService` on net8.0 for graceful shutdown.
@@ -20,15 +20,13 @@ Configuration section:
 ```json
 {
   "PowerFeatures": {
-    "Cache": {
-      "Disk": {
-        "DirectoryPath": "/path/to/cache",
-        "DefaultTtlSeconds": 3600,
-        "MaxEntries": 1000,
-        "EnableBackgroundCleanup": true,
-        "CleanupIntervalSeconds": 300,
-        "EnableCrossProcessLocking": true
-      }
+    "DiskCache": {
+      "DirectoryPath": "/path/to/cache",
+      "DefaultTtlSeconds": 3600,
+      "MaxEntries": 10000,
+      "EnableBackgroundCleanup": true,
+      "CleanupIntervalSeconds": 300,
+      "EnableCrossProcessLocking": false
     }
   }
 }
@@ -49,3 +47,15 @@ var cache = (DiskCacheService)disk;
 cache.PurgeExpired();
 cache.EvictToLimit();
 ```
+
+## Details
+
+- **Package ID:** `PowerCSharp.Feature.Cache.Disk`
+- **Depends on:** `PowerCSharp.Feature.Cache.Abstractions` (+ `PowerCSharp.Core`, `PowerCSharp.Helpers`, `PowerCSharp.Extensions`)
+- **Target framework:** `net8.0`
+- **Activate:** `PowerFeatures:DiskCache:Enabled = true` or call `services.AddCacheDisk(configuration)`
+
+## Namespaces
+
+- `PowerCSharp.Feature.Cache.Disk` — `DiskCacheService`, `DiskCacheFeatureOptions`, `AddCacheDisk`, `DiskCacheBackgroundService`.
+- `PowerCSharp.Feature.Cache.Abstractions` — `IDiskCacheService` contract.

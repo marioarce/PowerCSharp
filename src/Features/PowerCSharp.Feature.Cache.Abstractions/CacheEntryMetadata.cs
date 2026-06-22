@@ -99,7 +99,7 @@ public abstract class CacheEntryMetadata
     /// Updates the access statistics for this cache entry.
     /// </summary>
     /// <param name="isHit">Whether this access was a cache hit.</param>
-    internal void UpdateAccess(bool isHit)
+    public void UpdateAccess(bool isHit)
     {
         LastAccessedUtc = DateTime.UtcNow;
         AccessCount++;

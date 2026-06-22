@@ -1,6 +1,7 @@
 #if NET8_0_OR_GREATER
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PowerCSharp.Feature.Cache.Abstractions;
 
 namespace PowerCSharp.Feature.Cache.Disk;
 

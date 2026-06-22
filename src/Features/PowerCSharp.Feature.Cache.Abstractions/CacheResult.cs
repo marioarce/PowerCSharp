@@ -44,16 +44,72 @@ public sealed class CacheResult<T>
     public DateTime RetrievedAtUtc { get; }
 
     /// <summary>
+    /// Gets the name of the cache provider that generated this result.
+    /// </summary>
+    public string? ProviderName { get; }
+
+    /// <summary>
+    /// Gets the type of cache (Memory, Disk, etc.).
+    /// </summary>
+    public string? CacheType { get; }
+
+    /// <summary>
+    /// Gets the duration of the cache retrieval operation.
+    /// </summary>
+    public TimeSpan RetrievalDuration { get; }
+
+    /// <summary>
+    /// Gets the total time spent in cache operations for this request.
+    /// </summary>
+    public TimeSpan TotalCacheTime { get; }
+
+    /// <summary>
+    /// Gets the number of cache hits for this entry.
+    /// </summary>
+    public long HitCount => Metadata?.HitCount ?? 0;
+
+    /// <summary>
+    /// Gets the number of cache misses for this entry.
+    /// </summary>
+    public long MissCount => Metadata?.MissCount ?? 0;
+
+    /// <summary>
+    /// Gets the hit ratio for this entry (hits / total accesses).
+    /// </summary>
+    public double HitRatio
+    {
+        get
+        {
+            var total = HitCount + MissCount;
+            return total > 0 ? (double)HitCount / total : 0.0;
+        }
+    }
+
+    /// <summary>
     /// Initializes a new instance of <see cref="CacheResult{T}"/> for a successful operation.
     /// </summary>
     /// <param name="value">The cached value.</param>
     /// <param name="metadata">Optional metadata about the cache entry.</param>
-    public CacheResult(T value, CacheEntryMetadata? metadata = null)
+    /// <param name="providerName">Optional name of the cache provider.</param>
+    /// <param name="cacheType">Optional type of cache.</param>
+    /// <param name="retrievalDuration">Optional duration of the retrieval operation.</param>
+    /// <param name="totalCacheTime">Optional total time spent in cache operations.</param>
+    public CacheResult(
+        T value, 
+        CacheEntryMetadata? metadata = null, 
+        string? providerName = null, 
+        string? cacheType = null,
+        TimeSpan? retrievalDuration = null,
+        TimeSpan? totalCacheTime = null)
     {
         Value = value;
         IsSuccess = true;
         Reason = CacheResultReason.Success;
         Metadata = metadata;
+        ProviderName = providerName;
+        CacheType = cacheType;
+        RetrievalDuration = retrievalDuration ?? TimeSpan.Zero;
+        TotalCacheTime = totalCacheTime ?? RetrievalDuration;
         RetrievedAtUtc = DateTime.UtcNow;
     }
 
@@ -62,12 +118,26 @@ public sealed class CacheResult<T>
     /// </summary>
     /// <param name="reason">The reason for the failure.</param>
     /// <param name="metadata">Optional metadata about the cache entry.</param>
-    public CacheResult(CacheResultReason reason, CacheEntryMetadata? metadata = null)
+    /// <param name="providerName">Optional name of the cache provider.</param>
+    /// <param name="cacheType">Optional type of cache.</param>
+    /// <param name="retrievalDuration">Optional duration of the retrieval operation.</param>
+    /// <param name="totalCacheTime">Optional total time spent in cache operations.</param>
+    public CacheResult(
+        CacheResultReason reason, 
+        CacheEntryMetadata? metadata = null, 
+        string? providerName = null, 
+        string? cacheType = null,
+        TimeSpan? retrievalDuration = null,
+        TimeSpan? totalCacheTime = null)
     {
         Value = default;
         IsSuccess = false;
         Reason = reason;
         Metadata = metadata;
+        ProviderName = providerName;
+        CacheType = cacheType;
+        RetrievalDuration = retrievalDuration ?? TimeSpan.Zero;
+        TotalCacheTime = totalCacheTime ?? RetrievalDuration;
         RetrievedAtUtc = DateTime.UtcNow;
     }
 
@@ -76,33 +146,62 @@ public sealed class CacheResult<T>
     /// </summary>
     /// <param name="value">The cached value.</param>
     /// <param name="metadata">Optional metadata about the cache entry.</param>
+    /// <param name="providerName">Optional name of the cache provider.</param>
+    /// <param name="cacheType">Optional type of cache.</param>
+    /// <param name="retrievalDuration">Optional duration of the retrieval operation.</param>
     /// <returns>A successful cache result.</returns>
-    public static CacheResult<T> Success(T value, CacheEntryMetadata? metadata = null)
-        => new CacheResult<T>(value, metadata);
+    public static CacheResult<T> Success(
+        T value, 
+        CacheEntryMetadata? metadata = null, 
+        string? providerName = null, 
+        string? cacheType = null,
+        TimeSpan? retrievalDuration = null)
+        => new CacheResult<T>(value, metadata, providerName, cacheType, retrievalDuration);
 
     /// <summary>
     /// Creates a cache result indicating the entry was not found.
     /// </summary>
     /// <param name="key">The key that was not found.</param>
+    /// <param name="providerName">Optional name of the cache provider.</param>
+    /// <param name="cacheType">Optional type of cache.</param>
+    /// <param name="retrievalDuration">Optional duration of the retrieval operation.</param>
     /// <returns>A not-found cache result.</returns>
-    public static CacheResult<T> NotFound(string key)
-        => new CacheResult<T>(CacheResultReason.NotFound, null);
+    public static CacheResult<T> NotFound(
+        string key, 
+        string? providerName = null, 
+        string? cacheType = null,
+        TimeSpan? retrievalDuration = null)
+        => new CacheResult<T>(CacheResultReason.NotFound, null, providerName, cacheType, retrievalDuration);
 
     /// <summary>
     /// Creates a cache result indicating the entry was expired.
     /// </summary>
     /// <param name="metadata">Metadata about the expired entry.</param>
+    /// <param name="providerName">Optional name of the cache provider.</param>
+    /// <param name="cacheType">Optional type of cache.</param>
+    /// <param name="retrievalDuration">Optional duration of the retrieval operation.</param>
     /// <returns>An expired cache result.</returns>
-    public static CacheResult<T> Expired(CacheEntryMetadata metadata)
-        => new CacheResult<T>(CacheResultReason.Expired, metadata);
+    public static CacheResult<T> Expired(
+        CacheEntryMetadata metadata, 
+        string? providerName = null, 
+        string? cacheType = null,
+        TimeSpan? retrievalDuration = null)
+        => new CacheResult<T>(CacheResultReason.Expired, metadata, providerName, cacheType, retrievalDuration);
 
     /// <summary>
     /// Creates a cache result indicating an error occurred.
     /// </summary>
     /// <param name="key">The key that caused the error.</param>
+    /// <param name="providerName">Optional name of the cache provider.</param>
+    /// <param name="cacheType">Optional type of cache.</param>
+    /// <param name="retrievalDuration">Optional duration of the retrieval operation.</param>
     /// <returns>An error cache result.</returns>
-    public static CacheResult<T> Error(string key)
-        => new CacheResult<T>(CacheResultReason.Error, null);
+    public static CacheResult<T> Error(
+        string key, 
+        string? providerName = null, 
+        string? cacheType = null,
+        TimeSpan? retrievalDuration = null)
+        => new CacheResult<T>(CacheResultReason.Error, null, providerName, cacheType, retrievalDuration);
 
     /// <summary>
     /// Gets the value if the operation was successful, otherwise returns the default value.
@@ -133,12 +232,44 @@ public sealed class CacheResult<T>
         if (IsSuccess)
         {
             var sizeInfo = Metadata?.SizeBytes.HasValue == true ? $" ({Metadata.SizeBytes.Value} bytes)" : "";
-            return $"CacheResult.Success: {typeof(T).Name}{sizeInfo}";
+            var providerInfo = !string.IsNullOrEmpty(ProviderName) ? $" [{ProviderName}]" : "";
+            var typeInfo = !string.IsNullOrEmpty(CacheType) ? $" ({CacheType})" : "";
+            var timingInfo = RetrievalDuration > TimeSpan.Zero ? $" in {RetrievalDuration.TotalMilliseconds:F2}ms" : "";
+            var hitRatioInfo = HitRatio > 0 ? $" (hit ratio: {HitRatio:P1})" : "";
+            
+            return $"CacheResult.Success{providerInfo}{typeInfo}: {typeof(T).Name}{sizeInfo}{timingInfo}{hitRatioInfo}";
         }
         else
         {
-            return $"CacheResult.{Reason}: {typeof(T).Name}";
+            var providerInfo = !string.IsNullOrEmpty(ProviderName) ? $" [{ProviderName}]" : "";
+            var typeInfo = !string.IsNullOrEmpty(CacheType) ? $" ({CacheType})" : "";
+            var timingInfo = RetrievalDuration > TimeSpan.Zero ? $" in {RetrievalDuration.TotalMilliseconds:F2}ms" : "";
+            
+            return $"CacheResult.{Reason}{providerInfo}{typeInfo}: {typeof(T).Name}{timingInfo}";
         }
+    }
+
+    /// <summary>
+    /// Implicit conversion to the cached value.
+    /// </summary>
+    /// <param name="result">The cache result.</param>
+    public static implicit operator T?(CacheResult<T> result) => result.Value;
+
+    /// <summary>
+    /// Implicit conversion from a value to a successful cache result.
+    /// </summary>
+    /// <param name="value">The value to convert.</param>
+    public static implicit operator CacheResult<T>(T value) => Success(value);
+
+    /// <summary>
+    /// Pattern matching support for deconstruction.
+    /// </summary>
+    /// <param name="isSuccess">Whether the operation was successful.</param>
+    /// <param name="value">The cached value (if successful).</param>
+    public void Deconstruct(out bool isSuccess, out T? value)
+    {
+        isSuccess = IsSuccess;
+        value = Value;
     }
 
     /// <inheritdoc />
@@ -152,7 +283,11 @@ public sealed class CacheResult<T>
         return IsSuccess == other.IsSuccess &&
                Reason == other.Reason &&
                EqualityComparer<T?>.Default.Equals(Value, other.Value) &&
-               EqualityComparer<CacheEntryMetadata?>.Default.Equals(Metadata, other.Metadata);
+               EqualityComparer<CacheEntryMetadata?>.Default.Equals(Metadata, other.Metadata) &&
+               string.Equals(ProviderName, other.ProviderName, StringComparison.Ordinal) &&
+               string.Equals(CacheType, other.CacheType, StringComparison.Ordinal) &&
+               RetrievalDuration.Equals(other.RetrievalDuration) &&
+               TotalCacheTime.Equals(other.TotalCacheTime);
     }
 
     /// <inheritdoc />
@@ -164,6 +299,10 @@ public sealed class CacheResult<T>
         hash = hash * 31 + Reason.GetHashCode();
         hash = hash * 31 + (Value?.GetHashCode() ?? 0);
         hash = hash * 31 + (Metadata?.GetHashCode() ?? 0);
+        hash = hash * 31 + (ProviderName?.GetHashCode() ?? 0);
+        hash = hash * 31 + (CacheType?.GetHashCode() ?? 0);
+        hash = hash * 31 + RetrievalDuration.GetHashCode();
+        hash = hash * 31 + TotalCacheTime.GetHashCode();
 
         return hash;
     }

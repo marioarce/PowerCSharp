@@ -176,6 +176,23 @@ public class CacheMetadataTests
     }
 
     [Fact]
+    public void CacheResult_Success_With_Performance_Metrics()
+    {
+        var metadata = new InMemoryCacheEntryMetadata("key", DateTime.UtcNow, DateTime.UtcNow);
+        var retrievalDuration = TimeSpan.FromMilliseconds(5);
+        var totalCacheTime = TimeSpan.FromMilliseconds(8);
+        var result = CacheResult<string>.Success("test_value", metadata, "TestProvider", "TestCache", retrievalDuration);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("test_value", result.Value);
+        Assert.Same(metadata, result.Metadata);
+        Assert.Equal("TestProvider", result.ProviderName);
+        Assert.Equal("TestCache", result.CacheType);
+        Assert.Equal(retrievalDuration, result.RetrievalDuration);
+        Assert.Equal(retrievalDuration, result.TotalCacheTime); // TotalCacheTime defaults to RetrievalDuration when not specified
+    }
+
+    [Fact]
     public void CacheResult_NotFound_Creates_Correctly()
     {
         var result = CacheResult<string>.NotFound("missing_key");
@@ -186,6 +203,21 @@ public class CacheMetadataTests
         Assert.Equal(default(string), result.Value);
         Assert.Null(result.Metadata); // NotFound returns null metadata
         Assert.Equal(CacheResultReason.NotFound, result.Reason);
+    }
+
+    [Fact]
+    public void CacheResult_NotFound_With_Performance_Metrics()
+    {
+        var retrievalDuration = TimeSpan.FromMilliseconds(2);
+        var result = CacheResult<string>.NotFound("missing_key", "TestProvider", "TestCache", retrievalDuration);
+
+        Assert.False(result.IsSuccess);
+        Assert.True(result.IsNotFound);
+        Assert.Equal(default(string), result.Value);
+        Assert.Null(result.Metadata);
+        Assert.Equal("TestProvider", result.ProviderName);
+        Assert.Equal("TestCache", result.CacheType);
+        Assert.Equal(retrievalDuration, result.RetrievalDuration);
     }
 
     [Fact]
@@ -268,6 +300,90 @@ public class CacheMetadataTests
 
         Assert.Contains("NotFound", failureString);
         Assert.Contains("String", failureString);
+    }
+
+    [Fact]
+    public void CacheResult_ToString_With_Performance_Metrics()
+    {
+        var metadata = new InMemoryCacheEntryMetadata("key", DateTime.UtcNow, DateTime.UtcNow);
+        var result = CacheResult<string>.Success("value", metadata, "TestProvider", "TestCache", TimeSpan.FromMilliseconds(5));
+
+        var resultString = result.ToString();
+        Assert.Contains("Success", resultString);
+        Assert.Contains("TestProvider", resultString);
+        Assert.Contains("TestCache", resultString);
+        Assert.Contains("ms", resultString); // Check for milliseconds format
+    }
+
+    [Fact]
+    public void CacheResult_Hit_Ratio_Calculations()
+    {
+        var now = DateTime.UtcNow;
+        var metadataWithHits = new InMemoryCacheEntryMetadata(
+            "key", now, now, null, null, true, 10, 8, 2); // 8 hits, 2 misses = 80% hit ratio
+        
+        var resultWithHits = CacheResult<string>.Success("value", metadataWithHits);
+        Assert.Equal(0.8, resultWithHits.HitRatio);
+        Assert.Equal(8, resultWithHits.HitCount);
+        Assert.Equal(2, resultWithHits.MissCount);
+
+        var metadataNoHits = new InMemoryCacheEntryMetadata(
+            "key", now, now, null, null, true, 5, 0, 5); // 0 hits, 5 misses = 0% hit ratio
+        
+        var resultNoHits = CacheResult<string>.Success("value", metadataNoHits);
+        Assert.Equal(0.0, resultNoHits.HitRatio);
+        Assert.Equal(0, resultNoHits.HitCount);
+        Assert.Equal(5, resultNoHits.MissCount);
+
+        var resultWithoutMetadata = CacheResult<string>.NotFound("key");
+        Assert.Equal(0.0, resultWithoutMetadata.HitRatio);
+        Assert.Equal(0, resultWithoutMetadata.HitCount);
+        Assert.Equal(0, resultWithoutMetadata.MissCount);
+    }
+
+    [Fact]
+    public void CacheResult_Implicit_Conversion()
+    {
+        // Implicit conversion from value to successful result
+        CacheResult<string> result = "test_value";
+        Assert.True(result.IsSuccess);
+        Assert.Equal("test_value", result.Value);
+
+        // Implicit conversion from result to value
+        CacheResult<string> successResult = CacheResult<string>.Success("success_value");
+        string? value = successResult;
+        Assert.Equal("success_value", value);
+
+        // Implicit conversion from failed result returns default
+        CacheResult<string> failResult = CacheResult<string>.NotFound("key");
+        string? defaultValue = failResult;
+        Assert.Equal(default(string), defaultValue);
+    }
+
+    [Fact]
+    public void CacheResult_Pattern_Matching()
+    {
+        var successResult = CacheResult<string>.Success("success");
+        var failureResult = CacheResult<string>.NotFound("key");
+
+        // Deconstruction pattern matching
+        var (isSuccess, value) = successResult;
+        Assert.True(isSuccess);
+        Assert.Equal("success", value!);
+
+        var (isFailure, failValue) = failureResult;
+        Assert.False(isFailure);
+        Assert.Equal(default(string)!, failValue);
+
+        // Switch pattern matching
+        string result = successResult switch
+        {
+            { IsSuccess: true } => "success",
+            { IsNotFound: true } => "not_found",
+            { IsExpired: true } => "expired",
+            _ => "error"
+        };
+        Assert.Equal("success", result);
     }
 
     [Fact]

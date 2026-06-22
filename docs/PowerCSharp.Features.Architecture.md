@@ -35,14 +35,16 @@ The Features system turns reusable capabilities (cache, sanitization, observabil
 ## 3. Package Topology
 
 ```
-PowerCSharp.Features.Abstractions      contracts only, zero third-party deps
-PowerCSharp.Features                    engine: discovery, flag resolution, DI orchestration, diagnostics
-PowerCSharp.BuiltInFeatures             Group 1 bundle (depends on engine + Microsoft.AspNetCore.App)
+PowerCSharp.Features.Abstractions       contracts only, zero third-party deps
+PowerCSharp.Features                     engine: discovery, flag resolution, DI orchestration, diagnostics
+PowerCSharp.BuiltInFeatures              Group 1 bundle (depends on engine + Microsoft.AspNetCore.App)
 
-PowerCSharp.Feature.Cache               Group 2 — contracts + module + options/flag (no third-party)
-PowerCSharp.Feature.Cache.BitFaster     Group 2 — BitFaster-backed implementation (isolates BitFaster.Caching)
+PowerCSharp.Feature.Cache.Abstractions   Group 2 — cache contracts + NoOp floors (no third-party, netstandard2.0 + net8.0)
+PowerCSharp.Feature.Cache                Group 2 — module + options + ASP.NET Core wiring (net8.0)
+PowerCSharp.Feature.Cache.BitFaster      Group 2 — BitFaster-backed implementation (isolates BitFaster.Caching)
+PowerCSharp.Feature.Cache.Disk           Group 2 — disk-backed LRU implementation (no third-party)
 # future:
-PowerCSharp.Feature.Cache.Memory        native MemoryCache implementation
+PowerCSharp.Feature.Cache.Memory         native MemoryCache implementation
 PowerCSharp.Feature.Sitecore            third-party GraphQL integration
 PowerCSharp.Feature.Sentry              third-party APM
 PowerCSharp.Feature.Observability       OpenTelemetry
@@ -57,10 +59,15 @@ PowerCSharp.Feature.Observability       OpenTelemetry
         PowerCSharp.Features (engine)      │
             ▲           ▲                  │
             │           │                  │
- PowerCSharp.BuiltInFeatures   PowerCSharp.Feature.Cache (contracts/module)
-   (Group 1: bundle)                     ▲
-                                         │
-                          PowerCSharp.Feature.Cache.BitFaster (impl, isolates BitFaster)
+ PowerCSharp.BuiltInFeatures   PowerCSharp.Feature.Cache (module/options)
+   (Group 1: bundle)              ▲        ▲
+                                 │        │
+                                 │        │
+        PowerCSharp.Feature.Cache.Abstractions (cache contracts + NoOp)
+                        ▲                  ▲
+                        │                  │
+     PowerCSharp.Feature.Cache.BitFaster   PowerCSharp.Feature.Cache.Disk
+        (impl, isolates BitFaster)          (disk LRU impl)
 
  All features MAY also depend on existing libraries:
    PowerCSharp.Core / .Extensions / .Helpers / .Utilities
@@ -69,14 +76,18 @@ PowerCSharp.Feature.Observability       OpenTelemetry
 - **`PowerCSharp.Features.Abstractions`** — pure contracts (`IFeatureModule`, `IFeatureFlagProvider`, options base types, descriptors). No third-party deps so any feature can reference it cheaply.
 - **`PowerCSharp.Features`** — the engine: assembly discovery, flag-resolution pipeline, DI orchestration, the `FeatureRegistry`, diagnostics, and the `AddPowerFeatures()` / `UsePowerFeatures()` host entry points.
 - **`PowerCSharp.BuiltInFeatures`** — the Group 1 bundle; references the engine + `Microsoft.AspNetCore.App`.
-- **Pluggable packages** — reference `Abstractions` (and optionally the engine) plus their own isolated third-party deps.
+- **Pluggable packages** — reference the framework `Abstractions` and/or the feature-family `Abstractions` package, plus their own isolated third-party deps.
+- **`PowerCSharp.Feature.Cache.Abstractions`** — cache-specific contracts (`ICacheService`, `IDiskCacheService`, `CacheProvider`, metadata types) and the NoOp safe-off implementations. Targets `netstandard2.0` and `net8.0` so providers can run on .NET Framework and .NET Core.
+
+> **Namespace note:** because the package name is `PowerCSharp.Feature.Cache.Abstractions`, the contract namespaces are `PowerCSharp.Feature.Cache.Abstractions`, `PowerCSharp.Feature.Cache.Abstractions.Enums`, and `PowerCSharp.Feature.Cache.Abstractions.NoOp`. They are **not** under `PowerCSharp.Feature.Cache`.
 
 ### Naming conventions
 
 - Plural **`Features`** = framework (abstractions + engine).
 - **`PowerCSharp.BuiltInFeatures`** = the single Group 1 bundle.
-- Singular **`Feature.<Name>`** = a Pluggable Feature.
-- **Feature family** for swappable backends: `Feature.<Name>` (contracts/module) + `Feature.<Name>.<Provider>` (implementation). Providers are **provider-named, not type-named** (e.g. `.BitFaster`, `.Memory`), matching .NET norms such as `Microsoft.Extensions.Caching.StackExchangeRedis`.
+- Singular **`Feature.<Name>`** = a Pluggable Feature module/options package.
+- **`Feature.<Name>.Abstractions`** = the contracts and safe-off NoOp implementations for a pluggable feature; zero third-party dependencies and the widest target-framework reach.
+- **Feature family** for swappable backends: `Feature.<Name>.Abstractions` (contracts/NoOp) + `Feature.<Name>` (module/options) + `Feature.<Name>.<Provider>` (implementation). Providers are **provider-named, not type-named** (e.g. `.BitFaster`, `.Memory`), matching .NET norms such as `Microsoft.Extensions.Caching.StackExchangeRedis`.
 
 ---
 

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using PowerCSharp.Feature.Cache.Abstractions;
 
 namespace PowerCSharp.Feature.Cache.Disk;
 
@@ -10,12 +10,12 @@ namespace PowerCSharp.Feature.Cache.Disk;
 public static class CacheDiskExtensions
 {
     /// <summary>
-    /// Binds <see cref="DiskCacheOptions"/> from <c>PowerFeatures:Cache:Disk</c> and registers the
+    /// Binds <see cref="DiskCacheFeatureOptions"/> from <c>PowerFeatures:DiskCache</c> and registers the
     /// disk cache, overriding the NoOp floor registered by the contracts package.
     /// </summary>
     public static IServiceCollection AddCacheDisk(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<DiskCacheOptions>(configuration.GetSection("PowerFeatures:Cache:Disk"));
+        services.Configure<DiskCacheFeatureOptions>(configuration.GetSection("PowerFeatures:DiskCache"));
 
         // Register concrete class first for hosted service dependency
         services.AddSingleton<DiskCacheService>();

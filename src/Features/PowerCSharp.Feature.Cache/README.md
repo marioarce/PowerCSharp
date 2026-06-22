@@ -1,16 +1,30 @@
 # PowerCSharp.Feature.Cache
 
-Cache feature contracts, module, options and NoOp implementations — **no third-party dependencies**.
-Pair with a provider package (e.g. `PowerCSharp.Feature.Cache.BitFaster`) to choose a backend.
+Cache feature module, options, and ASP.NET Core wiring — **no third-party dependencies**.
+
+Pair this package with `PowerCSharp.Feature.Cache.Abstractions` (contracts + NoOp) and a provider package (e.g. `PowerCSharp.Feature.Cache.BitFaster`) to choose a backend.
 
 ## Contents
 
-- **`ICacheService` / `IDiskCacheService`** — cache contracts.
-- **`CacheFeatureOptions` / `CacheProvider`** — options bound from `PowerFeatures:Cache` (variant `Provider` selects the backend).
+- **`CacheFeatureOptions`** — options bound from `PowerFeatures:Cache` (variant `Provider` selects the backend).
 - **`CacheFeatureModule`** — auto-discoverable module; registers a NoOp floor so dependents always resolve.
-- **NoOp implementations** — safe-off behavior when disabled or no provider is configured.
+- **`AddCacheFeature`** — explicit registration extension.
 
-## Flag
+## Namespaces
+
+- `PowerCSharp.Feature.Cache` — options, module, and extension methods.
+
+> The contracts (`ICacheService`, `IDiskCacheService`) and the NoOp implementations live in `PowerCSharp.Feature.Cache.Abstractions`.
+
+## Usage
+
+```csharp
+using PowerCSharp.Feature.Cache;
+
+builder.Services
+    .AddPowerFeatures(builder.Configuration, o => o.ScanAssemblies(typeof(CacheFeatureModule).Assembly))
+    .AddCacheBitFaster(builder.Configuration);
+```
 
 ```json
 {
@@ -23,5 +37,6 @@ Pair with a provider package (e.g. `PowerCSharp.Feature.Cache.BitFaster`) to cho
 ## Details
 
 - **Package ID:** `PowerCSharp.Feature.Cache`
-- **Depends on:** `PowerCSharp.Features.Abstractions`
+- **Depends on:** `PowerCSharp.Features.Abstractions` + `PowerCSharp.Feature.Cache.Abstractions`
+- **Target framework:** `net8.0` (requires ASP.NET Core host)
 - See: `docs/PowerCSharp.Features.Authoring-Guide.md`

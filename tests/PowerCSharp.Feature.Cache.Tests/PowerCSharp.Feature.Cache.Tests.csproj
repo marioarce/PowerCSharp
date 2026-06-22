@@ -23,8 +23,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Features\PowerCSharp.Feature.Cache\PowerCSharp.Feature.Cache.csproj" />
     <ProjectReference Include="..\..\src\Features\PowerCSharp.Feature.Cache.BitFaster\PowerCSharp.Feature.Cache.BitFaster.csproj" />
-    <ProjectReference Include="..\..\src\Features\PowerCSharp.Feature.Cache.Disk\PowerCSharp.Feature.Cache.Disk.csproj" />
     <ProjectReference Include="..\..\src\Features\PowerCSharp.Features\PowerCSharp.Features.csproj" />
+    <ProjectReference Include="..\..\src\Features\PowerCSharp.Feature.Cache.Disk\PowerCSharp.Feature.Cache.Disk.csproj" />
   </ItemGroup>
 
 </Project>
