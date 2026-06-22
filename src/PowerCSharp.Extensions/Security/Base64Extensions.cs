@@ -12,8 +12,6 @@ namespace PowerCSharp.Extensions.Security;
 /// </remarks>
 public static class Base64Extensions
 {
-    private static readonly char[] Padding = { '=' };
-
     /// <summary>
     /// Converts a byte array to a URL-safe Base64 encoded string.
     /// </summary>
@@ -205,4 +203,7 @@ public static class Base64Extensions
             return input;
         }
     }
+
+    // Private fields (moved to end)
+    private static readonly char[] Padding = { '=' };
 }

@@ -16,12 +16,6 @@ namespace PowerCSharp.Compatibility.Net;
 /// </summary>
 public static class HttpRequestMessageExtensions
 {
-    private const string TrueClientIpHeader = "True-Client-IP";
-    private const string XForwardedForHeader = "X-Forwarded-For";
-    private const string HttpContextProperty = "MS_HttpContext";
-    private const string RemoteEndpointMessageProperty = "System.ServiceModel.Channels.RemoteEndpointMessageProperty";
-    private const string OwinContextProperty = "MS_OwinContext";
-
     /// <summary>
     /// Creates a deep clone of the <see cref="HttpRequestMessage"/> including headers, content, and properties.
     /// This method is critical for retry scenarios where the same request needs to be sent multiple times,
@@ -194,4 +188,11 @@ public static class HttpRequestMessageExtensions
 
         return null;
     }
+
+    // Private constants (moved to end)
+    private const string TrueClientIpHeader = "True-Client-IP";
+    private const string XForwardedForHeader = "X-Forwarded-For";
+    private const string HttpContextProperty = "MS_HttpContext";
+    private const string RemoteEndpointMessageProperty = "System.ServiceModel.Channels.RemoteEndpointMessageProperty";
+    private const string OwinContextProperty = "MS_OwinContext";
 }

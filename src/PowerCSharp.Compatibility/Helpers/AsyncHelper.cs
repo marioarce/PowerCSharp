@@ -15,19 +15,6 @@ namespace PowerCSharp.Compatibility.Helpers;
 public static class AsyncHelper
 {
     /// <summary>
-    /// Task factory configured to prevent deadlocks in sync-over-async scenarios.
-    /// </summary>
-    /// <remarks>
-    /// Uses default task scheduler and no cancellation to ensure predictable behavior.
-    /// </remarks>
-    private static readonly TaskFactory _taskFactory =
-        new(
-            CancellationToken.None,
-            TaskCreationOptions.None,
-            TaskContinuationOptions.None,
-            TaskScheduler.Default);
-
-    /// <summary>
     /// Runs an asynchronous function synchronously and returns the result.
     /// </summary>
     /// <typeparam name="T">The return type of the asynchronous operation.</typeparam>
@@ -39,4 +26,18 @@ public static class AsyncHelper
     /// </remarks>
     public static T RunSync<T>(Func<Task<T>> func)
         => _taskFactory.StartNew(func).Unwrap().GetAwaiter().GetResult();
+
+    // Private fields (moved to end)
+    /// <summary>
+    /// Task factory configured to prevent deadlocks in sync-over-async scenarios.
+    /// </summary>
+    /// <remarks>
+    /// Uses default task scheduler and no cancellation to ensure predictable behavior.
+    /// </remarks>
+    private static readonly TaskFactory _taskFactory =
+        new(
+            CancellationToken.None,
+            TaskCreationOptions.None,
+            TaskContinuationOptions.None,
+            TaskScheduler.Default);
 }

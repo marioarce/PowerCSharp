@@ -40,8 +40,8 @@ public static class HashSampleEndpoints
             },
             nullObject = new
             {
-                data = (object)null,
-                hash = ((object)null).ComputeHash()
+                data = (object?)null,
+                hash = ((object?)null)!.ComputeHash()
             },
             consistencyCheck = new
             {

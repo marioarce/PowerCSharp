@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>PowerCSharp.BuiltInFeatures</PackageId>
+    <PackageVersion>$(PowerCSharpFeaturesVersion)</PackageVersion>
+    <Title>PowerCSharp Built-in Features</Title>
+    <Description>Bundle of lightweight, runtime-flag-toggled ASP.NET Core capabilities (starting with CORS). Toggle each via PowerFeatures:&lt;Key&gt;:Enabled. Any built-in can be disabled and replaced by a custom Pluggable Feature.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
+    <PackageTags>csharp;dotnet;features;feature-flags;aspnetcore;cors;clean-architecture</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PowerCSharp.Features\PowerCSharp.Features.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\..\docs\images\PowerCSharp_NuGet_Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

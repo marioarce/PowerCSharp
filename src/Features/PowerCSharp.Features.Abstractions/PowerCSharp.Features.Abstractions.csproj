@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>PowerCSharp.Features.Abstractions</PackageId>
+    <PackageVersion>$(PowerCSharpFeaturesVersion)</PackageVersion>
+    <Title>PowerCSharp Features Abstractions</Title>
+    <Description>Contracts for the PowerCSharp Features system: IFeatureModule, IFeatureFlagProvider, FeatureFlagValue, FeatureOptionsBase and FeatureDescriptor. Zero third-party dependencies so any feature can reference it cheaply.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
+    <PackageTags>csharp;dotnet;features;feature-flags;abstractions;clean-architecture</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Framework reference provides IServiceCollection, IConfiguration, ILogger and IApplicationBuilder
+         from the shared framework; no external third-party packages are pulled in. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\..\docs\images\PowerCSharp_NuGet_Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

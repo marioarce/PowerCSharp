@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>PowerCSharp.Feature.Cache.Disk</PackageId>
+    <PackageVersion>$(PowerCSharpFeatureCacheVersion)</PackageVersion>
+    <Title>PowerCSharp Cache Feature - Disk Provider</Title>
+    <Description>Disk-backed LRU cache implementation for the PowerCSharp Cache feature. Targets net8.0. De-branded port of proven production code with atomic writes, file-lock coordination, and background cleanup.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>PowerCSharp_NuGet_Icon.png</PackageIcon>
+    <PackageTags>csharp;dotnet;features;feature-flags;cache;disk;lru;clean-architecture</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PowerCSharp.Feature.Cache.Abstractions\PowerCSharp.Feature.Cache.Abstractions.csproj" />
+    <ProjectReference Include="..\..\PowerCSharp.Core\PowerCSharp.Core.csproj" />
+    <ProjectReference Include="..\..\PowerCSharp.Helpers\PowerCSharp.Helpers.csproj" />
+    <ProjectReference Include="..\..\PowerCSharp.Extensions\PowerCSharp.Extensions.csproj" />
+    <ProjectReference Include="..\PowerCSharp.Features.Abstractions\PowerCSharp.Features.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\..\docs\images\PowerCSharp_NuGet_Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, initial-scale=1.0">
+    <title>Dynamic LINQ Banner - Simple</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .banner {
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .content {
+            display: flex;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .left-content {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .right-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .title {
+            font-size: 52px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 24px;
+            line-height: 1.1;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        .subtitle {
+            font-size: 22px;
+            color: #f0f0f0;
+            margin-bottom: 40px;
+            line-height: 1.4;
+            font-weight: 400;
+            max-width: 500px;
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid #7e22ce;
+            border-radius: 12px;
+            padding: 24px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 16px;
+            color: #00ff41;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+        
+        .code-line {
+            margin: 6px 0;
+        }
+        
+        .keyword { color: #ff79c6; font-weight: bold; }
+        .string { color: #f1fa8c; }
+        .method { color: #50fa7b; font-weight: bold; }
+        .comment { color: #6272a4; font-style: italic; }
+        
+        .badge {
+            position: absolute;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
+            transform: rotate(3deg);
+        }
+        
+        .performance {
+            top: 60px;
+            right: 60px;
+        }
+        
+        .security {
+            bottom: 60px;
+            right: 60px;
+            background: linear-gradient(45deg, #48dbfb, #0abde3);
+            box-shadow: 0 6px 16px rgba(72, 219, 251, 0.4);
+            transform: rotate(-3deg);
+        }
+        
+        .brand {
+            position: absolute;
+            bottom: 30px;
+            left: 60px;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.08;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px);
+        }
+        
+        .glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(126, 34, 206, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            top: 50%;
+            right: 20%;
+            transform: translateY(-50%);
+            filter: blur(40px);
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <div class="pattern"></div>
+        <div class="glow"></div>
+        
+        <div class="content">
+            <div class="left-content">
+                <h1 class="title">Dynamic LINQ<br>That Doesn't Suck</h1>
+                <p class="subtitle">Building secure, performant runtime query parsing for enterprise applications</p>
+                
+                <div class="code-block">
+                    <div class="code-line"><span class="comment">// User input to LINQ expression</span></div>
+                    <div class="code-line"><span class="keyword">string</span> filter = <span class="string">"Age > 25 && Status == 'Active'"</span>;</div>
+                    <div class="code-line"><span class="keyword">var</span> query = users.<span class="method">Where</span>(filter);</div>
+                    <div class="code-line"><span class="comment">// Secure • Fast • Production-Ready</span></div>
+                </div>
+                
+                <div class="brand">PowerCSharp</div>
+            </div>
+            
+            <div class="right-content">
+                <div class="badge performance">10x Faster</div>
+                <div class="badge security">Injection Safe</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

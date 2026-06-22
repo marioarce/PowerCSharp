@@ -274,7 +274,10 @@ public static class ExceptionExtensions
 #if NET5_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(exception);
 #else
-        if (exception == null) throw new ArgumentNullException(nameof(exception));
+        if (exception == null)
+        {
+            throw new ArgumentNullException(nameof(exception));
+        }
 #endif
 
         ExceptionDispatchInfo

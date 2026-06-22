@@ -14,11 +14,14 @@ public static class AsyncSampleEndpoints
     public static object GetDemoData()
     {
         // Simulate async operation being called from sync context
-        string result = AsyncHelper.RunSync(async () =>
+        static async Task<string> asyncFunc()
         {
             await Task.Delay(100); // Simulate async work
             return "Async operation completed successfully!";
-        });
+        }
+
+        string result = AsyncHelper
+            .RunSync(asyncFunc);
         
         return new
         {
