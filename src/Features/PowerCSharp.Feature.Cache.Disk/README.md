@@ -1,5 +1,7 @@
 # PowerCSharp.Feature.Cache.Disk
 
+![PowerCSharp Banner](https://raw.githubusercontent.com/marioarce/PowerCSharp/0191ee12092c28ccf5a578e59977583117a3ff00/docs/images/PowerCSharp_Banner.png)
+
 Disk-backed LRU cache implementation for the PowerCSharp Cache feature.
 
 - Targets `net8.0`, so it runs on **.NET 8.0 and later**.

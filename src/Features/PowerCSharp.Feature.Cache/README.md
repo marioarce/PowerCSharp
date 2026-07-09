@@ -1,5 +1,7 @@
 # PowerCSharp.Feature.Cache
 
+![PowerCSharp Banner](https://raw.githubusercontent.com/marioarce/PowerCSharp/0191ee12092c28ccf5a578e59977583117a3ff00/docs/images/PowerCSharp_Banner.png)
+
 Cache feature module, options, and ASP.NET Core wiring — **no third-party dependencies**.
 
 Pair this package with `PowerCSharp.Feature.Cache.Abstractions` (contracts + NoOp) and a provider package (e.g. `PowerCSharp.Feature.Cache.BitFaster`) to choose a backend.

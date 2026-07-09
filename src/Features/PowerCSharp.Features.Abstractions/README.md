@@ -1,5 +1,7 @@
 # PowerCSharp.Features.Abstractions
 
+![PowerCSharp Banner](https://raw.githubusercontent.com/marioarce/PowerCSharp/0191ee12092c28ccf5a578e59977583117a3ff00/docs/images/PowerCSharp_Banner.png)
+
 Contracts for the PowerCSharp Features system. Zero third-party dependencies so any feature
 can reference it cheaply (it relies only on the shared ASP.NET Core framework).
 
