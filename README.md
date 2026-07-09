@@ -1,6 +1,6 @@
 # PowerCSharp
 
-![PowerCSharp Banner](docs/images/PowerCSharp_Banner.png)
+![PowerCSharp Banner](https://raw.githubusercontent.com/marioarce/PowerCSharp/0191ee12092c28ccf5a578e59977583117a3ff00/docs/images/PowerCSharp_Banner.png)
 
 [![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v2.0.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
