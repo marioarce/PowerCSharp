@@ -662,6 +662,17 @@ public static partial class StringExtensions
     }
 
     /// <summary>
+    /// Returns the raw value when it has content; otherwise the current fallback value.
+    /// </summary>
+    /// <param name="rawValue">The candidate raw value.</param>
+    /// <param name="fallback">The value to keep when the candidate is empty.</param>
+    /// <returns>The overriding value or the existing fallback.</returns>
+    public static string? Coalesce(this string? rawValue, string? fallback)
+    {
+        return string.IsNullOrEmpty(rawValue) ? fallback : rawValue;
+    }
+
+    /// <summary>
     /// Returns a copy of the string after removing Html Tags and Entities like &reg; or &nbsp;.
     /// </summary>
     /// <param name="input">The input string containing HTML.</param>
