@@ -90,7 +90,7 @@ public class ValidationUtilityTests
         string text = "abc123";
         
         // Act
-        bool result = ValidationHelper.IsNumeric(text);
+        bool result = ValidationUtility.IsNumeric(text);
         
         // Assert
         Assert.False(result);
@@ -103,7 +103,7 @@ public class ValidationUtilityTests
         string? value = null;
         
         // Act
-        bool result = ValidationHelper.IsNumeric(value);
+        bool result = ValidationUtility.IsNumeric(value);
         
         // Assert
         Assert.False(result);
@@ -116,7 +116,7 @@ public class ValidationUtilityTests
         string value = "";
         
         // Act
-        bool result = ValidationHelper.IsNumeric(value);
+        bool result = ValidationUtility.IsNumeric(value);
         
         // Assert
         Assert.False(result);
