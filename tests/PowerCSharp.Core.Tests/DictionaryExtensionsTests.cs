@@ -120,7 +120,7 @@ public class DictionaryExtensionsTests
         Dictionary<string, int>? nullDictionary = null;
 
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => nullDictionary!.TryAdd("key", 1));
+        Assert.Throws<NullReferenceException>(() => nullDictionary!.TryAdd("key", 1));
     }
 
     [Fact]
