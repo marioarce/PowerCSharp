@@ -14,7 +14,7 @@ public class MathHelperTests
         int max = 20;
         
         // Act
-        int result = MathHelper.Clamp(value, min, max);
+        int result = MathUtility.Clamp(value, min, max);
         
         // Assert
         Assert.Equal(min, result);
@@ -29,7 +29,7 @@ public class MathHelperTests
         int max = 20;
         
         // Act
-        int result = MathHelper.Clamp(value, min, max);
+        int result = MathUtility.Clamp(value, min, max);
         
         // Assert
         Assert.Equal(max, result);
@@ -44,7 +44,7 @@ public class MathHelperTests
         int max = 20;
         
         // Act
-        int result = MathHelper.Clamp(value, min, max);
+        int result = MathUtility.Clamp(value, min, max);
         
         // Assert
         Assert.Equal(value, result);
@@ -59,7 +59,7 @@ public class MathHelperTests
         int max = 20;
         
         // Act
-        bool result = MathHelper.IsInRange(value, min, max);
+        bool result = MathUtility.IsInRange(value, min, max);
         
         // Assert
         Assert.True(result);
@@ -74,7 +74,7 @@ public class MathHelperTests
         int max = 20;
         
         // Act
-        bool result = MathHelper.IsInRange(value, min, max);
+        bool result = MathUtility.IsInRange(value, min, max);
         
         // Assert
         Assert.True(result);
@@ -89,7 +89,7 @@ public class MathHelperTests
         int max = 20;
         
         // Act
-        bool result = MathHelper.IsInRange(value, min, max);
+        bool result = MathUtility.IsInRange(value, min, max);
         
         // Assert
         Assert.True(result);
@@ -104,7 +104,7 @@ public class MathHelperTests
         int max = 20;
         
         // Act
-        bool result = MathHelper.IsInRange(value, min, max);
+        bool result = MathUtility.IsInRange(value, min, max);
         
         // Assert
         Assert.False(result);
@@ -119,7 +119,7 @@ public class MathHelperTests
         int max = 20;
         
         // Act
-        bool result = MathHelper.IsInRange(value, min, max);
+        bool result = MathUtility.IsInRange(value, min, max);
         
         // Assert
         Assert.False(result);
@@ -133,7 +133,7 @@ public class MathHelperTests
         double total = 100;
         
         // Act
-        double result = MathHelper.Percentage(part, total);
+        double result = MathUtility.Percentage(part, total);
         
         // Assert
         Assert.Equal(25.0, result);
@@ -147,7 +147,7 @@ public class MathHelperTests
         double total = 0;
         
         // Act
-        double result = MathHelper.Percentage(part, total);
+        double result = MathUtility.Percentage(part, total);
         
         // Assert
         Assert.Equal(0.0, result);
@@ -160,7 +160,7 @@ public class MathHelperTests
         double degrees = 180;
         
         // Act
-        double result = MathHelper.ToRadians(degrees);
+        double result = MathUtility.ToRadians(degrees);
         
         // Assert
         Assert.Equal(Math.PI, result, 5);
@@ -173,7 +173,7 @@ public class MathHelperTests
         double radians = Math.PI;
         
         // Act
-        double result = MathHelper.ToDegrees(radians);
+        double result = MathUtility.ToDegrees(radians);
         
         // Assert
         Assert.Equal(180.0, result, 5);
@@ -186,7 +186,7 @@ public class MathHelperTests
         int number = 4;
         
         // Act
-        bool result = MathHelper.IsEven(number);
+        bool result = MathUtility.IsEven(number);
         
         // Assert
         Assert.True(result);
@@ -199,7 +199,7 @@ public class MathHelperTests
         int number = 3;
         
         // Act
-        bool result = MathHelper.IsEven(number);
+        bool result = MathUtility.IsEven(number);
         
         // Assert
         Assert.False(result);
@@ -212,7 +212,7 @@ public class MathHelperTests
         int number = 3;
         
         // Act
-        bool result = MathHelper.IsOdd(number);
+        bool result = MathUtility.IsOdd(number);
         
         // Assert
         Assert.True(result);
@@ -225,7 +225,7 @@ public class MathHelperTests
         int number = 4;
         
         // Act
-        bool result = MathHelper.IsOdd(number);
+        bool result = MathUtility.IsOdd(number);
         
         // Assert
         Assert.False(result);
