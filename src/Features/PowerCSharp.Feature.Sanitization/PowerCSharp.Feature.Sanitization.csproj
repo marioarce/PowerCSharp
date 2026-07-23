@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>PowerCSharp.Feature.Sanitization</PackageId>
+    <PackageVersion>$(PowerCSharpFeatureSanitizationVersion)</PackageVersion>
+    <Title>PowerCSharp Sanitization Feature</Title>
+    <Description>Sanitization feature module, options, and DI/Features-Framework wiring for log-injection, file-path traversal, sensitive-data, and regex-injection sanitization. Pair with PowerCSharp.Feature.Sanitization.Abstractions.</Description>
+    <PackageTags>csharp;dotnet;features;feature-flags;security;sanitization;clean-architecture</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PowerCSharp.Features.Abstractions\PowerCSharp.Features.Abstractions.csproj" />
+    <ProjectReference Include="..\PowerCSharp.Feature.Sanitization.Abstractions\PowerCSharp.Feature.Sanitization.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
