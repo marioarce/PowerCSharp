@@ -137,10 +137,14 @@ public class FilePathSanitizationTests
     [Fact]
     public void SanitizeCorrelationIdForPath_Replaces_Invalid_Characters()
     {
-        var result = SanitizationEngine.SanitizeCorrelationIdForPath("abc:def*ghi");
+        // SanitizeCorrelationIdForPath consults Path.GetInvalidFileNameChars(), which is
+        // platform-dependent: on Windows it includes ':' and '*', but those are legal in Unix file
+        // names, so this assertion sticks to the small set (NUL and '/') that is invalid on every
+        // platform .NET targets, to keep the test portable.
+        var result = SanitizationEngine.SanitizeCorrelationIdForPath("abc\0def/ghi");
 
-        Assert.DoesNotContain(':', result);
-        Assert.DoesNotContain('*', result);
+        Assert.DoesNotContain('\0', result);
+        Assert.DoesNotContain('/', result);
     }
 
     [Fact]
