@@ -3,6 +3,7 @@
 ![PowerCSharp Banner](https://raw.githubusercontent.com/marioarce/PowerCSharp/0191ee12092c28ccf5a578e59977583117a3ff00/docs/images/PowerCSharp_Banner.png)
 
 [![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v2.0.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
+[![Website](https://img.shields.io/badge/website-powercsharp.net-blue.svg)](https://powercsharp.net/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/marioarce/PowerCSharp/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/marioarce/PowerCSharp/actions)
 [![codecov](https://codecov.io/gh/marioarce/PowerCSharp/branch/main/graph/badge.svg)](https://codecov.io/gh/marioarce/PowerCSharp)
@@ -10,6 +11,8 @@
 [![Code Quality](https://img.shields.io/badge/code%20quality-A%2B-brightgreen)](https://github.com/marioarce/PowerCSharp)
 
 Enhanced C# extension methods and utilities for .NET developers
+
+🌐 **Official website:** [https://powercsharp.net/](https://powercsharp.net/)
 
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Core.svg)](https://www.nuget.org/packages/PowerCSharp.Core)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Extensions.svg)](https://www.nuget.org/packages/PowerCSharp.Extensions)
@@ -496,6 +499,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
+- 🌐 [Official Website](https://powercsharp.net/)
 - 🐛 [Report Issues](https://github.com/marioarce/PowerCSharp/issues)
 - 💡 [Feature Requests](https://github.com/marioarce/PowerCSharp/discussions)
 - 📧 [Email Support](mailto:support@example.com)
