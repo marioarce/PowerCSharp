@@ -1,5 +1,7 @@
+using PowerCSharp.Features;
 using WebSample.Samples.Core;
 using WebSample.Samples.Extensions;
+using WebSample.Samples.Features;
 using WebSample.Samples.Helpers;
 using WebSample.Samples.Utilities;
 
@@ -22,6 +24,17 @@ public static class WebApplicationExtensions
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "PowerCSharp Web Sample API v1");
             c.RoutePrefix = "swagger";
         });
+    }
+
+    /// <summary>
+    /// Runs the PowerCSharp Features Framework pipeline hook — resolves each enabled feature's
+    /// middleware (none, for Cache/Sanitization) and bridges the Sanitization engine's
+    /// configuration for non-DI call sites.
+    /// </summary>
+    /// <param name="app">The WebApplication instance</param>
+    public static void UsePowerCSharpFeatures(this WebApplication app)
+    {
+        app.UsePowerFeatures();
     }
 
     /// <summary>
@@ -55,5 +68,9 @@ public static class WebApplicationExtensions
         app.MapGet("/demo/collection", CollectionSampleEndpoints.GetDemoData);
         app.MapGet("/demo/dictionary", DictionarySampleEndpoints.GetDemoData);
         app.MapGet("/demo/unix-timestamp", UnixTimestampSampleEndpoints.GetDemoData);
+
+        // Features Framework Samples
+        app.MapGet("/demo/cache", CacheSampleEndpoints.GetDemoDataAsync);
+        app.MapGet("/demo/sanitization", SanitizationSampleEndpoints.GetDemoData);
     }
 }
