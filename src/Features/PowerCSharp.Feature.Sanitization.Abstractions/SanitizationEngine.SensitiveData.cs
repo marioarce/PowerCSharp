@@ -278,8 +278,12 @@ public static partial class SanitizationEngine
 
         result = SensitiveKeyRegex().Replace(result, m =>
         {
-            var key = m.Groups[1].Value;
-            var maskedValue = MaskValueIntelligently(m.Groups[2].Value, maskChar);
+            // SensitiveKeyRegex has exactly one capturing group (the value); the key/separator
+            // prefix is matched but intentionally not captured. Reconstruct it the same way the
+            // four handlers below do, rather than indexing a non-existent Groups[2] (which is
+            // always an empty, unsuccessful group and previously left the raw value unmasked).
+            var key = m.Value.Substring(0, m.Value.IndexOf(m.Groups[1].Value, StringComparison.Ordinal));
+            var maskedValue = MaskValueIntelligently(m.Groups[1].Value, maskChar);
             return $"{key}{maskedValue}";
         });
 
