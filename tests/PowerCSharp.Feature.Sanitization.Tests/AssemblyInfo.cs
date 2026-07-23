@@ -4,4 +4,4 @@
 // in this assembly could make an unrelated test observe settings it never configured. Disabling
 // parallelization keeps the suite deterministic — the tradeoff is acceptable given this project's
 // size.
-[assembly: CollectionBehavior(DisablesTestParallelization = true)]
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
