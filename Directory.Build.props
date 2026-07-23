@@ -11,7 +11,10 @@
     <!-- Cache family bumped to 1.3.0: realigns Cache + BitFaster onto the post-split
          PowerCSharp.Feature.Cache.Abstractions ICacheService (stale 1.2.0 predated the split). -->
     <PowerCSharpFeatureCacheVersion>1.3.2</PowerCSharpFeatureCacheVersion>
-    
+
+    <!-- Sanitization family: Feature.Sanitization.Abstractions + Feature.Sanitization -->
+    <PowerCSharpFeatureSanitizationVersion>1.0.0</PowerCSharpFeatureSanitizationVersion>
+
     <!-- Common package metadata -->
     <Authors>Mario Arce</Authors>
     <Copyright>Copyright © Mario Arce 2026</Copyright>
