@@ -23,9 +23,10 @@ on:
         default: 'core'
         type: choice
         options:
-          - core       # PowerCSharpVersion — Core, Extensions, Helpers, Utilities, Compatibility, AspNetCore
-          - features   # PowerCSharpFeaturesVersion — Features.Abstractions, Features, BuiltInFeatures
-          - cache      # PowerCSharpFeatureCacheVersion — Feature.Cache.*, Feature.Cache.BitFaster, Feature.Cache.Disk
+          - core         # PowerCSharpVersion — Core, Extensions, Helpers, Utilities, Compatibility, AspNetCore
+          - features     # PowerCSharpFeaturesVersion — Features.Abstractions, Features, BuiltInFeatures
+          - cache        # PowerCSharpFeatureCacheVersion — Feature.Cache.*, Feature.Cache.BitFaster, Feature.Cache.Disk
+          - sanitization # PowerCSharpFeatureSanitizationVersion — Feature.Sanitization.*, Feature.Sanitization
 
 permissions:
   contents: write
@@ -259,6 +260,10 @@ jobs:
           "cache")
             VERSION_ELEMENT="PowerCSharpFeatureCacheVersion"
             TAG_PREFIX="cache-v"
+            ;;
+          "sanitization")
+            VERSION_ELEMENT="PowerCSharpFeatureSanitizationVersion"
+            TAG_PREFIX="sanitization-v"
             ;;
           *)
             VERSION_ELEMENT="PowerCSharpVersion"
