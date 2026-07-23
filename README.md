@@ -1,6 +1,6 @@
 # PowerCSharp
 
-![PowerCSharp Banner](docs/images/PowerCSharp_Banner.png)
+![PowerCSharp Banner](https://raw.githubusercontent.com/marioarce/PowerCSharp/0191ee12092c28ccf5a578e59977583117a3ff00/docs/images/PowerCSharp_Banner.png)
 
 [![PowerCSharp](https://img.shields.io/badge/PowerCSharp-v2.0.0-blue.svg)](https://github.com/marioarce/PowerCSharp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -21,6 +21,7 @@ Enhanced C# extension methods and utilities for .NET developers
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Features.svg)](https://www.nuget.org/packages/PowerCSharp.Features)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.BuiltInFeatures.svg)](https://www.nuget.org/packages/PowerCSharp.BuiltInFeatures)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Feature.Cache.svg)](https://www.nuget.org/packages/PowerCSharp.Feature.Cache)
+[![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Feature.Sanitization.svg)](https://www.nuget.org/packages/PowerCSharp.Feature.Sanitization)
 
 PowerCSharp is a comprehensive library of extension methods, utilities, and helper classes designed to enhance your C# development experience. Built by a senior C# architect with 20+ years of experience, this library provides practical, well-tested solutions for common programming challenges.
 
@@ -30,6 +31,7 @@ PowerCSharp is a comprehensive library of extension methods, utilities, and help
 - **Features Framework**: Brand-new `PowerCSharp.Features` engine — hybrid auto-scan + explicit module discovery, composite flag resolution (config → env vars → overrides), DI orchestration, opt-in diagnostics endpoint
 - **Built-in Features**: `PowerCSharp.BuiltInFeatures` bundle — runtime-flag-toggled ASP.NET Core capabilities (CORS), toggled via `PowerFeatures:<Key>:Enabled`
 - **Cache Feature Family**: `PowerCSharp.Feature.Cache` (module + options), `PowerCSharp.Feature.Cache.Abstractions` (contracts + NoOp, `netstandard2.0` + `net8.0`), `PowerCSharp.Feature.Cache.BitFaster` (BitFaster-backed LRU), `PowerCSharp.Feature.Cache.Disk` (disk-backed LRU with cross-process locking)
+- **Sanitization Feature Family**: `PowerCSharp.Feature.Sanitization.Abstractions` (engine + contracts + NoOp, `netstandard2.0` + `net8.0`) and `PowerCSharp.Feature.Sanitization` (module + options) — log injection (CWE-117), file-path traversal (CWE-22), sensitive-data masking (CWE-200), and regex-injection/ReDoS validation (CWE-400/CWE-730)
 - **EditorConfig**: Comprehensive coding standards applied across the entire codebase
 - **Directory Extensions**: `TrySafeDelete` and related safe I/O helpers
 - **Code Quality**: Nullable annotations, member ordering, and namespace cleanup throughout
@@ -59,6 +61,11 @@ PowerCSharp is organized into focused, independently versioned packages.
 - **[PowerCSharp.Feature.Cache](src/Features/PowerCSharp.Feature.Cache/README.md)** - Cache feature module, options, and `AddCacheFeature()` wiring. Pair with a provider package.
 - **[PowerCSharp.Feature.Cache.BitFaster](src/Features/PowerCSharp.Feature.Cache.BitFaster/README.md)** - BitFaster-backed in-memory LRU cache. Isolates `BitFaster.Caching` dependency.
 - **[PowerCSharp.Feature.Cache.Disk](src/Features/PowerCSharp.Feature.Cache.Disk/README.md)** - Disk-backed LRU cache with atomic writes, cross-process file-lock coordination, and background cleanup.
+
+### Sanitization Feature Family (`v1.0.0`)
+
+- **[PowerCSharp.Feature.Sanitization.Abstractions](src/Features/PowerCSharp.Feature.Sanitization.Abstractions/README.md)** - Sanitization engine, contracts, and NoOp safe-off implementation covering log injection, file-path traversal, sensitive-data masking, and regex-injection/ReDoS. Targets `netstandard2.0` + `net8.0`.
+- **[PowerCSharp.Feature.Sanitization](src/Features/PowerCSharp.Feature.Sanitization/README.md)** - Sanitization feature module, options, and `AddSanitizationFeature()` wiring. No separate provider package — registers the real service directly.
 
 ### 🏗️ Architecture
 
@@ -98,6 +105,13 @@ dotnet add package PowerCSharp.BuiltInFeatures
 dotnet add package PowerCSharp.Feature.Cache
 dotnet add package PowerCSharp.Feature.Cache.BitFaster   # in-memory LRU (BitFaster)
 dotnet add package PowerCSharp.Feature.Cache.Disk        # disk-backed LRU
+```
+
+### Sanitization feature
+
+```bash
+dotnet add package PowerCSharp.Feature.Sanitization.Abstractions  # engine — usable standalone, no DI required
+dotnet add package PowerCSharp.Feature.Sanitization               # module — Features Framework + DI wiring
 ```
 
 ## 💡 Usage Examples
@@ -221,6 +235,22 @@ var result = await cache.GetAsync<MyObject>("key");
 
 if (result.Hit)
     Console.WriteLine(result.Value);
+```
+
+### Sanitization Feature (PowerCSharp.Feature.Sanitization.Abstractions)
+
+```csharp
+using PowerCSharp.Feature.Sanitization.Abstractions;
+
+// Usable standalone — no DI or feature registration required.
+string safeForLog = untrustedInput.SanitizeForLog();               // CWE-117 log injection
+string safeForPath = untrustedSegment.SanitizeForFilePath();       // CWE-22 path traversal (throws if rejected)
+string masked = payload.SanitizeForSensitiveData();                // CWE-200 sensitive-data masking
+string safePattern = untrustedPattern.SanitizeForRegexInjection(); // CWE-400/CWE-730 ReDoS validation
+
+// Or resolve the DI-facing service once PowerCSharp.Feature.Sanitization is registered:
+var sanitizer = app.Services.GetRequiredService<ISanitizationService>();
+var result = sanitizer.SanitizeForLogInjection(untrustedInput);
 ```
 
 ### LINQ & Dynamic Query Extensions (PowerCSharp.Extensions)
@@ -382,8 +412,8 @@ string random = CryptoHelper.GenerateRandomString(10);
 
 ## 🎯 Target Frameworks
 
-- **Modern .NET**: .NET 8.0 — core libraries, Features engine, BuiltInFeatures, Cache feature modules
-- **.NET Standard 2.0 + .NET 8.0**: `PowerCSharp.Features.Abstractions`, `PowerCSharp.Feature.Cache.Abstractions`, `PowerCSharp.Feature.Cache.BitFaster` — usable from .NET Framework and .NET Core
+- **Modern .NET**: .NET 8.0 — core libraries, Features engine, BuiltInFeatures, Cache and Sanitization feature modules
+- **.NET Standard 2.0 + .NET 8.0**: `PowerCSharp.Features.Abstractions`, `PowerCSharp.Feature.Cache.Abstractions`, `PowerCSharp.Feature.Cache.BitFaster`, `PowerCSharp.Feature.Sanitization.Abstractions` — usable from .NET Framework and .NET Core
 - **.NET Framework**: 4.6.2, 4.7.2, 4.8 — via `PowerCSharp.Compatibility`
 - **ASP.NET Core**: .NET 8.0 — `PowerCSharp.Extensions.AspNetCore`, Features engine, BuiltInFeatures
 
@@ -418,6 +448,10 @@ dotnet test
 - **[PowerCSharp.Feature.Cache.BitFaster](src/Features/PowerCSharp.Feature.Cache.BitFaster/README.md)** - BitFaster provider guide
 - **[PowerCSharp.Feature.Cache.Disk](src/Features/PowerCSharp.Feature.Cache.Disk/README.md)** - Disk provider guide
 
+**Sanitization feature family**
+- **[PowerCSharp.Feature.Sanitization.Abstractions](src/Features/PowerCSharp.Feature.Sanitization.Abstractions/README.md)** - Engine and contracts reference
+- **[PowerCSharp.Feature.Sanitization](src/Features/PowerCSharp.Feature.Sanitization/README.md)** - Module guide
+
 ### Detailed API Documentation
 - **[PowerCSharp.Core API](docs/PowerCSharp.Core.md)** - Complete core API reference
 - **[PowerCSharp.Extensions API](docs/PowerCSharp.Extensions.md)** - Cross-platform extensions documentation
@@ -430,6 +464,7 @@ dotnet test
 - **[Features Authoring Guide](docs/PowerCSharp.Features.Authoring-Guide.md)** - How to build a new feature
 - **[Features Flag Reference](docs/PowerCSharp.Features.FlagReference.md)** - Flag schema and provider precedence
 - **[Cache Feature API](docs/PowerCSharp.Feature.Cache.md)** - Cache family API reference
+- **[Sanitization Feature API](docs/PowerCSharp.Feature.Sanitization.md)** - Sanitization family API reference
 
 ### Development Documentation
 - [Examples and Samples](samples/) - Working code examples

@@ -1,5 +1,7 @@
 # PowerCSharp.Features
 
+![PowerCSharp Banner](https://raw.githubusercontent.com/marioarce/PowerCSharp/0191ee12092c28ccf5a578e59977583117a3ff00/docs/images/PowerCSharp_Banner.png)
+
 The Features engine: feature discovery (hybrid auto-scan + explicit), composite flag resolution,
 DI orchestration, a feature registry, and diagnostics.
 

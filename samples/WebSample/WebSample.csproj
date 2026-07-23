@@ -6,6 +6,13 @@
     <ProjectReference Include="..\..\src\PowerCSharp.Extensions.AspNetCore\PowerCSharp.Extensions.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\PowerCSharp.Utilities\PowerCSharp.Utilities.csproj" />
     <ProjectReference Include="..\..\src\PowerCSharp.Helpers\PowerCSharp.Helpers.csproj" />
+    <ProjectReference Include="..\..\src\Features\PowerCSharp.Features.Abstractions\PowerCSharp.Features.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Features\PowerCSharp.Features\PowerCSharp.Features.csproj" />
+    <ProjectReference Include="..\..\src\Features\PowerCSharp.Feature.Cache.Abstractions\PowerCSharp.Feature.Cache.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Features\PowerCSharp.Feature.Cache\PowerCSharp.Feature.Cache.csproj" />
+    <ProjectReference Include="..\..\src\Features\PowerCSharp.Feature.Cache.BitFaster\PowerCSharp.Feature.Cache.BitFaster.csproj" />
+    <ProjectReference Include="..\..\src\Features\PowerCSharp.Feature.Sanitization.Abstractions\PowerCSharp.Feature.Sanitization.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Features\PowerCSharp.Feature.Sanitization\PowerCSharp.Feature.Sanitization.csproj" />
   </ItemGroup>
 
   <ItemGroup>

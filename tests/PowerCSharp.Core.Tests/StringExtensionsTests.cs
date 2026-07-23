@@ -1,5 +1,6 @@
 using System;
 using PowerCSharp.Core;
+using PowerCSharp.Extensions.Strings;
 using Xunit;
 
 namespace PowerCSharp.Core.Tests;

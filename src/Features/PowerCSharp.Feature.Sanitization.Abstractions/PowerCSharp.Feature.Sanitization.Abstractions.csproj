@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>PowerCSharp.Feature.Sanitization.Abstractions</PackageId>
+    <PackageVersion>$(PowerCSharpFeatureSanitizationVersion)</PackageVersion>
+    <Title>PowerCSharp Sanitization Feature - Abstractions</Title>
+    <Description>Framework-agnostic sanitization engine and contracts for the PowerCSharp Sanitization feature: log-injection (CWE-117), file-path traversal (CWE-22), sensitive-data (CWE-200), and regex-injection/ReDoS (CWE-400/730) sanitization, plus the NoOp safe-off implementation. Targets netstandard2.0 and net8.0. No ASP.NET Core dependency.</Description>
+    <PackageTags>csharp;dotnet;features;feature-flags;security;sanitization;abstractions;clean-architecture</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+    <!-- Needed for JsonEncode control-character strategy; System.Text.Json ships in the net8.0
+         shared framework but is not part of the netstandard2.0 contract (matches PowerCSharp.Helpers). -->
+    <PackageReference Include="System.Text.Json" Version="10.0.8" />
+  </ItemGroup>
+
+</Project>
