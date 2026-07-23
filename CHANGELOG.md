@@ -209,7 +209,7 @@ This is the first stable production release of PowerCSharp, marking the transiti
 
 ---
 
-## [Unreleased]
+## [Sanitization 1.0.0] - 2026-07-23
 
 ### Added
 
