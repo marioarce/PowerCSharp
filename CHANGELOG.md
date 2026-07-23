@@ -211,6 +211,20 @@ This is the first stable production release of PowerCSharp, marking the transiti
 
 ## [Unreleased]
 
+### Added
+
+- **PowerCSharp.Feature.Sanitization.Abstractions v1.0.0** — Sanitization engine, contracts, and NoOp safe-off implementation. Migrated and de-branded from an internal reference implementation, then refactored from one large class into concern-based files: `SanitizationEngine.LogInjection.cs` (CWE-117), `SanitizationEngine.FilePath.cs` (CWE-22), `SanitizationEngine.SensitiveData.cs` (CWE-200), `SanitizationEngine.RegexInjection.cs` (CWE-400/CWE-730). Includes `SanitizationExtensions` string extensions (usable with no DI or configuration), `SanitizationSettings`, `SanitizationResult`/`SensitiveDataResult`, and `NoOpSanitizationService`. Targets `netstandard2.0` + `net8.0`.
+
+- **PowerCSharp.Feature.Sanitization v1.0.0** — Sanitization feature module (`SanitizationFeatureModule`), options (`SanitizationFeatureOptions`), `SanitizationService` / `SanitizationSettingsProvider`, and `AddSanitizationFeature()` explicit extension. No separate provider package (unlike Cache) — registers the real service directly when the feature flag is enabled, `NoOpSanitizationService` otherwise. `ConfigureSanitizationEngine()` bridges DI-resolved settings into the static engine for non-DI call sites.
+
+- **Comprehensive Sanitization test suite** — `PowerCSharp.Feature.Sanitization.Tests` covering log injection, file-path traversal (strict allowlist and legacy modes), sensitive-data masking, regex/ReDoS validation, extension methods, result-type equality, and feature DI wiring.
+
+- **`PowerCSharpFeatureSanitizationVersion`** — New independent version family in `Directory.Build.props`, alongside a `sanitization` `package_family` choice in the release `workflow_dispatch`.
+
+### Fixed
+
+- **Sensitive-data key masking** — `MaskKeyBasedValues`'s handling of the generic `password`/`token`/`secret`/etc. key-value pattern referenced a capture group that didn't exist on that regex, which always evaluated to an empty mask and silently left the raw secret value in the sanitized output (with the key name dropped). Found while writing tests for the Sanitization feature; the same defect exists in the original reference implementation this was migrated from. Fixed by reconstructing the key prefix the same way the other key-based heuristics in the same method already do.
+
 ---
 
 ## Version History
