@@ -15,6 +15,10 @@
     <!-- Sanitization family: Feature.Sanitization.Abstractions + Feature.Sanitization -->
     <PowerCSharpFeatureSanitizationVersion>1.0.0</PowerCSharpFeatureSanitizationVersion>
 
+    <!-- Operational family: Operational.Abstractions + Operational (diagnostics, issue capture,
+         structured logging, disk event-log writing, HTTP retry/circuit-breaker resilience) -->
+    <PowerCSharpOperationalVersion>1.0.0</PowerCSharpOperationalVersion>
+
     <!-- Common package metadata -->
     <Authors>Mario Arce</Authors>
     <Copyright>Copyright © Mario Arce 2026</Copyright>
