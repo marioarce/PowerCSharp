@@ -80,6 +80,13 @@ PowerCSharp.Feature.Cache.Abstractions      cache contracts + NoOp (netstandard2
        ├─ PowerCSharp.Feature.Cache.BitFaster   BitFaster-backed LRU (isolates BitFaster.Caching)
        └─ PowerCSharp.Feature.Cache.Disk        disk-backed LRU (cross-process locking) — own CLAUDE.md
 
+--- Operational Package Family (independent versioning family) ---
+PowerCSharp.Operational.Abstractions        contracts, models, NoOp (netstandard2.0 + net8.0)
+  └─ PowerCSharp.Operational               diagnostics, issue capture, logging, event-log writer,
+                                           HTTP retry/circuit-breaker (net8.0, ASP.NET Core).
+                                           Optional PowerCSharp.Features integration via
+                                           OperationalFeatureModule; usable standalone otherwise.
+
 --- Roadmapped, confirmed in scope (see src/Features/CLAUDE.md) ---
 PowerCSharp.Feature.Sitecore                 third-party GraphQL/Sitecore integration — not started
 ```
@@ -110,6 +117,7 @@ Centrally managed in `Directory.Build.props` as independently-bumped "families":
 | `PowerCSharpCompatibilityVersion` | Compatibility | manual edit in `Directory.Build.props` |
 | `PowerCSharpFeaturesVersion` | Features.Abstractions, Features, BuiltInFeatures | `workflow_dispatch` → `package_family: features` |
 | `PowerCSharpFeatureCacheVersion` | Feature.Cache.Abstractions, Feature.Cache, Feature.Cache.BitFaster, Feature.Cache.Disk | `workflow_dispatch` → `package_family: cache` |
+| `PowerCSharpOperationalVersion` | Operational.Abstractions, Operational | `workflow_dispatch` → `package_family: operational` |
 
 If you are adding to an existing package, bump its existing family. If you are standing up a new
 pluggable `Feature.<Name>` family (e.g. `Feature.Sitecore`), it earns its own
@@ -199,3 +207,5 @@ The .NET Framework compatibility layer is **not** covered by the commands above 
   Feature package, pluggable or built-in.
 - `docs/EDGE_CASES_AND_SECURITY.md` — per-API edge-case and security notes; consult before
   changing the behavior of any existing public extension/utility method.
+- `docs/PowerCSharp.Operational.md` and `docs/PowerCSharp.Operational.Architecture.md` — Operational
+  package family API reference and architecture rationale/decision log.
