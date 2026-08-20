@@ -117,6 +117,7 @@ Centrally managed in `Directory.Build.props` as independently-bumped "families":
 | `PowerCSharpCompatibilityVersion` | Compatibility | manual edit in `Directory.Build.props` |
 | `PowerCSharpFeaturesVersion` | Features.Abstractions, Features, BuiltInFeatures | `workflow_dispatch` → `package_family: features` |
 | `PowerCSharpFeatureCacheVersion` | Feature.Cache.Abstractions, Feature.Cache, Feature.Cache.BitFaster, Feature.Cache.Disk | `workflow_dispatch` → `package_family: cache` |
+| `PowerCSharpFeatureSanitizationVersion` | Feature.Sanitization.Abstractions, Feature.Sanitization | `workflow_dispatch` → `package_family: sanitization` |
 | `PowerCSharpOperationalVersion` | Operational.Abstractions, Operational | `workflow_dispatch` → `package_family: operational` |
 
 If you are adding to an existing package, bump its existing family. If you are standing up a new
