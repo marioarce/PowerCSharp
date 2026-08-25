@@ -14,7 +14,11 @@ public sealed class NoOpDiskCacheService : IDiskCacheService
     /// <summary>Creates the NoOp disk cache and logs that disk caching is inert.</summary>
     public NoOpDiskCacheService(ILogger<NoOpDiskCacheService> logger)
     {
-        logger.LogInformation("Cache feature is disabled or unconfigured; using NoOp disk cache.");
+        // NOTE: see the matching comment in NoOpCacheService — this can be constructed by
+        // ASP.NET Core's ValidateOnBuild even when a real provider (e.g. Disk) is the one
+        // actually injected as IDiskCacheService. Check the Cache feature's "Cache feature
+        // resolved" diagnostic line for the implementation actually in use.
+        logger.LogInformation("NoOp disk cache constructed (IDiskCacheService safe-off floor).");
     }
 
     /// <inheritdoc />

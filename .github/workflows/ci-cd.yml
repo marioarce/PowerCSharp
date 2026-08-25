@@ -27,6 +27,7 @@ on:
           - features     # PowerCSharpFeaturesVersion — Features.Abstractions, Features, BuiltInFeatures
           - cache        # PowerCSharpFeatureCacheVersion — Feature.Cache.*, Feature.Cache.BitFaster, Feature.Cache.Disk
           - sanitization # PowerCSharpFeatureSanitizationVersion — Feature.Sanitization.*, Feature.Sanitization
+          - operational  # PowerCSharpOperationalVersion — Operational.Abstractions, Operational
 
 permissions:
   contents: write
@@ -264,6 +265,10 @@ jobs:
           "sanitization")
             VERSION_ELEMENT="PowerCSharpFeatureSanitizationVersion"
             TAG_PREFIX="sanitization-v"
+            ;;
+          "operational")
+            VERSION_ELEMENT="PowerCSharpOperationalVersion"
+            TAG_PREFIX="operational-v"
             ;;
           *)
             VERSION_ELEMENT="PowerCSharpVersion"

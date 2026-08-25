@@ -14,7 +14,13 @@ public sealed class NoOpCacheService : ICacheService
     /// <summary>Creates the NoOp cache and logs that caching is inert.</summary>
     public NoOpCacheService(ILogger<NoOpCacheService> logger)
     {
-        logger.LogInformation("Cache feature is disabled or unconfigured; using NoOp in-memory cache.");
+        // NOTE: this constructor can run even when a real provider (e.g. BitFaster) is the one
+        // actually injected as ICacheService — ASP.NET Core's ValidateOnBuild (on by default in
+        // Development) constructs every registered descriptor, including this shadowed safe-off
+        // floor, purely to validate the DI graph. Seeing this log does not by itself mean the app
+        // is using NoOp; check the Cache feature's "Cache feature resolved" diagnostic line for
+        // the implementation actually bound to ICacheService.
+        logger.LogInformation("NoOp in-memory cache constructed (ICacheService safe-off floor).");
     }
 
     /// <inheritdoc />
