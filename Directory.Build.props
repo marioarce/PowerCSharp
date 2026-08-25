@@ -16,7 +16,7 @@
 
     <!-- Operational family: Operational.Abstractions + Operational (diagnostics, issue capture,
          structured logging, disk event-log writing, HTTP retry/circuit-breaker resilience) -->
-    <PowerCSharpOperationalVersion>1.0.0</PowerCSharpOperationalVersion>
+    <PowerCSharpOperationalVersion>1.0.1</PowerCSharpOperationalVersion>
 
     <!-- Common package metadata -->
     <Authors>Mario Arce</Authors>
