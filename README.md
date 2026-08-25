@@ -25,6 +25,8 @@ Enhanced C# extension methods and utilities for .NET developers
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.BuiltInFeatures.svg)](https://www.nuget.org/packages/PowerCSharp.BuiltInFeatures)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Feature.Cache.svg)](https://www.nuget.org/packages/PowerCSharp.Feature.Cache)
 [![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Feature.Sanitization.svg)](https://www.nuget.org/packages/PowerCSharp.Feature.Sanitization)
+[![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Operational.Abstractions.svg)](https://www.nuget.org/packages/PowerCSharp.Operational.Abstractions)
+[![NuGet](https://img.shields.io/nuget/v/PowerCSharp.Operational.svg)](https://www.nuget.org/packages/PowerCSharp.Operational)
 
 PowerCSharp is a comprehensive library of extension methods, utilities, and helper classes designed to enhance your C# development experience. Built by a senior C# architect with 20+ years of experience, this library provides practical, well-tested solutions for common programming challenges.
 
@@ -35,6 +37,7 @@ PowerCSharp is a comprehensive library of extension methods, utilities, and help
 - **Built-in Features**: `PowerCSharp.BuiltInFeatures` bundle — runtime-flag-toggled ASP.NET Core capabilities (CORS), toggled via `PowerFeatures:<Key>:Enabled`
 - **Cache Feature Family**: `PowerCSharp.Feature.Cache` (module + options), `PowerCSharp.Feature.Cache.Abstractions` (contracts + NoOp, `netstandard2.0` + `net8.0`), `PowerCSharp.Feature.Cache.BitFaster` (BitFaster-backed LRU), `PowerCSharp.Feature.Cache.Disk` (disk-backed LRU with cross-process locking)
 - **Sanitization Feature Family**: `PowerCSharp.Feature.Sanitization.Abstractions` (engine + contracts + NoOp, `netstandard2.0` + `net8.0`) and `PowerCSharp.Feature.Sanitization` (module + options) — log injection (CWE-117), file-path traversal (CWE-22), sensitive-data masking (CWE-200), and regex-injection/ReDoS validation (CWE-400/CWE-730)
+- **Operational Package Family**: `PowerCSharp.Operational.Abstractions` (contracts + NoOp, `netstandard2.0` + `net8.0`) and `PowerCSharp.Operational` (net8.0) — cross-cutting issue capture, in-app diagnostics, structured logging, disk event-log writing, and HTTP retry/circuit-breaker resilience. Optional `PowerCSharp.Features` integration; usable standalone.
 - **EditorConfig**: Comprehensive coding standards applied across the entire codebase
 - **Directory Extensions**: `TrySafeDelete` and related safe I/O helpers
 - **Code Quality**: Nullable annotations, member ordering, and namespace cleanup throughout
@@ -69,6 +72,11 @@ PowerCSharp is organized into focused, independently versioned packages.
 
 - **[PowerCSharp.Feature.Sanitization.Abstractions](src/Features/PowerCSharp.Feature.Sanitization.Abstractions/README.md)** - Sanitization engine, contracts, and NoOp safe-off implementation covering log injection, file-path traversal, sensitive-data masking, and regex-injection/ReDoS. Targets `netstandard2.0` + `net8.0`.
 - **[PowerCSharp.Feature.Sanitization](src/Features/PowerCSharp.Feature.Sanitization/README.md)** - Sanitization feature module, options, and `AddSanitizationFeature()` wiring. No separate provider package — registers the real service directly.
+
+### Operational Package Family (`v1.0.0`)
+
+- **[PowerCSharp.Operational.Abstractions](src/PowerCSharp.Operational/PowerCSharp.Operational.Abstractions/README.md)** - Contracts (`IDiagnosticsService`, `IIssueManager`, `IEventViewerService`), models, enums, and NoOp safe-off implementations. Zero third-party dependencies. Targets `netstandard2.0` + `net8.0`.
+- **[PowerCSharp.Operational](src/PowerCSharp.Operational/PowerCSharp.Operational/README.md)** - In-app diagnostics, centralized issue/error capture, a custom `ILogger` provider, disk event-log writing (NDJSON), and HTTP retry/circuit-breaker resilience (via Polly). Works standalone via `AddOperational()`/`UseOperational()`, or through `PowerCSharp.Features` via the optional `OperationalFeatureModule`. Targets `net8.0` (ASP.NET Core).
 
 ### 🏗️ Architecture
 
@@ -115,6 +123,13 @@ dotnet add package PowerCSharp.Feature.Cache.Disk        # disk-backed LRU
 ```bash
 dotnet add package PowerCSharp.Feature.Sanitization.Abstractions  # engine — usable standalone, no DI required
 dotnet add package PowerCSharp.Feature.Sanitization               # module — Features Framework + DI wiring
+```
+
+### Operational package family
+
+```bash
+dotnet add package PowerCSharp.Operational.Abstractions  # contracts + NoOp — usable standalone, no DI required
+dotnet add package PowerCSharp.Operational               # diagnostics, issue capture, logging, event-log writer, retry/circuit-breaker
 ```
 
 ## 💡 Usage Examples
@@ -255,6 +270,39 @@ string safePattern = untrustedPattern.SanitizeForRegexInjection(); // CWE-400/CW
 var sanitizer = app.Services.GetRequiredService<ISanitizationService>();
 var result = sanitizer.SanitizeForLogInjection(untrustedInput);
 ```
+
+### Operational (PowerCSharp.Operational)
+
+```csharp
+// Program.cs
+builder.Services.AddOperational(builder.Configuration);
+// ...
+app.UseOperational();
+```
+
+```csharp
+using PowerCSharp.Operational.Abstractions;
+
+public class OrderController(IDiagnosticsService diagnostics, IIssueManager issues)
+{
+    public IActionResult Get(int id)
+    {
+        diagnostics.AddTrace($"Looking up order {id}");
+
+        try
+        {
+            return Ok(GetOrder(id));
+        }
+        catch (Exception ex)
+        {
+            issues.CaptureException(ex, new { orderId = id });
+            throw;
+        }
+    }
+}
+```
+
+Enable per-request diagnostics with the `debug: true` header (add `debugVerbose: true` to disable auto-obfuscation, `traceLevel: <0-6>` to filter, `eventLog: true` to also write to disk). Disabled or unconfigured, `PowerCSharp.Operational.Abstractions` NoOp floors keep every call site safe.
 
 ### LINQ & Dynamic Query Extensions (PowerCSharp.Extensions)
 
@@ -415,10 +463,10 @@ string random = CryptoHelper.GenerateRandomString(10);
 
 ## 🎯 Target Frameworks
 
-- **Modern .NET**: .NET 8.0 — core libraries, Features engine, BuiltInFeatures, Cache and Sanitization feature modules
-- **.NET Standard 2.0 + .NET 8.0**: `PowerCSharp.Features.Abstractions`, `PowerCSharp.Feature.Cache.Abstractions`, `PowerCSharp.Feature.Cache.BitFaster`, `PowerCSharp.Feature.Sanitization.Abstractions` — usable from .NET Framework and .NET Core
+- **Modern .NET**: .NET 8.0 — core libraries, Features engine, BuiltInFeatures, Cache, Sanitization, and Operational feature modules
+- **.NET Standard 2.0 + .NET 8.0**: `PowerCSharp.Features.Abstractions`, `PowerCSharp.Feature.Cache.Abstractions`, `PowerCSharp.Feature.Cache.BitFaster`, `PowerCSharp.Feature.Sanitization.Abstractions`, `PowerCSharp.Operational.Abstractions` — usable from .NET Framework and .NET Core
 - **.NET Framework**: 4.6.2, 4.7.2, 4.8 — via `PowerCSharp.Compatibility`
-- **ASP.NET Core**: .NET 8.0 — `PowerCSharp.Extensions.AspNetCore`, Features engine, BuiltInFeatures
+- **ASP.NET Core**: .NET 8.0 — `PowerCSharp.Extensions.AspNetCore`, Features engine, BuiltInFeatures, `PowerCSharp.Operational`
 
 ## 🧪 Testing
 
@@ -455,6 +503,10 @@ dotnet test
 - **[PowerCSharp.Feature.Sanitization.Abstractions](src/Features/PowerCSharp.Feature.Sanitization.Abstractions/README.md)** - Engine and contracts reference
 - **[PowerCSharp.Feature.Sanitization](src/Features/PowerCSharp.Feature.Sanitization/README.md)** - Module guide
 
+**Operational package family**
+- **[PowerCSharp.Operational.Abstractions](src/PowerCSharp.Operational/PowerCSharp.Operational.Abstractions/README.md)** - Contracts, models, and NoOp reference
+- **[PowerCSharp.Operational](src/PowerCSharp.Operational/PowerCSharp.Operational/README.md)** - Diagnostics, issue capture, logging, event-log writer, and retry/circuit-breaker guide
+
 ### Detailed API Documentation
 - **[PowerCSharp.Core API](docs/PowerCSharp.Core.md)** - Complete core API reference
 - **[PowerCSharp.Extensions API](docs/PowerCSharp.Extensions.md)** - Cross-platform extensions documentation
@@ -468,6 +520,8 @@ dotnet test
 - **[Features Flag Reference](docs/PowerCSharp.Features.FlagReference.md)** - Flag schema and provider precedence
 - **[Cache Feature API](docs/PowerCSharp.Feature.Cache.md)** - Cache family API reference
 - **[Sanitization Feature API](docs/PowerCSharp.Feature.Sanitization.md)** - Sanitization family API reference
+- **[Operational Package API](docs/PowerCSharp.Operational.md)** - Operational family API reference
+- **[Operational Architecture](docs/PowerCSharp.Operational.Architecture.md)** - Operational design rationale and decision log
 
 ### Development Documentation
 - [Examples and Samples](samples/) - Working code examples
