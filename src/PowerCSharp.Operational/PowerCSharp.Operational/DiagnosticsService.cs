@@ -110,6 +110,11 @@ public sealed class DiagnosticsService : IDiagnosticsService
     /// <inheritdoc />
     public DiagnosticEvent? AddTrace(string message, TraceLevel level = Abstractions.Enums.TraceLevel.Error, object? data = null, bool obfuscateMessage = false)
     {
+        if (!_enabled)
+        {
+            return null;
+        }
+
         if (obfuscateMessage || ShouldAutoObfuscate(message))
         {
             message = MaskString(message);
@@ -132,6 +137,11 @@ public sealed class DiagnosticsService : IDiagnosticsService
     /// <inheritdoc />
     public DiagnosticEvent? AddBreadcrumb(string message, string category, BreadcrumbLevel level = BreadcrumbLevel.Info, bool obfuscateMessage = false)
     {
+        if (!_enabled)
+        {
+            return null;
+        }
+
         var fullMessage = $"{category}: {message}";
 
         if (obfuscateMessage || ShouldAutoObfuscate(message))
@@ -157,6 +167,11 @@ public sealed class DiagnosticsService : IDiagnosticsService
     {
         ArgumentNullException.ThrowIfNull(ex);
 
+        if (!_enabled)
+        {
+            return null;
+        }
+
         var result = new DiagnosticEvent
         {
             Type = DiagnosticEventType.Exception,
@@ -174,6 +189,11 @@ public sealed class DiagnosticsService : IDiagnosticsService
     /// <inheritdoc />
     public DiagnosticEvent? AddError(string message, object? data = null, bool obfuscateMessage = false)
     {
+        if (!_enabled)
+        {
+            return null;
+        }
+
         if (obfuscateMessage || ShouldAutoObfuscate(message))
         {
             message = MaskString(message);
