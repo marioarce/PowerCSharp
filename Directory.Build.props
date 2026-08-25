@@ -9,7 +9,7 @@
 
     <!-- Per-pluggable-feature versions — ship independently. -->
 
-    <PowerCSharpFeatureCacheVersion>1.3.4</PowerCSharpFeatureCacheVersion>
+    <PowerCSharpFeatureCacheVersion>1.3.5</PowerCSharpFeatureCacheVersion>
 
     <!-- Sanitization family: Feature.Sanitization.Abstractions + Feature.Sanitization -->
     <PowerCSharpFeatureSanitizationVersion>1.0.0</PowerCSharpFeatureSanitizationVersion>
