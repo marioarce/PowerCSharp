@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using BitFaster.Caching.Lru;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PowerCSharp.Feature.Cache.Abstractions;
 
@@ -20,10 +21,16 @@ public sealed class BitFasterCacheService : ICacheService
     private readonly ConcurrentDictionary<string, InMemoryCacheEntryMetadata> _metadata = new();
 
     /// <summary>Creates the cache with capacity from <see cref="BitFasterCacheOptions"/>.</summary>
-    public BitFasterCacheService(IOptions<BitFasterCacheOptions> options)
+    public BitFasterCacheService(IOptions<BitFasterCacheOptions> options, ILogger<BitFasterCacheService> logger)
     {
         var capacity = Math.Max(1, options.Value.Capacity);
         _cache = new ConcurrentLru<string, object?>(capacity);
+
+        logger.LogInformation(
+            "BitFaster in-memory cache initialized (capacity={Capacity}). This constructor running does not " +
+            "by itself confirm this instance is the one injected as ICacheService — see the Cache feature's " +
+            "'Cache feature resolved' diagnostic line for the actually-bound implementation.",
+            capacity);
     }
 
     /// <inheritdoc />
