@@ -61,7 +61,7 @@ PowerCSharp is organized into focused, independently versioned packages.
 - **[PowerCSharp.Features](src/Features/PowerCSharp.Features/README.md)** - The engine: assembly discovery, composite flag resolution, DI orchestration, feature registry, and diagnostics. Entry points: `AddPowerFeatures()` / `UsePowerFeatures()`.
 - **[PowerCSharp.BuiltInFeatures](src/Features/PowerCSharp.BuiltInFeatures/README.md)** - Bundle of lightweight, runtime-toggled ASP.NET Core capabilities (CORS). Toggle via `PowerFeatures:<Key>:Enabled`.
 
-### Cache Feature Family (`v1.3.0`)
+### Cache Feature Family (`v1.3.5`)
 
 - **[PowerCSharp.Feature.Cache.Abstractions](src/Features/PowerCSharp.Feature.Cache.Abstractions/README.md)** - Cache contracts (`ICacheService`, `IDiskCacheService`, metadata types) and NoOp safe-off implementations. Targets `netstandard2.0` + `net8.0`.
 - **[PowerCSharp.Feature.Cache](src/Features/PowerCSharp.Feature.Cache/README.md)** - Cache feature module, options, and `AddCacheFeature()` wiring. Pair with a provider package.
@@ -73,7 +73,7 @@ PowerCSharp is organized into focused, independently versioned packages.
 - **[PowerCSharp.Feature.Sanitization.Abstractions](src/Features/PowerCSharp.Feature.Sanitization.Abstractions/README.md)** - Sanitization engine, contracts, and NoOp safe-off implementation covering log injection, file-path traversal, sensitive-data masking, and regex-injection/ReDoS. Targets `netstandard2.0` + `net8.0`.
 - **[PowerCSharp.Feature.Sanitization](src/Features/PowerCSharp.Feature.Sanitization/README.md)** - Sanitization feature module, options, and `AddSanitizationFeature()` wiring. No separate provider package — registers the real service directly.
 
-### Operational Package Family (`v1.0.0`)
+### Operational Package Family (`v1.0.1`)
 
 - **[PowerCSharp.Operational.Abstractions](src/PowerCSharp.Operational/PowerCSharp.Operational.Abstractions/README.md)** - Contracts (`IDiagnosticsService`, `IIssueManager`, `IEventViewerService`), models, enums, and NoOp safe-off implementations. Zero third-party dependencies. Targets `netstandard2.0` + `net8.0`.
 - **[PowerCSharp.Operational](src/PowerCSharp.Operational/PowerCSharp.Operational/README.md)** - In-app diagnostics, centralized issue/error capture, a custom `ILogger` provider, disk event-log writing (NDJSON), and HTTP retry/circuit-breaker resilience (via Polly). Works standalone via `AddOperational()`/`UseOperational()`, or through `PowerCSharp.Features` via the optional `OperationalFeatureModule`. Targets `net8.0` (ASP.NET Core).
